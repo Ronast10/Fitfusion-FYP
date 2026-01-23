@@ -1,78 +1,70 @@
-import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./Register.css";
 
-function Register() {
+export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [success, setSuccess] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleRegister = (e) => {
     e.preventDefault();
-
-    console.log("Register Data:", { name, email, password });
-
-    // simulate successful registration
-    setSuccess(true);
-
-    // optional: redirect to login after 2 seconds
-    setTimeout(() => {
-      navigate("/");
-    }, 2000);
+    if (name && email && password) {
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("userEmail", email);
+      navigate("/landing");
+    } else {
+      alert("Please fill all fields");
+    }
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "60px auto" }}>
-      <h2>Register</h2>
+    <div className="login-container">
+      <div className="login-card">
+        <h1>FitFusion</h1>
+        <p>Create your account</p>
 
-      {success && (
-        <p style={{ color: "green" }}>
-          Registered successfully! Redirecting to login...
-        </p>
-      )}
-
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name</label>
+        <form onSubmit={handleRegister}>
           <input
+            type="text"
+            placeholder="Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
           />
-        </div>
-
-        <div style={{ marginTop: "10px" }}>
-          <label>Email</label>
           <input
             type="email"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-        </div>
 
-        <div style={{ marginTop: "10px" }}>
-          <label>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+          <div className="password-wrapper">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <span
+              className="toggle-password"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? "●" : "○"}
+            </span>
+          </div>
 
-        <button style={{ marginTop: "15px" }} type="submit">
-          Register
-        </button>
-      </form>
+          <button type="submit">Register</button>
+        </form>
 
-      <p style={{ marginTop: "10px" }}>
-        Already have an account? <Link to="/">Login</Link>
-      </p>
+        <p className="register-link">
+          Already have an account? <span onClick={() => navigate("/login")}>Login</span>
+        </p>
+      </div>
     </div>
   );
 }
-
-export default Register;
