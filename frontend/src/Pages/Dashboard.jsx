@@ -1,14 +1,3 @@
-import { Link } from "react-router-dom";
-
-function Dashboard() {
-  return (
-    <div>
-      <h2>Dashboard</h2      >
-      <p>Welcome to FitFusion</p>
-
-      <Link to="/">Logout</Link>
-    </div>
-  );
+export default function Dashboard() {
+  return <h1>Welcome to FitFusion Dashboard 💪</h1>;
 }
-
-export default Dashboard;

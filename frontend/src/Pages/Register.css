@@ -1,0 +1,112 @@
+/* GLOBAL RESET - Necessary for React apps to center correctly */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100vh; 
+  width: 100vw;
+  overflow: hidden; 
+}
+
+/* Full page centering */
+.login-container {
+  display: flex;
+  justify-content: center; 
+  align-items: center;     
+  height: 100%;            
+  width: 100%;
+  background: linear-gradient(120deg, #ff6b81, #ff4757);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Card styling */
+.login-card {
+  background: white;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 380px; 
+  text-align: center;
+  box-sizing: border-box; 
+}
+
+.login-card h1 {
+  margin: 0 0 10px 0;
+  color: #ff4757;
+}
+
+.login-card p {
+  margin: 0 0 30px 0;
+  color: #555;
+}
+
+/* Input fields - Updated to be white background with black text */
+.login-card input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background-color: white !important; /* Forces background to be white */
+  color: #000 !important;             /* Forces text to be black */
+  box-sizing: border-box; 
+}
+
+/* Specific styling for placeholder text color */
+.login-card input::placeholder {
+  color: #888;
+}
+
+/* Password wrapper */
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.password-wrapper input {
+  padding-right: 40px;
+}
+
+/* Eye icon - Black & White Style */
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-85%); 
+  cursor: pointer;
+  font-size: 18px;
+  color: #000; 
+  user-select: none;
+}
+
+/* Red submit button */
+.login-card button {
+  width: 100%;
+  padding: 12px;
+  background: #ff4757;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+  margin-top: 10px;
+}
+
+.login-card button:hover {
+  background: #ff6b81;
+}
+
+/* Links */
+.register-link {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #555;
+}
+
+.register-link span {
+  color: #ff4757;
+  cursor: pointer;
+  font-weight: bold;
+}

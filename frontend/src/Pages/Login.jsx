@@ -1,55 +1,62 @@
-import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./Login.css";
 
-function Login() {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
-
-    console.log("Login Data:", { email, password });
-
-    // TEMP: simulate successful login
-    navigate("/dashboard");
+    if (email && password) {
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("userEmail", email);
+      navigate("/landing");
+    } else {
+      alert("Please enter email and password");
+    }
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "60px auto" }}>
-      <h2>Login</h2>
+    <div className="login-container">
+      <div className="login-card">
+        <h1>FitFusion</h1>
+        <p>Track your fitness, anytime, anywhere</p>
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Email</label>
+        <form onSubmit={handleLogin}>
           <input
             type="email"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-        </div>
 
-        <div style={{ marginTop: "10px" }}>
-          <label>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+          <div className="password-wrapper">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <span
+              className="toggle-password"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? "●" : "○"}
+            </span>
+          </div>
 
-        <button style={{ marginTop: "15px" }} type="submit">
-          Login
-        </button>
-      </form>
+          <button type="submit">Login</button>
+        </form>
 
-      <p style={{ marginTop: "10px" }}>
-        New user? <Link to="/register">Register</Link>
-      </p>
+        <p className="register-link">
+          Don't have an account? <span onClick={() => navigate("/register")}>Register</span>
+        </p>
+      </div>
     </div>
   );
 }
-
-export default Login;
