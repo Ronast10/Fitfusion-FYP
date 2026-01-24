@@ -1,32 +1,26 @@
-// App.jsx
 import { Routes, Route, Navigate } from "react-router-dom";
-import Login from "./Pages/Login";
-import Register from "./Pages/Register";
-import Landing from "./Pages/Landing";
-import Dashboard from "./Pages/Dashboard";
-import "./App.css";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Landing from "./pages/Landing";
+import Contact from "./pages/Contact"; // 1. Import the new Contact page
 
 function App() {
   return (
-    /* We use a wrapper that doesn't restrict height or width */
-    <div className="app-main-wrapper">
+    <>
       <Routes>
-        {/* Redirect root to Login */}
-        <Route path="/" element={<Navigate to="/login" />} />
+        {/* 2. Change root to Landing so users see the home page first */}
+        <Route path="/" element={<Landing />} /> 
         
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
-        {/* The scrollable Landing page with FitFusion info */}
-        <Route path="/landing" element={<Landing />} />
-
-        {/* Dashboard page */}
-        <Route path="/dashboard" element={<Dashboard />} />
         
-        {/* Catch-all: Redirect back to login if route doesn't exist */}
-        <Route path="*" element={<Navigate to="/login" />} />
+        {/* 3. Add the Contact Us route */}
+        <Route path="/contact" element={<Contact />} />
+
+        {/* Optional: Fallback to redirect unknown URLs back to home */}
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
-    </div>
+    </>
   );
 }
 

@@ -1,88 +1,173 @@
-import { useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Landing.css";
+import "../components/Landing.css"; 
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 export default function Landing() {
   const navigate = useNavigate();
+  // FAQ State and Data
+  const [openIndex, setOpenIndex] = useState(null);
 
+  const faqData = [
+    { q: "Do you offer personalized training programs?", a: "Yes! Our elite trainers design custom workout and nutrition plans tailored specifically to your body type and fitness goals." },
+    { q: "How can I get started with a consultation?", a: "You can book a session directly through our Services section or contact our support team to schedule your first assessment." },
+    { q: "What are the benefits of FitFusion membership?", a: "Members get exclusive access to digital tracking tools, premium training videos, and priority booking for our top-tier trainers." },
+    { q: "Is FitFusion Nepal Suitable for Beginners?", a: "Absolutely! Whether you’re a beginner or an experienced fitness enthusiast, our gym caters to individuals of all fitness levels." }
+  ];
 
-
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("userEmail");
-    navigate("/login");
+  const toggleFAQ = (index) => {
+    setOpenIndex(openIndex === index ? null : index);
   };
 
   return (
-    <div className="landing-wrapper">
-      {/* Top Contact Bar */}
-      <div className="top-bar">
-        <div className="top-bar-content">
-          <span>📞 +977-01-5919988</span>
-          <span>✉️ info@fitfusion.com.np</span>
-          <span>📱 +977-9876543210</span>
-        </div>
-      </div>
-
-      {/* Main Navigation */}
-      <nav className="navbar">
-        <div className="nav-container">
-          <h2 className="logo">FIT<span>FUSION</span></h2>
-          <ul>
-            <li>Home</li>
-            <li onClick={() => document.getElementById('about-section').scrollIntoView({ behavior: 'smooth' })}>About Us</li>
-            <li>Blog</li>
-            <li>Profile</li>
-            <li>Contact</li>
-            <li className="logout-btn" onClick={handleLogout}>Logout</li>
-          </ul>
-          <button className="cta-button-nav">JOIN NOW</button>
-        </div>
-      </nav>
-
+    <>
+      <Navbar />
+      
       {/* Hero Section */}
-      <header className="hero">
+      <section className="section hero" id="hero-section">
         <div className="hero-overlay">
           <div className="hero-content">
             <h1>BUILD YOUR <span>LEGACY</span></h1>
             <h3>THE ULTIMATE FITNESS DESTINATION</h3>
-            <button className="hero-btn">START TODAY</button>
+            <button className="hero-btn" onClick={() => navigate("/register")}>START TODAY</button>
           </div>
         </div>
-      </header>
+      </section>
 
-      {/* About/Info Section - Replaces the old boxes */}
-      <section className="about-section" id="about-section">
+      {/* About Section */}
+      <section className="section about" id="about-section">
         <div className="about-container">
           <div className="about-text">
             <h2>FITFUSION NEPAL</h2>
             <h3>Your No.1 Choice For Fitness Management</h3>
             <p>
-              Welcome to FitFusion, Nepal's premier web-based fitness management system! 
-              We bridge the gap between elite personal trainers and enthusiasts. 
-              Unlike a traditional gym, we provide the digital infrastructure for 
-              trainers to host classes and users to manage their fitness journey.
-            </p>
-            <p>
-              Our platform features an integrated <strong>FitFusion Shop</strong> where 
-              you can browse a curated selection of gym products, including wearable 
-              tech, fitness apparel, and nutritional edibles.
-            </p>
-            <p>
-              Access expert training videos, information hubs, and scheduled classes 
-              all in one seamless interface designed to safeguard your health.
+             "Welcome to FitFusion, Nepal's premier digital fitness ecosystem where technology meets elite physical performance. We aren't just a platform; we are the bridge between world-class trainers and dedicated enthusiasts, providing the modern infrastructure necessary for you to take total control of your health journey. Whether you are an athlete seeking specialized coaching or a beginner taking your first step, FitFusion empowers you with the tools, the community, and the expert guidance needed to transform your lifestyle. From our curated gear shop to real-time class scheduling and high-impact training videos, every feature is engineered to safeguard your health and amplify your results. At FitFusion, we don't just help you work out—we help you build a lasting legacy through consistency, expert knowledge, and a commitment to excellence. Join us today and experience the evolution of fitness management in Nepal."
             </p>
             <button className="about-btn">EXPLORE SHOP</button>
           </div>
           <div className="about-image-wrapper">
             <img 
-              src="https://images.unsplash.com/photo-1593079831268-3381b0db4a77?q=80&w=2069" 
+              src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=2069"
               alt="Trainer providing class" 
               className="about-img"
             />
           </div>
         </div>
       </section>
+
+      {/* Services and Facilities Section - UPDATED */}
+      <section className="services" id="services-section">
+        <h2 className="services-title">SERVICES AND FACILITIES</h2>
+        <div className="services-container">
+          
+          <div className="service-card">
+            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2070" alt="Personal Trainer" />
+            <h3>PERSONAL TRAINERS</h3>
+            <p>Our expert trainers provide specialized support ensuring your fitness journey is both fulfilling and transformative.</p>
+          </div>
+
+          <div className="service-card">
+            <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?q=80&w=2070" alt="Online Classes" />
+            <h3>ONLINE COACHING CLASSES</h3>
+            <p>Access high-quality training sessions from anywhere with our interactive and engaging digital coaching platform.</p>
+          </div>
+
+          <div className="service-card">
+            <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=2053" alt="Nutritionist" />
+            <h3>NUTRITIONIST</h3>
+            <p>Work with qualified nutritionists to develop a customized plan that fits seamlessly into your daily routine.</p>
+          </div>
+
+          <div className="service-card">
+            <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=2070" alt="Consultation" />
+            <h3>CONSULTATION</h3>
+            <p>Get professional health and fitness advice through one-on-one sessions to map out your long-term success.</p>
+          </div>
+
+        </div>
+      </section>
+      
+      {/* Trainers Section */}
+<section className="section trainers" id="trainers-section">
+  <h2 className="trainers-title">MEET OUR TRAINERS</h2>
+  <div className="trainers-container">
+    
+    {/* Trainer 1 */}
+    <div className="trainer-card">
+      <img src="https://images.unsplash.com/photo-1696563996353-214a3690bb11?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Trainer 1" />
+      <div className="trainer-overlay">
+        <h3>Kishor Karki</h3>
+        <p>7 Years Experience</p>
+        <p>Prep Coach</p>
+      </div>
     </div>
+
+    {/* Trainer 2 */}
+    <div className="trainer-card">
+      <img src="https://images.unsplash.com/photo-1572621988687-3fe290e7c0f6?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzV8fGd5bSUyMHRyYWluZXIlMjBmZW1hbGV8ZW58MHx8MHx8fDA%3D" alt="Trainer 2" /> 
+      <div className="trainer-overlay">
+        <h3>Sarah Tamang</h3>
+        <p>5 Years Experience</p>
+        <p>Yoga Specialist</p>
+      </div>
+    </div>
+
+    {/* Trainer 3 */}
+    <div className="trainer-card">
+      <img src="https://images.unsplash.com/photo-1667890786327-d28da55b0e57?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjR8fGd5bSUyMHRyYWluZXJ8ZW58MHx8MHx8fDA%3D" alt="Trainer 3" />
+      <div className="trainer-overlay">
+        <h3>Arjun Thapa</h3>
+        <p>8 Years Experience</p>
+        <p>Strength Coach</p>
+      </div>
+    </div>
+
+    {/* Trainer 4 */}
+    <div className="trainer-card">
+      <img src="https://images.unsplash.com/photo-1701481080490-cb2e7f4fd5f8?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NjB8fGd5bSUyMHRyYWluZXJ8ZW58MHx8MHx8fDA%3D" alt="Trainer 4" />
+      <div className="trainer-overlay">
+        <h3>Binod Rai</h3>
+        <p>6 Years Experience</p>
+        <p>Crossfit Expert</p>
+      </div>
+    </div>
+
+    {/* Trainer 5 */}
+    <div className="trainer-card">
+      <img src="https://images.unsplash.com/photo-1738870558728-720a366830a6?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjN8fGd5bSUyMHRyYWluZXIlMjBmZW1hbGV8ZW58MHx8MHx8fDA%3D" alt="Trainer 5" />
+      <div className="trainer-overlay">
+        <h3>Deepa Gurung</h3>
+        <p>4 Years Experience</p>
+        <p>Zumba Trainer</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+{/* FAQ Section */}
+      <section className="faq-section" id="faq-section">
+        <h2 className="faq-title">F.A.Q</h2>
+        <div className="faq-container">
+          {faqData.map((item, index) => (
+            <div 
+              key={index} 
+              className={`faq-item ${openIndex === index ? "active" : ""}`}
+              onClick={() => toggleFAQ(index)}
+            >
+              <div className="faq-question">
+                <span>{openIndex === index ? "−" : "+"}</span>
+                <h3>{item.q}</h3>
+              </div>
+              <div className="faq-answer">
+                <p>{item.a}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <Footer />
+    </>
   );
 }

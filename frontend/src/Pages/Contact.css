@@ -1,0 +1,88 @@
+.contact-header {
+  height: 45vh;
+  /* Dark overlay with gym background image */
+  background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+              url('https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?q=80&w=2069');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.contact-header h1 {
+  font-size: 64px;
+  font-weight: 900;
+  color: #ffcc00; /* Yellow title from the image */
+  letter-spacing: 2px;
+}
+
+.contact-body {
+  background-color: #ffffff;
+  color: #000;
+  padding: 100px 20px;
+}
+
+.contact-content-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.5fr; /* Matches the layout balance */
+  gap: 100px;
+}
+
+.serif-title {
+  font-family: 'Serif', 'Times New Roman';
+  font-size: 32px;
+  margin-bottom: 20px;
+}
+
+.info-block label {
+  display: block;
+  font-weight: bold;
+  color: #333;
+  margin-top: 25px;
+}
+
+.info-block p {
+  font-size: 16px;
+  color: #ff4757; /* Using your Red theme for the links */
+}
+
+.form-subtext {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 30px;
+}
+
+.fitfusion-contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.input-row {
+  display: flex;
+  gap: 15px;
+}
+
+.fitfusion-contact-form input, 
+.fitfusion-contact-form textarea {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 14px;
+}
+
+.contact-submit-btn {
+  background: #ffcc00; /* Yellow button matching the image */
+  color: #000;
+  border: none;
+  padding: 14px 40px;
+  font-weight: bold;
+  cursor: pointer;
+  width: fit-content;
+  text-transform: uppercase;
+}

@@ -7,6 +7,7 @@
   align-items: center;     /* Vertical center */
   flex: 1;                 /* Fills the height provided by index.css */
   width: 100vw;
+  min-height: 100vh;
   background: linear-gradient(120deg, #ff6b81, #ff4757);
   font-family: 'Segoe UI', sans-serif;
 }
@@ -92,4 +93,77 @@
   color: #ff4757;
   cursor: pointer;
   font-weight: bold;
+}
+/* FAQ Section Styles */
+.faq-section {
+  padding: 80px 20px;
+  background-color: #0a0a0a; /* Dark background */
+  color: #ffffff;
+  text-align: center;
+}
+
+.faq-title {
+  font-size: 48px;
+  font-family: 'Serif', 'Times New Roman';
+  margin-bottom: 40px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+}
+
+.faq-container {
+  max-width: 800px;
+  margin: 0 auto;
+  border-top: 1px solid #333;
+}
+
+.faq-item {
+  border-bottom: 1px solid #333;
+  padding: 20px 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.faq-question {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.faq-question span {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ff4757; /* FitFusion Red icon */
+  min-width: 25px;
+}
+
+.faq-question h3 {
+  font-size: 18px;
+  font-weight: 500;
+  color: #ffffff;
+  margin: 0;
+}
+
+/* Expansion Logic */
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.3s ease;
+  padding-left: 45px;
+}
+
+.faq-item.active .faq-answer {
+  max-height: 200px; /* Adjust based on text length */
+  padding-top: 15px;
+}
+
+.faq-item.active .faq-question h3 {
+  color: #ff4757; /* Text turns red when expanded */
+}
+
+.faq-answer p {
+  color: #bbbbbb;
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
 }

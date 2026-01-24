@@ -1,0 +1,298 @@
+/* Hero Section */
+.hero {
+  position: relative;
+  height: 100vh;
+  background: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070') no-repeat center center/cover;
+  margin-bottom: -1px; /* Prevents the white gap at the bottom */
+  overflow: hidden;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.hero-content h1 {
+  font-size: 60px;
+  color: #fff;
+}
+
+.hero-content h1 span {
+  color: #ff4757; /* FitFusion Red */
+}
+
+.hero-content h3 {
+  font-size: 24px;
+  color: #fff;
+  margin: 20px 0;
+}
+
+.hero-btn {
+  padding: 12px 30px;
+  background: #ff4757;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.hero-btn:hover {
+  background: #e33e4d;
+  transform: scale(1.05);
+}
+
+/* --- About Section (Updated to Dark Theme) --- */
+.about {
+  min-height: 80vh;
+  padding: 100px 20px;
+  background-color: #0f0f0f; /* Changed from white to dark */
+  color: #ffffff; /* Changed text to white */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.about-container {
+  max-width: 1200px;
+  display: flex;
+  gap: 60px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.about-text { flex: 1; min-width: 350px; text-align: left; }
+
+.about-text p {
+  font-size: 17px;
+  line-height: 1.8;
+  color: #bbbbbb;
+  /* This aligns the text to both the left and right margins */
+  text-align: justify; 
+  /* This ensures the last line stays left-aligned for a natural look */
+  text-align-last: left; 
+  margin-bottom: 20px;
+}
+
+.about-text h3 { 
+  font-size: 20px; 
+  border-left: 5px solid #ff4757; 
+  padding-left: 15px; 
+  margin-bottom: 25px; 
+  color: #ff4757; /* Red accent */
+}
+
+.about-text p { 
+  font-size: 17px; 
+  line-height: 1.8; 
+  color: #bbbbbb; /* Softer grey for readability */
+}
+
+.about-btn { 
+  background: #ff4757; /* Changed from black to red */
+  color:#fff; 
+  padding:14px 35px; 
+  border:none; 
+  font-weight:bold; 
+  text-transform:uppercase; 
+  cursor: pointer;
+}
+
+.about-img { 
+  width:100%; 
+  max-width:500px; 
+  box-shadow:20px 20px 0px #ff4757; /* Matches red branding */
+}
+
+/* --- Services Section (Updated to Dark Theme) --- */
+.services {
+  padding: 100px 40px;
+  background-color: #050505; /* Deep black background */
+  text-align: center;
+}
+
+.services-title {
+  font-size: 42px;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 60px;
+  color: #ffffff; /* White text for contrast */
+}
+
+.services-title::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: #ff4757;
+  margin: 15px auto 0;
+}
+
+.services-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+/* Card Styling - Dark Mode */
+.service-card {
+  background: #151515; /* Dark grey cards */
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #222;
+  text-align: left;
+  transition: all 0.3s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-10px);
+  border-color: #ff4757; /* Border lights up red on hover */
+  box-shadow: 0 10px 30px rgba(255, 71, 87, 0.15);
+}
+
+.service-card img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-bottom: 4px solid #ff4757; /* Red accent line under image */
+}
+
+.service-card h3 {
+  padding: 25px 20px 10px;
+  font-size: 20px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.service-card p {
+  padding: 0 20px 30px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #aaaaaa;
+}
+
+/* Blog, Profile, Contact Sections (Adjusted for consistency) */
+.blog, .profile, .contact {
+  padding: 100px 20px;
+  background: #0a0a0a;
+  color: #fff;
+  text-align: center;
+  min-height: 80vh;
+}
+
+.blog-section h2, .profile-section h2, .contact-section h2 {
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+/* Top Bar */
+.top-bar {
+  background: #000000 !important; 
+  padding: 8px 40px;
+  display: flex !important;
+  justify-content: flex-end; 
+  align-items: center;
+  border-bottom: 1px solid #333; 
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 2001; 
+}
+
+.top-bar span, .top-bar li, .top-bar p {
+  color: #ffffff !important; 
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+/* Trainers Section */
+.trainers {
+  padding: 100px 20px;
+  background-color: #000;
+  text-align: center;
+}
+
+.trainers-title {
+  color: #ffcc00; /* Yellow title from your image */
+  font-size: 32px;
+  font-weight: 900;
+  margin-bottom: 50px;
+  text-transform: uppercase;
+}
+
+.trainers-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  max-width: 900px; /* Forces the 4th and 5th trainer to drop to a new line */
+  margin: 0 auto;
+}
+
+.trainer-card {
+  position: relative;
+  width: 260px; /* Specific width for 3-across in 900px container */
+  height: 380px;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  background: #1a1a1a;
+}
+
+.trainer-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+/* Hover Info Overlay */
+.trainer-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75); /* Darker overlay for better text contrast */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; /* Centered text like a profile */
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  text-align: center;
+}
+
+.trainer-card:hover .trainer-overlay {
+  opacity: 1;
+}
+
+.trainer-card:hover img {
+  transform: scale(1.1);
+}
+
+.trainer-overlay h3 {
+  color: #ffcc00;
+  font-size: 22px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.trainer-overlay p {
+  font-size: 15px;
+  margin: 5px 0;
+  color: #fff;
+  font-weight: 500;
+}
