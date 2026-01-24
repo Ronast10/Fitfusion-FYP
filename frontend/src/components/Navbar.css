@@ -1,0 +1,79 @@
+/* Navbar Styling - Fixed side-by-side layout */
+.navbar {
+  background: rgba(0, 0, 0, 0.95);
+  padding: 0 40px; /* Vertical padding handled by container */
+  position: sticky;
+  top: 0;
+  z-index: 2000;
+  height: 80px; /* Fixed height for better alignment */
+  display: flex;
+  align-items: center;
+}
+
+.nav-container {
+  width: 100%;
+  max-width: 1300px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between; /* Pushes Logo to left and Menu to right */
+  align-items: center;
+}
+
+/* Ensure the logo stays to the left */
+.logo {
+  font-size: 28px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  text-decoration: none;
+}
+
+.logo span { color: #ff4757; }
+
+/* Menu items MUST be flex to go sideways */
+.navbar ul {
+  display: flex !important; /* Forces horizontal layout */
+  list-style: none;
+  gap: 25px;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.navbar li {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: #ffffff !important; /* Visible against black */
+  transition: 0.3s ease;
+  white-space: nowrap; /* Prevents text from wrapping */
+}
+
+.navbar li:hover { 
+  color: #ff4757 !important; 
+}
+
+/* Profile / Logout section if you have one */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.cta-button-nav {
+  background: #ff4757;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  font-weight: 800;
+  text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.cta-button-nav:hover {
+  background: #ff6b81;
+  transform: translateY(-2px);
+}
