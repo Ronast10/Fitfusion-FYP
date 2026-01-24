@@ -1,21 +1,14 @@
-/* GLOBAL RESET - Necessary for React apps to center correctly */
-html, body, #root {
-  margin: 0;
-  padding: 0;
-  height: 100vh; 
-  width: 100vw;
-  overflow: hidden; 
-}
+/* Login.css */
 
-/* Full page centering */
+/* Full page centering container */
 .login-container {
   display: flex;
-  justify-content: center; 
-  align-items: center;     
-  height: 100%;            
-  width: 100%;
+  justify-content: center; /* Horizontal center */
+  align-items: center;     /* Vertical center */
+  flex: 1;                 /* Fills the height provided by index.css */
+  width: 100vw;
   background: linear-gradient(120deg, #ff6b81, #ff4757);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', sans-serif;
 }
 
 /* Card styling */
@@ -27,7 +20,7 @@ html, body, #root {
   width: 100%;
   max-width: 380px; 
   text-align: center;
-  box-sizing: border-box; 
+  box-sizing: border-box;
 }
 
 .login-card h1 {
@@ -40,7 +33,7 @@ html, body, #root {
   color: #555;
 }
 
-/* Input fields - Updated to be white background with black text */
+/* Inputs with white background and black text */
 .login-card input {
   width: 100%;
   padding: 12px;
@@ -48,36 +41,28 @@ html, body, #root {
   border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 14px;
-  background-color: white !important; /* Forces background to be white */
-  color: #000 !important;             /* Forces text to be black */
+  background-color: white !important;
+  color: #000 !important;
   box-sizing: border-box; 
 }
 
-/* Specific styling for placeholder text color */
 .login-card input::placeholder {
   color: #888;
 }
 
-/* Password wrapper */
+/* Password eye icon centering */
 .password-wrapper {
   position: relative;
   width: 100%;
 }
 
-.password-wrapper input {
-  padding-right: 40px;
-}
-
-/* Eye icon - Black & White Style */
 .toggle-password {
   position: absolute;
   top: 50%;
   right: 12px;
   transform: translateY(-85%); 
   cursor: pointer;
-  font-size: 18px;
-  color: #000; 
-  user-select: none;
+  color: #000;
 }
 
 /* Red submit button */
@@ -90,7 +75,6 @@ html, body, #root {
   border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
-  transition: 0.3s;
   margin-top: 10px;
 }
 
@@ -98,7 +82,6 @@ html, body, #root {
   background: #ff6b81;
 }
 
-/* Links */
 .register-link {
   margin-top: 20px;
   font-size: 14px;
