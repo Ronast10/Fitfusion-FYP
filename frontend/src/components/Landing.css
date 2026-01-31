@@ -1,9 +1,30 @@
-/* Hero Section */
+/* --- GLOBAL RESET --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* --- BLUR SYSTEM --- */
+/* This class is applied to the main content wrapper when a modal is open */
+.content-blur {
+  filter: blur(10px);
+  pointer-events: none; /* Prevents interaction with background */
+  user-select: none;
+  transition: filter 0.3s ease;
+}
+
+/* --- HERO SECTION --- */
 .hero {
   position: relative;
   height: 100vh;
   background: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070') no-repeat center center/cover;
-  margin-bottom: -1px; /* Prevents the white gap at the bottom */
+  margin-bottom: -1px; 
   overflow: hidden;
 }
 
@@ -21,10 +42,11 @@
 .hero-content h1 {
   font-size: 60px;
   color: #fff;
+  font-weight: 900;
 }
 
 .hero-content h1 span {
-  color: #ff4757; /* FitFusion Red */
+  color: #ff4757; 
 }
 
 .hero-content h3 {
@@ -48,16 +70,15 @@
   transform: scale(1.05);
 }
 
-/* --- About Section (Updated to Dark Theme) --- */
+/* --- ABOUT SECTION --- */
 .about {
   min-height: 80vh;
   padding: 100px 20px;
-  background-color: #0f0f0f; /* Changed from white to dark */
-  color: #ffffff; /* Changed text to white */
+  background-color: #0f0f0f; 
+  color: #ffffff; 
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
 }
 
 .about-container {
@@ -70,15 +91,10 @@
 
 .about-text { flex: 1; min-width: 350px; text-align: left; }
 
-.about-text p {
-  font-size: 17px;
-  line-height: 1.8;
-  color: #bbbbbb;
-  /* This aligns the text to both the left and right margins */
-  text-align: justify; 
-  /* This ensures the last line stays left-aligned for a natural look */
-  text-align-last: left; 
-  margin-bottom: 20px;
+.about-text h2 {
+  font-size: 36px;
+  margin-bottom: 10px;
+  color: #fff;
 }
 
 .about-text h3 { 
@@ -86,17 +102,20 @@
   border-left: 5px solid #ff4757; 
   padding-left: 15px; 
   margin-bottom: 25px; 
-  color: #ff4757; /* Red accent */
+  color: #ff4757; 
 }
 
 .about-text p { 
   font-size: 17px; 
   line-height: 1.8; 
-  color: #bbbbbb; /* Softer grey for readability */
+  color: #bbbbbb; 
+  text-align: justify; 
+  text-align-last: left; 
+  margin-bottom: 20px;
 }
 
 .about-btn { 
-  background: #ff4757; /* Changed from black to red */
+  background: #ff4757; 
   color:#fff; 
   padding:14px 35px; 
   border:none; 
@@ -108,13 +127,13 @@
 .about-img { 
   width:100%; 
   max-width:500px; 
-  box-shadow:20px 20px 0px #ff4757; /* Matches red branding */
+  box-shadow:20px 20px 0px #ff4757; 
 }
 
-/* --- Services Section (Updated to Dark Theme) --- */
+/* --- SERVICES SECTION --- */
 .services {
   padding: 100px 40px;
-  background-color: #050505; /* Deep black background */
+  background-color: #050505; 
   text-align: center;
 }
 
@@ -123,7 +142,7 @@
   font-weight: 900;
   text-transform: uppercase;
   margin-bottom: 60px;
-  color: #ffffff; /* White text for contrast */
+  color: #ffffff;
 }
 
 .services-title::after {
@@ -143,9 +162,8 @@
   margin: 0 auto;
 }
 
-/* Card Styling - Dark Mode */
 .service-card {
-  background: #151515; /* Dark grey cards */
+  background: #151515; 
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid #222;
@@ -155,7 +173,7 @@
 
 .service-card:hover {
   transform: translateY(-10px);
-  border-color: #ff4757; /* Border lights up red on hover */
+  border-color: #ff4757; 
   box-shadow: 0 10px 30px rgba(255, 71, 87, 0.15);
 }
 
@@ -163,7 +181,7 @@
   width: 100%;
   height: 250px;
   object-fit: cover;
-  border-bottom: 4px solid #ff4757; /* Red accent line under image */
+  border-bottom: 4px solid #ff4757;
 }
 
 .service-card h3 {
@@ -181,41 +199,7 @@
   color: #aaaaaa;
 }
 
-/* Blog, Profile, Contact Sections (Adjusted for consistency) */
-.blog, .profile, .contact {
-  padding: 100px 20px;
-  background: #0a0a0a;
-  color: #fff;
-  text-align: center;
-  min-height: 80vh;
-}
-
-.blog-section h2, .profile-section h2, .contact-section h2 {
-  font-size: 36px;
-  margin-bottom: 20px;
-}
-
-/* Top Bar */
-.top-bar {
-  background: #000000 !important; 
-  padding: 8px 40px;
-  display: flex !important;
-  justify-content: flex-end; 
-  align-items: center;
-  border-bottom: 1px solid #333; 
-  width: 100%;
-  box-sizing: border-box;
-  position: relative;
-  z-index: 2001; 
-}
-
-.top-bar span, .top-bar li, .top-bar p {
-  color: #ffffff !important; 
-  font-size: 13px;
-  font-weight: 500;
-  white-space: nowrap;
-}
-/* Trainers Section */
+/* --- TRAINERS SECTION --- */
 .trainers {
   padding: 100px 20px;
   background-color: #000;
@@ -223,7 +207,7 @@
 }
 
 .trainers-title {
-  color: #ffcc00; /* Yellow title from your image */
+  color: #ffcc00; 
   font-size: 32px;
   font-weight: 900;
   margin-bottom: 50px;
@@ -235,13 +219,13 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 20px;
-  max-width: 900px; /* Forces the 4th and 5th trainer to drop to a new line */
+  max-width: 900px; 
   margin: 0 auto;
 }
 
 .trainer-card {
   position: relative;
-  width: 260px; /* Specific width for 3-across in 900px container */
+  width: 260px; 
   height: 380px;
   border-radius: 12px;
   overflow: hidden;
@@ -256,32 +240,24 @@
   transition: transform 0.5s ease;
 }
 
-/* Hover Info Overlay */
 .trainer-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75); /* Darker overlay for better text contrast */
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.75);
   color: white;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center; /* Centered text like a profile */
+  align-items: center; 
   padding: 20px;
   opacity: 0;
   transition: opacity 0.3s ease;
   text-align: center;
 }
 
-.trainer-card:hover .trainer-overlay {
-  opacity: 1;
-}
-
-.trainer-card:hover img {
-  transform: scale(1.1);
-}
+.trainer-card:hover .trainer-overlay { opacity: 1; }
+.trainer-card:hover img { transform: scale(1.1); }
 
 .trainer-overlay h3 {
   color: #ffcc00;
@@ -290,9 +266,91 @@
   text-transform: uppercase;
 }
 
-.trainer-overlay p {
-  font-size: 15px;
-  margin: 5px 0;
-  color: #fff;
-  font-weight: 500;
+/* --- FAQ SECTION --- */
+.faq-section {
+  padding: 80px 20px;
+  background-color: #0a0a0a; 
+  color: #ffffff;
+  text-align: center;
+}
+
+.faq-title {
+  font-size: 48px;
+  margin-bottom: 40px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+}
+
+.faq-container {
+  max-width: 800px;
+  margin: 0 auto;
+  border-top: 1px solid #333;
+}
+
+.faq-item {
+  border-bottom: 1px solid #333;
+  padding: 20px 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.faq-question {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.faq-question span {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ff4757;
+  min-width: 25px;
+}
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+  padding-left: 45px;
+}
+
+.faq-item.active .faq-answer {
+  max-height: 200px;
+  padding-top: 15px;
+}
+
+/* --- MODAL OVERLAY SYSTEM --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5); /* Dim the background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  position: relative;
+  z-index: 10000;
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+.close-btn {
+  position: absolute;
+  top: -45px;
+  right: 0;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 40px;
+  cursor: pointer;
+}
+
+@keyframes modalFadeIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }

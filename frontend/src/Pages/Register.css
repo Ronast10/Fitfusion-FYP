@@ -1,112 +1,92 @@
-/* GLOBAL RESET - Necessary for React apps to center correctly */
-html, body, #root {
-  margin: 0;
-  padding: 0;
-  height: 100vh; 
-  width: 100vw;
-  overflow: hidden; 
-}
-
-/* Full page centering */
-.login-container {
-  display: flex;
-  justify-content: center; 
-  align-items: center;     
-  height: 100%;            
-  width: 100%;
-  background: linear-gradient(120deg, #ff6b81, #ff4757);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* Card styling */
+/* Card styling - This sits in the middle of your Landing page blur */
 .login-card {
   background: white;
   padding: 40px;
-  border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  width: 100%;
-  max-width: 380px; 
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  width: 380px; /* Fixed width prevents the 'full screen red' issue */
   text-align: center;
-  box-sizing: border-box; 
+  box-sizing: border-box;
+  position: relative;
 }
 
 .login-card h1 {
   margin: 0 0 10px 0;
   color: #ff4757;
+  font-size: 32px;
+  font-weight: 800;
+  text-transform: uppercase;
 }
 
 .login-card p {
   margin: 0 0 30px 0;
-  color: #555;
+  color: #666;
+  font-size: 15px;
 }
 
-/* Input fields - Updated to be white background with black text */
 .login-card input {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   margin-bottom: 15px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  background-color: white !important; /* Forces background to be white */
-  color: #000 !important;             /* Forces text to be black */
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 15px;
+  background-color: #fcfcfc !important;
+  color: #000 !important;
   box-sizing: border-box; 
+  transition: all 0.3s ease;
 }
 
-/* Specific styling for placeholder text color */
-.login-card input::placeholder {
-  color: #888;
+.login-card input:focus {
+  border-color: #ff4757;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 71, 87, 0.1);
 }
 
-/* Password wrapper */
 .password-wrapper {
   position: relative;
   width: 100%;
 }
 
-.password-wrapper input {
-  padding-right: 40px;
-}
-
-/* Eye icon - Black & White Style */
 .toggle-password {
   position: absolute;
   top: 50%;
-  right: 12px;
-  transform: translateY(-85%); 
+  right: 15px;
+  transform: translateY(-80%); 
   cursor: pointer;
-  font-size: 18px;
-  color: #000; 
-  user-select: none;
+  color: #888;
 }
 
-/* Red submit button */
 .login-card button {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   background: #ff4757;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   font-weight: bold;
-  transition: 0.3s;
+  font-size: 16px;
   margin-top: 10px;
+  transition: all 0.3s ease;
 }
 
 .login-card button:hover {
   background: #ff6b81;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
 }
 
-/* Links */
 .register-link {
-  margin-top: 20px;
+  margin-top: 25px;
   font-size: 14px;
-  color: #555;
+  color: #666;
 }
 
 .register-link span {
   color: #ff4757;
   cursor: pointer;
   font-weight: bold;
+  text-decoration: underline;
+  margin-left: 5px;
 }

@@ -1,13 +1,44 @@
-/* Navbar Styling - Fixed side-by-side layout */
+/* --- TOP BAR ALIGNMENT FIX --- */
+.top-bar {
+  background-color: #000000 !important;
+  width: 100%;
+  padding: 8px 40px; /* Adjust padding to match your main nav */
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.top-bar-content {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: flex;
+  
+  /* CHANGE THIS LINE: 
+     Use 'flex-end' to push everything to the right side.
+     Use 'space-between' if you want them spread out. */
+  justify-content: flex-end; 
+  
+  gap: 25px; /* Space between the phone, email, and mobile info */
+}
+
+.top-bar-content span {
+  color: #ffffff !important;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* --- MAIN NAVBAR --- */
 .navbar {
-  background: rgba(0, 0, 0, 0.95);
-  padding: 0 40px; /* Vertical padding handled by container */
+  background: #000000 !important; /* Pure black, no transparency */
+  padding: 0 40px;
   position: sticky;
   top: 0;
   z-index: 2000;
-  height: 80px; /* Fixed height for better alignment */
+  height: 80px; 
   display: flex;
   align-items: center;
+  border-bottom: 1px solid #1a1a1a;
 }
 
 .nav-container {
@@ -15,24 +46,24 @@
   max-width: 1300px;
   margin: 0 auto;
   display: flex;
-  justify-content: space-between; /* Pushes Logo to left and Menu to right */
+  justify-content: space-between;
   align-items: center;
 }
 
-/* Ensure the logo stays to the left */
 .logo {
   font-size: 28px;
   font-weight: 800;
   color: #ffffff;
   margin: 0;
   text-decoration: none;
+  text-transform: uppercase;
 }
 
 .logo span { color: #ff4757; }
 
-/* Menu items MUST be flex to go sideways */
+/* Menu items */
 .navbar ul {
-  display: flex !important; /* Forces horizontal layout */
+  display: flex !important;
   list-style: none;
   gap: 25px;
   margin: 0;
@@ -45,20 +76,18 @@
   font-weight: 700;
   text-transform: uppercase;
   cursor: pointer;
-  color: #ffffff !important; /* Visible against black */
+  color: #ffffff !important; 
   transition: 0.3s ease;
-  white-space: nowrap; /* Prevents text from wrapping */
+  white-space: nowrap;
 }
 
 .navbar li:hover { 
   color: #ff4757 !important; 
 }
 
-/* Profile / Logout section if you have one */
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+/* Logout Specific Styling */
+.logout-btn {
+  color: #ff4757 !important; /* Highlighting logout for clarity */
 }
 
 .cta-button-nav {
