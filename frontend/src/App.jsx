@@ -2,7 +2,9 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Landing from "./pages/Landing";
-import Contact from "./pages/Contact"; // 1. Import the new Contact page
+import Contact from "./pages/Contact"; // 
+import Shop from "./pages/Shop";
+
 
 function App() {
   return (
@@ -19,6 +21,9 @@ function App() {
 
         {/* Optional: Fallback to redirect unknown URLs back to home */}
         <Route path="*" element={<Navigate to="/" />} />
+        
+        <Route path="/shop" element={<Shop />} />
+
       </Routes>
     </>
   );

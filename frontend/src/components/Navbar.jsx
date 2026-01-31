@@ -32,7 +32,8 @@ export default function Navbar() {
             {/* 2. Update these to your Landing page IDs if using scrolling, or keep for subpages */}
             <li onClick={() => navigate("/")}>About Us</li>
             
-            <li>Blog</li>
+            <li onClick={() => navigate("/shop")}>Shop</li>
+
             <li>Profile</li>
             
             {/* 3. Add the Contact click handler */}
