@@ -1,62 +1,89 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./Login.css";
 
-export default function Login() {
+// 1. Add onLoginSuccess to the props here
+export default function Login({ switchToRegister, onLoginSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
+  const [error, setError] = useState(""); 
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (email && password) {
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("userEmail", email);
-      navigate("/landing");
-    } else {
-      alert("Please enter email and password");
+    setError(""); 
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/auth/login", {
+        email,
+        password,
+      });
+
+      if (response.status === 200) {
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("userEmail", email);
+        
+        // 2. REMOVE window.location.reload() and call the prop instead
+        if (onLoginSuccess) {
+          onLoginSuccess(); 
+        }
+      }
+    } catch (err) {
+      const message = err.response?.data?.message || "Login failed. Please try again.";
+      setError(message);
     }
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <h1>FitFusion</h1>
-        <p>Track your fitness, anytime, anywhere</p>
+    <div className="login-card">
+      <h1>FitFusion</h1>
+      <p>Track your fitness, anytime, anywhere</p>
 
-        <form onSubmit={handleLogin}>
+      {error && (
+        <p style={{ 
+          color: "#fff", 
+          backgroundColor: "rgba(255, 71, 87, 0.2)", 
+          border: "1px solid #ff4757",
+          padding: "10px", 
+          borderRadius: "8px", 
+          fontSize: "13px",
+          marginBottom: "15px" 
+        }}>
+          {error}
+        </p>
+      )}
+
+      <form onSubmit={handleLogin}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+
+        <div className="password-wrapper">
           <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
+          <span
+            className="toggle-password"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? "👁" : "Ø"}
+          </span>
+        </div>
 
-          <div className="password-wrapper">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <span
-              className="toggle-password"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? "●" : "○"}
-            </span>
-          </div>
+        <button type="submit">Login</button>
+      </form>
 
-          <button type="submit">Login</button>
-        </form>
-
-        <p className="register-link">
-          Don't have an account? <span onClick={() => navigate("/register")}>Register</span>
-        </p>
-      </div>
+      <p className="register-link">
+        Don't have an account? <span onClick={switchToRegister}>Register</span>
+      </p>
     </div>
   );
 }

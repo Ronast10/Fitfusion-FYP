@@ -1,57 +1,73 @@
-/* Login.css */
-
-/* Full page centering container */
-.login-container {
-  display: flex;
-  justify-content: center; /* Horizontal center */
-  align-items: center;     /* Vertical center */
-  flex: 1;                 /* Fills the height provided by index.css */
-  width: 100vw;
-  min-height: 100vh;
-  background: linear-gradient(120deg, #ff6b81, #ff4757);
-  font-family: 'Segoe UI', sans-serif;
-}
-
-/* Card styling */
+/* Card styling - Matte Black & FitFusion Red */
 .login-card {
-  background: white;
+  background: #111111; /* Solid Dark Background */
   padding: 40px;
-  border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  width: 100%;
-  max-width: 380px; 
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+  width: 380px; /* Fixed width prevents stretching */
   text-align: center;
   box-sizing: border-box;
+  border: 1px solid #222; /* Subtle edge definition */
+  position: relative; /* REQUIRED to pin the X button to the top right */
+}
+
+/* THE X BUTTON - Positioned at top right of the card */
+.close-modal-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.close-modal-btn:hover {
+  color: #ff4757;
 }
 
 .login-card h1 {
   margin: 0 0 10px 0;
-  color: #ff4757;
+  color: #ff4757; /* FitFusion Red */
+  font-size: 32px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 .login-card p {
   margin: 0 0 30px 0;
-  color: #555;
+  color: #888;
+  font-size: 14px;
 }
 
-/* Inputs with white background and black text */
+/* Dark Inputs */
 .login-card input {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   margin-bottom: 15px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  background-color: white !important;
-  color: #000 !important;
+  border-radius: 10px;
+  border: 1px solid #333;
+  font-size: 15px;
+  background-color: #1a1a1a !important; 
+  color: #ffffff !important;
   box-sizing: border-box; 
+  transition: all 0.3s ease;
+}
+
+.login-card input:focus {
+  border-color: #ff4757;
+  outline: none;
+  background-color: #222 !important;
 }
 
 .login-card input::placeholder {
-  color: #888;
+  color: #555;
 }
 
-/* Password eye icon centering */
+/* Password Eye Styling */
 .password-wrapper {
   position: relative;
   width: 100%;
@@ -60,110 +76,50 @@
 .toggle-password {
   position: absolute;
   top: 50%;
-  right: 12px;
-  transform: translateY(-85%); 
+  right: 15px;
+  transform: translateY(-50%); 
   cursor: pointer;
-  color: #000;
+  color: #fff; /* Black and white eye style */
+  font-size: 18px;
+  opacity: 0.7;
 }
 
-/* Red submit button */
+.toggle-password:hover {
+  opacity: 1;
+}
+
+/* Red Button */
 .login-card button {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   background: #ff4757;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   font-weight: bold;
+  font-size: 16px;
   margin-top: 10px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
 }
 
 .login-card button:hover {
   background: #ff6b81;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
 }
 
 .register-link {
-  margin-top: 20px;
+  margin-top: 25px;
   font-size: 14px;
-  color: #555;
+  color: #888;
 }
 
 .register-link span {
   color: #ff4757;
   cursor: pointer;
   font-weight: bold;
-}
-/* FAQ Section Styles */
-.faq-section {
-  padding: 80px 20px;
-  background-color: #0a0a0a; /* Dark background */
-  color: #ffffff;
-  text-align: center;
-}
-
-.faq-title {
-  font-size: 48px;
-  font-family: 'Serif', 'Times New Roman';
-  margin-bottom: 40px;
-  letter-spacing: 5px;
-  text-transform: uppercase;
-}
-
-.faq-container {
-  max-width: 800px;
-  margin: 0 auto;
-  border-top: 1px solid #333;
-}
-
-.faq-item {
-  border-bottom: 1px solid #333;
-  padding: 20px 0;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: left;
-}
-
-.faq-question {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.faq-question span {
-  font-size: 24px;
-  font-weight: bold;
-  color: #ff4757; /* FitFusion Red icon */
-  min-width: 25px;
-}
-
-.faq-question h3 {
-  font-size: 18px;
-  font-weight: 500;
-  color: #ffffff;
-  margin: 0;
-}
-
-/* Expansion Logic */
-.faq-answer {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease, padding 0.3s ease;
-  padding-left: 45px;
-}
-
-.faq-item.active .faq-answer {
-  max-height: 200px; /* Adjust based on text length */
-  padding-top: 15px;
-}
-
-.faq-item.active .faq-question h3 {
-  color: #ff4757; /* Text turns red when expanded */
-}
-
-.faq-answer p {
-  color: #bbbbbb;
-  font-size: 16px;
-  line-height: 1.6;
-  margin: 0;
+  text-decoration: underline;
+  margin-left: 5px;
 }

@@ -13,12 +13,13 @@ export default function Navbar() {
   return (
     <>
       <div className="top-bar">
-        <div className="top-bar-content">
-          <span>📞 +977-01-5919988</span>
-          <span>✉️ info@fitfusion.com.np</span>
-          <span>📱 +977-9876543210</span>
-        </div>
-      </div>
+  <div className="top-bar-content">
+    {/* These spans will now move together to the right side */}
+    <span>📞 +977-01-5919988</span>
+    <span>✉️ info@fitfusion.com.np</span>
+    <span>📱 +977-9876543210</span>
+  </div>
+</div>
 
       <nav className="navbar">
         <div className="nav-container">
@@ -39,7 +40,7 @@ export default function Navbar() {
             {/* 3. Add the Contact click handler */}
             <li onClick={() => navigate("/contact")}>Contact</li>
             
-            <li className="logout-btn" onClick={handleLogout}>Logout</li>
+            <li className="Logout-btn" onClick={() => navigate("/Logout")}>Logout</li>
           </ul>
           <button className="cta-button-nav" onClick={() => navigate("/register")}>JOIN NOW</button>
         </div>
