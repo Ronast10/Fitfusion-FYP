@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 
 import connectDB from "./db/db.js";
 import authRoutes from "./routes/auth.js";
+import productRoutes from "./routes/productRoutes.js";
+
 
 // Load environment variables
 dotenv.config();
@@ -14,11 +16,13 @@ const app = express();
 app.use(cors());
 app.use(express.json()); // Essential for parsing user registration data
 
+
 // Connect to MongoDB Atlas
 connectDB();
 
 // API Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/products", productRoutes);
 
 // Base Route
 app.get("/", (req, res) => {
