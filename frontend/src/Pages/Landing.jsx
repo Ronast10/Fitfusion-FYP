@@ -10,8 +10,8 @@ export default function Landing() {
   const navigate = useNavigate();
   
   // --- STATE MANAGEMENT ---
-  // showLogin is set to true so it pops up immediately on page load
-  const [showLogin, setShowLogin] = useState(true); 
+  // We set these to false so the landing page shows first without pop-ups
+  const [showLogin, setShowLogin] = useState(false); 
   const [showRegister, setShowRegister] = useState(false);
   const [openIndex, setOpenIndex] = useState(null);
 
@@ -33,7 +33,7 @@ export default function Landing() {
 
   return (
     <>
-      {/* 1. BLUR WRAPPER - This div blurs the background when a modal is active */}
+      {/* 1. BLUR WRAPPER - Blurs everything except the modal */}
       <div className={showLogin || showRegister ? "content-blur" : ""}>
         <Navbar onLoginClick={openLoginModal} onRegisterClick={openRegisterModal} />
         
@@ -55,9 +55,9 @@ export default function Landing() {
               <h2>FITFUSION NEPAL</h2>
               <h3>Your No.1 Choice For Fitness Management</h3>
               <p>
-                "Welcome to FitFusion, Nepal's premier digital fitness ecosystem where technology meets elite physical performance. We aren't just a platform; we are the bridge between world-class trainers and dedicated enthusiasts, providing the modern infrastructure necessary for you to take total control of your health journey. Whether you are an athlete seeking specialized coaching or a beginner taking your first step, FitFusion empowers you with the tools, the community, and the expert guidance needed to transform your lifestyle. From our curated gear shop to real-time class scheduling and high-impact training videos, every feature is engineered to safeguard your health and amplify your results. At FitFusion, we don't just help you work out—we help you build a lasting legacy through consistency, expert knowledge, and a commitment to excellence. Join us today and experience the evolution of fitness management in Nepal."
+                "Welcome to FitFusion, Nepal's premier digital fitness ecosystem where technology meets elite physical performance. We aren't just a platform; we are the bridge between world-class trainers and dedicated enthusiasts, providing the modern infrastructure necessary for you to take total control of your health journey. Join us today and experience the evolution of fitness management in Nepal."
               </p>
-              <button className="about-btn">EXPLORE SHOP</button>
+              <button className="about-btn" onClick={() => navigate("/shop")}>EXPLORE SHOP</button>
             </div>
             <div className="about-image-wrapper">
               <img 
@@ -100,46 +100,29 @@ export default function Landing() {
         <section className="section trainers" id="trainers-section">
           <h2 className="trainers-title">MEET OUR TRAINERS</h2>
           <div className="trainers-container">
-            <div className="trainer-card">
-              <img src="https://images.unsplash.com/photo-1696563996353-214a3690bb11?q=80&w=687" alt="Trainer 1" />
-              <div className="trainer-overlay">
-                <h3>Kishor Karki</h3>
-                <p>7 Years Experience</p>
-                <p>Prep Coach</p>
+            {[
+              { id: "kishor-karki", name: "Kishor Karki", exp: "7 Years", role: "Prep Coach", img: "https://images.unsplash.com/photo-1696563996353-214a3690bb11?q=80&w=687" },
+              { id: "sarah-tamang", name: "Sarah Tamang", exp: "5 Years", role: "Yoga Specialist", img: "https://images.unsplash.com/photo-1572621988687-3fe290e7c0f6?w=600" },
+              { id: "arjun-thapa", name: "Arjun Thapa", exp: "8 Years", role: "Strength Coach", img: "https://images.unsplash.com/photo-1667890786327-d28da55b0e57?w=600" },
+              { id: "binod-rai", name: "Binod Rai", exp: "6 Years", role: "Crossfit Expert", img: "https://images.unsplash.com/photo-1701481080490-cb2e7f4fd5f8?w=600" },
+              { id: "deepa-gurung", name: "Deepa Gurung", exp: "4 Years", role: "Zumba Trainer", img: "https://images.unsplash.com/photo-1738870558728-720a366830a6?w=600" }
+            ].map((trainer) => (
+              <div className="trainer-card" key={trainer.id}>
+                <img src={trainer.img} alt={trainer.name} />
+                <div className="trainer-overlay">
+                  <h3>{trainer.name}</h3>
+                  <p>{trainer.exp} Experience</p>
+                  <p>{trainer.role}</p>
+                  <div 
+                    className="trainer-message-box" 
+                    onClick={() => navigate(`/messages/${trainer.id}`)}
+                  >
+                    <span className="msg-icon">💬</span>
+                    <p>Message</p>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="trainer-card">
-              <img src="https://images.unsplash.com/photo-1572621988687-3fe290e7c0f6?w=600" alt="Trainer 2" /> 
-              <div className="trainer-overlay">
-                <h3>Sarah Tamang</h3>
-                <p>5 Years Experience</p>
-                <p>Yoga Specialist</p>
-              </div>
-            </div>
-            <div className="trainer-card">
-              <img src="https://images.unsplash.com/photo-1667890786327-d28da55b0e57?w=600" alt="Trainer 3" />
-              <div className="trainer-overlay">
-                <h3>Arjun Thapa</h3>
-                <p>8 Years Experience</p>
-                <p>Strength Coach</p>
-              </div>
-            </div>
-            <div className="trainer-card">
-              <img src="https://images.unsplash.com/photo-1701481080490-cb2e7f4fd5f8?w=600" alt="Trainer 4" />
-              <div className="trainer-overlay">
-                <h3>Binod Rai</h3>
-                <p>6 Years Experience</p>
-                <p>Crossfit Expert</p>
-              </div>
-            </div>
-            <div className="trainer-card">
-              <img src="https://images.unsplash.com/photo-1738870558728-720a366830a6?w=600" alt="Trainer 5" />
-              <div className="trainer-overlay">
-                <h3>Deepa Gurung</h3>
-                <p>4 Years Experience</p>
-                <p>Zumba Trainer</p>
-              </div>
-            </div>
+            ))}
           </div>
         </section>
 
@@ -168,27 +151,22 @@ export default function Landing() {
         <Footer />
       </div>
 
-      {/* 2. MODAL OVERLAYS - Outside the content-blur div */}
-      {showLogin && (
-  <div className="modal-overlay">
-    <div className="modal-content">
-      {/* Passing handleLoginSuccess to the Login component */}
-      <Login 
-        switchToRegister={openRegisterModal} 
-        onLoginSuccess={() => {
-          setShowLogin(false); // This hides the modal
-          navigate("/");       // This ensures you are on the landing page
-        }} 
-      />
-    </div>
-  </div>
-)}
-
-      {showRegister && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            
-            <Register switchToLogin={openLoginModal} />
+      {/* 2. MODAL OVERLAYS - Centered perfectly via CSS */}
+      {(showLogin || showRegister) && (
+        <div className="modal-overlay" onClick={closeModals}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <span className="close-x" onClick={closeModals}>&times;</span>
+            {showLogin && (
+              <Login 
+                switchToRegister={openRegisterModal} 
+                onLoginSuccess={closeModals} 
+              />
+            )}
+            {showRegister && (
+              <Register 
+                switchToLogin={openLoginModal} 
+              />
+            )}
           </div>
         </div>
       )}
