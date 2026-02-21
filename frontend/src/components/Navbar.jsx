@@ -41,6 +41,10 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
             <li onClick={() => navigate("/about")} style={{cursor: 'pointer'}}>About Us</li>
             
             <li onClick={() => navigate("/shop")}>Shop</li>
+
+            <li onClick={() => navigate("/tips")}>Tips & Videos</li>
+
+           
             <li onClick={() => navigate("/contact")}>Contact</li>
             
             {isLoggedIn ? (
