@@ -5,7 +5,8 @@ import dotenv from "dotenv";
 import connectDB from "./db/db.js";
 import authRoutes from "./routes/auth.js";
 import productRoutes from "./routes/productRoutes.js";
-
+// 1. IMPORT your new message routes
+import messageRoutes from "./routes/messageRoutes.js"; 
 
 // Load environment variables
 dotenv.config();
@@ -23,6 +24,8 @@ connectDB();
 // API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
+// 2. REGISTER the message routes so the app knows where to send /api/messages requests
+app.use("/api/messages", messageRoutes); 
 
 // Base Route
 app.get("/", (req, res) => {
