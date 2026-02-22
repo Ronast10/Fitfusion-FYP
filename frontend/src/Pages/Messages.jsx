@@ -8,9 +8,11 @@ export default function Messages() {
   const [inputText, setInputText] = useState("");
   const [messages, setMessages] = useState([]); // Array to hold sent messages
 
-  const handleSendMessage = () => {
+  // --- ADDED ASYNC TO THE FUNCTION ---
+  const handleSendMessage = async () => {
     if (inputText.trim() === "") return;
 
+    // YOUR EXISTING MESSAGE OBJECT
     const newMessage = {
       id: Date.now(),
       text: inputText,
@@ -18,6 +20,23 @@ export default function Messages() {
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       status: "sent"
     };
+
+    // --- NEW DB CODE START ---
+    try {
+      await fetch('http://localhost:5000/api/messages/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trainerName: trainerName,
+          senderName: "Rona Stacharya", // Current user
+          content: inputText // The text from the box
+        }),
+      });
+      // Logic continues to show message on screen after sending to DB
+    } catch (error) {
+      console.error("Database storage failed:", error);
+    }
+    // --- NEW DB CODE END ---
 
     setMessages([...messages, newMessage]);
     setInputText(""); // Clear the input box
