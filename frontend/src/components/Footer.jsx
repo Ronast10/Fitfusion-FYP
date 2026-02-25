@@ -38,7 +38,7 @@ export default function Footer() {
 
         <div className="footer-section">
           <h4>Contact</h4>
-          <p>📍 Bhaisepati Complex, Lalitpur</p>
+
           <p>📞 01-5919988</p>
           <p>✉️ info@fitfusion.com.np</p>
           <div className="social-icons">

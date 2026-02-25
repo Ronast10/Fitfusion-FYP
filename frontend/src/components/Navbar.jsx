@@ -9,12 +9,18 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
   const userEmail = localStorage.getItem("userEmail") || "";
   
-  // Extract name from email
-  const userName = userEmail ? userEmail.split('@')[0] : "User";
+  // 1. Priority: Use renamed name from profile, 2. Fallback: Email prefix
+  const storedName = localStorage.getItem("userName");
+  const userName = storedName || (userEmail ? userEmail.split('@')[0] : "User");
+
+  // Retrieve avatar from profile (if uploaded)
+  const userAvatar = localStorage.getItem("userAvatar");
 
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("userEmail");
+    // Note: We keep userName and userAvatar so they persist for next login 
+    // or you can clear them here if you want a fresh start.
     navigate("/"); 
     window.location.reload(); 
   };
@@ -36,21 +42,24 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
           </h2>
           <ul>
             <li onClick={() => navigate("/")}>Home</li>
-            
-            {/* FIXED: This now navigates to your new About Us page */}
             <li onClick={() => navigate("/about")} style={{cursor: 'pointer'}}>About Us</li>
-            
             <li onClick={() => navigate("/shop")}>Shop</li>
-
             <li onClick={() => navigate("/tips")}>Tips & Videos</li>
-
-           
             <li onClick={() => navigate("/contact")}>Contact</li>
             
             {isLoggedIn ? (
               <>
-                <li className="user-profile">
-                  <span className="user-icon">👤</span>
+                {/* CLICKING THIS NOW LOADS THE PROFILE PAGE */}
+                <li 
+                  className="user-profile nav-profile-active" 
+                  onClick={() => navigate("/profile")}
+                  style={{cursor: 'pointer'}}
+                >
+                  {userAvatar ? (
+                    <img src={userAvatar} alt="nav-avatar" className="nav-mini-avatar" />
+                  ) : (
+                    <span className="user-icon">👤</span>
+                  )}
                   <span className="user-name">Hi, {userName}</span>
                 </li>
                 <li className="Logout-btn" onClick={handleLogout}>Logout</li>

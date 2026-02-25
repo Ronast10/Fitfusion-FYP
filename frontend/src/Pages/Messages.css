@@ -123,3 +123,27 @@
     color: #fff;
     font-weight: bold;
 }
+.membership-page {
+  background-color: #000;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.membership-section {
+  flex: 1;
+  padding: 100px 20px;
+  position: relative;
+  text-align: center;
+}
+
+/* Make sure the X button is visible in the top right */
+.membership-close-x {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 40px;
+  color: #fff;
+  cursor: pointer;
+  z-index: 100;
+}
