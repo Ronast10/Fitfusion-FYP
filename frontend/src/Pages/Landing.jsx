@@ -5,8 +5,6 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Login from "./Login";       
 import Register from "./Register"; 
-import Membership from "./Membership";
-import PaymentModal from "./PaymentModal";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -14,7 +12,6 @@ export default function Landing() {
   // --- STATE MANAGEMENT ---
   const [showLogin, setShowLogin] = useState(false); 
   const [showRegister, setShowRegister] = useState(false);
-  const [paymentItem, setPaymentItem] = useState(null); 
   const [openIndex, setOpenIndex] = useState(null);
 
   // --- DATA ---
@@ -48,22 +45,15 @@ export default function Landing() {
 
   const openLoginModal = () => { closeModals(); setShowLogin(true); };
   const openRegisterModal = () => { closeModals(); setShowRegister(true); };
-  const openPaymentModal = (item) => { closeModals(); setPaymentItem(item); };
   
   const closeModals = () => { 
     setShowLogin(false); 
     setShowRegister(false); 
-    setPaymentItem(null); 
-  };
-
-  const scrollToMembership = () => {
-    const section = document.getElementById("membership-section");
-    if (section) section.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <>
-      <div className={showLogin || showRegister || paymentItem ? "content-blur" : ""}>
+      <div className={showLogin || showRegister ? "content-blur" : ""}>
         <Navbar onLoginClick={openLoginModal} onRegisterClick={openRegisterModal} />
         
         {/* HERO */}
@@ -72,7 +62,8 @@ export default function Landing() {
             <div className="hero-content">
               <h1>BUILD YOUR <span>LEGACY</span></h1>
               <h3>THE ULTIMATE FITNESS DESTINATION</h3>
-              <button className="hero-btn" onClick={scrollToMembership}>START TODAY</button>
+              {/* UPDATED: Navigates to membership page instead of scrolling */}
+              <button className="hero-btn" onClick={() => navigate("/membership")}>START TODAY</button>
             </div>
           </div>
         </section>
@@ -84,7 +75,7 @@ export default function Landing() {
               <h2>FITFUSION NEPAL</h2>
               <h3>Your No.1 Choice For Fitness Management</h3>
               <p>
-                "Welcome to FitFusion, Nepal's premier digital fitness ecosystem where technology meets elite physical performance. Join us today and experience the evolution of fitness management in Nepal."
+                "Welcome to FitFusion—Nepal’s premier digital fitness ecosystem where cutting-edge technology converges with elite physical performance. We aren't just a platform; we are a movement. By bridging the gap between world-class expertise and your personal dedication, we provide the modern infrastructure you need to master your health. Join us today and lead the evolution of fitness management in Nepal."
               </p>
               <button className="about-btn" onClick={() => navigate("/shop")}>EXPLORE SHOP</button>
             </div>
@@ -120,9 +111,6 @@ export default function Landing() {
             </div>
           </div>
         </section>
-
-        {/* MEMBERSHIP */}
-        <Membership onJoinClick={openPaymentModal} />
         
         {/* TRAINERS */}
         <section className="section trainers" id="trainers-section">
@@ -173,8 +161,6 @@ export default function Landing() {
           </div>
         </div>
       )}
-
-      {paymentItem && <PaymentModal item={paymentItem} onClose={closeModals} />}
     </>
   );
 }

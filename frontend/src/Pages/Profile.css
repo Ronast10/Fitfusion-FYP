@@ -1,0 +1,196 @@
+.profile-page { background: #0b0b0b; color: white; min-height: 100vh; }
+.profile-container { max-width: 900px; margin: 0 auto; padding: 60px 20px; }
+
+/* PROFILE CARD */
+.profile-card {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 15px;
+  padding: 40px;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.user-avatar { 
+  width: 150px; 
+  height: 150px; 
+  border-radius: 50%; 
+  border: 4px solid #ff2c2c; 
+  object-fit: cover; 
+}
+
+.user-info h2 span { color: #ff2c2c; }
+.edit-name input { 
+  background: #000; 
+  border: 1px solid #333; 
+  color: white; 
+  padding: 8px; 
+  border-radius: 5px; 
+  margin-right: 10px; 
+}
+
+.display-name button, .edit-name button { 
+  background: none; 
+  border: 1px solid #444; 
+  color: #888; 
+  cursor: pointer; 
+  padding: 5px 10px; 
+  border-radius: 4px; 
+  font-size: 12px; 
+}
+
+/* AVATAR SELECTION */
+.avatar-selection-wrapper {
+  text-align: center;
+}
+
+.pick-text {
+  font-size: 11px;
+  color: #888;
+  margin: 15px 0 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.avatar-options-grid {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.avatar-option {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #222;
+  transition: 0.3s;
+  background: #1a1a1a;
+  object-fit: cover;
+}
+
+.avatar-option:hover {
+  transform: translateY(-3px);
+  border-color: #ff2c2c;
+}
+
+.avatar-option.active-av {
+  border-color: #ff2c2c;
+  box-shadow: 0 0 10px rgba(255, 44, 44, 0.4);
+}
+
+/* STREAK SECTION */
+.streak-section {
+  background: #111;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 30px;
+  border: 1px solid #222;
+}
+
+.streak-stats { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 50px; 
+  margin: 20px 0; 
+}
+
+.streak-count span { 
+  font-size: 48px; 
+  font-weight: 800; 
+  color: #ff2c2c; 
+}
+
+.log-btn { 
+  background: #ff2c2c; 
+  color: white; 
+  border: none; 
+  padding: 15px 30px; 
+  border-radius: 8px; 
+  font-weight: 700; 
+  cursor: pointer; 
+  transition: 0.3s;
+}
+
+.log-btn:hover { 
+  background: #ff4444; 
+  transform: translateY(-2px); 
+}
+
+/* ACHIEVEMENTS SECTION */
+.achievements-section h3 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  border-left: 4px solid #ff2c2c;
+  padding-left: 15px;
+}
+
+.achievements-grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+  gap: 20px; 
+}
+
+.achievement-card {
+  background: #111;
+  border: 1px solid #222;
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+  transition: all 0.4s ease;
+  position: relative;
+}
+
+.ach-icon { 
+  font-size: 40px; 
+  margin-bottom: 15px; 
+  display: block;
+}
+
+.achievement-card h4 {
+  margin: 10px 0 5px;
+  font-size: 18px;
+}
+
+.achievement-card p {
+  font-size: 13px;
+  color: #777;
+}
+
+/* LOCK/UNLOCK STATES */
+.achievement-card.locked { 
+  opacity: 0.3; 
+  filter: grayscale(1); 
+}
+
+.badge-check {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 14px;
+}
+
+/* TIERED STYLING */
+.achievement-card.bronze.unlocked { 
+  border-color: #cd7f32; 
+  box-shadow: 0 0 15px rgba(205, 127, 50, 0.2); 
+}
+
+.achievement-card.silver.unlocked { 
+  border-color: #c0c0c0; 
+  box-shadow: 0 0 15px rgba(192, 192, 192, 0.2); 
+}
+
+.achievement-card.gold.unlocked { 
+  border-color: #ffd700; 
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); 
+}
+
+.achievement-card.warrior.unlocked { 
+  border-color: #ff2c2c; 
+  box-shadow: 0 0 15px rgba(255, 44, 44, 0.2); 
+}

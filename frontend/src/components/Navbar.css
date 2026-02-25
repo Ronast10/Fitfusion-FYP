@@ -1,8 +1,10 @@
-/* --- TOP BAR ALIGNMENT FIX --- */
+/* =========================================
+   TOP BAR (Contact Info)
+   ========================================= */
 .top-bar {
   background-color: #000000 !important;
   width: 100%;
-  padding: 8px 40px; /* Adjust padding to match your main nav */
+  padding: 8px 40px;
   border-bottom: 1px solid #1a1a1a;
 }
 
@@ -10,13 +12,8 @@
   max-width: 1300px;
   margin: 0 auto;
   display: flex;
-  
-  /* CHANGE THIS LINE: 
-     Use 'flex-end' to push everything to the right side.
-     Use 'space-between' if you want them spread out. */
-  justify-content: flex-end; 
-  
-  gap: 25px; /* Space between the phone, email, and mobile info */
+  justify-content: flex-end; /* Pushes contact info to the right */
+  gap: 25px;
 }
 
 .top-bar-content span {
@@ -28,9 +25,11 @@
   gap: 8px;
 }
 
-/* --- MAIN NAVBAR --- */
+/* =========================================
+   MAIN NAVBAR
+   ========================================= */
 .navbar {
-  background: #000000 !important; /* Pure black, no transparency */
+  background: #000000 !important;
   padding: 0 40px;
   position: sticky;
   top: 0;
@@ -57,11 +56,14 @@
   margin: 0;
   text-decoration: none;
   text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .logo span { color: #ff4757; }
 
-/* Menu items */
+/* =========================================
+   NAVIGATION LINKS
+   ========================================= */
 .navbar ul {
   display: flex !important;
   list-style: none;
@@ -85,9 +87,59 @@
   color: #ff4757 !important; 
 }
 
-/* Logout Specific Styling */
-.logout-btn {
-  color: #ff4757 !important; /* Highlighting logout for clarity */
+/* =========================================
+   NEW PROFILE & AVATAR STYLING
+   ========================================= */
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: rgba(255, 71, 87, 0.05); /* Very subtle red glow */
+  border: 1px solid transparent;
+  transition: 0.3s;
+}
+
+.user-profile:hover {
+  background: rgba(255, 71, 87, 0.1);
+  border-color: #ff4757;
+  transform: scale(1.02);
+}
+
+.nav-mini-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid #ff4757;
+  object-fit: cover;
+}
+
+.user-icon {
+  font-size: 18px;
+  color: #ff4757;
+}
+
+.user-name {
+  color: #ffffff;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+/* =========================================
+   BUTTONS (Logout & Join)
+   ========================================= */
+.Logout-btn {
+  color: #ff4757 !important; 
+  border: 1px solid #ff4757;
+  padding: 6px 15px;
+  border-radius: 4px;
+  font-size: 12px !important;
+}
+
+.Logout-btn:hover {
+  background: #ff4757;
+  color: #ffffff !important;
 }
 
 .cta-button-nav {
@@ -100,9 +152,19 @@
   border-radius: 4px;
   cursor: pointer;
   transition: 0.3s;
+  margin-left: 15px;
 }
 
 .cta-button-nav:hover {
   background: #ff6b81;
   transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+}
+
+/* MOBILE RESPONSIVENESS HINT */
+@media (max-width: 1024px) {
+  .top-bar { display: none; }
+  .navbar { padding: 0 20px; }
+  .navbar ul { gap: 15px; }
+  .user-name { display: none; } /* Hide name on small tablets, keep avatar */
 }
