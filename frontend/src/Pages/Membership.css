@@ -1,0 +1,127 @@
+.membership-section {
+    padding: 80px 5%;
+    background-color: #000;
+    text-align: center;
+}
+
+.membership-section .section-title {
+    font-size: 2.5rem;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.membership-section .section-title span {
+    color: #ff3e3e;
+}
+
+.membership-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-top: 50px;
+}
+
+.membership-card {
+    background: #121212;
+    border: 1px solid #333;
+    padding: 50px 30px;
+    border-radius: 12px;
+    width: 360px;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    position: relative;
+    color: white;
+}
+
+.membership-card:hover {
+    transform: translateY(-10px);
+    border-color: #ff3e3e;
+}
+
+.membership-card.featured {
+    border: 2px solid #ff3e3e;
+    background: #161616;
+}
+
+.featured-badge {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ff3e3e;
+    color: white;
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.price-tag {
+    font-size: 36px;
+    font-weight: 800;
+    margin: 25px 0;
+    color: #fff;
+}
+
+.perks-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 40px;
+    text-align: left;
+}
+
+.perks-list li {
+    margin: 15px 0;
+    font-size: 16px;
+    color: #bbb;
+}
+
+.membership-btn {
+    width: 100%;
+    padding: 15px;
+    background: transparent;
+    color: #fff;
+    border: 2px solid #ff3e3e;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    border-radius: 5px;
+}
+
+.featured-btn, .membership-btn:hover {
+    background: #ff3e3e;
+    color: #fff;
+}
+.membership-section {
+  position: relative; /* Essential for positioning the X */
+  padding: 80px 20px;
+  background-color: #000; /* Matching your black theme */
+  text-align: center;
+}
+
+/* THE CROSS (X) BUTTON STYLE */
+.membership-close-x {
+  position: absolute;
+  top: 30px;
+  right: 40px;
+  font-size: 40px;
+  color: #fff;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.3s ease, transform 0.3s ease;
+  z-index: 10;
+}
+
+.membership-close-x:hover {
+  color: #ff3e3e; /* FitFusion Red */
+  transform: scale(1.2);
+}
+
+/* Responsive adjustment for mobile */
+@media (max-width: 768px) {
+  .membership-close-x {
+    right: 20px;
+    top: 20px;
+    font-size: 30px;
+  }
+}

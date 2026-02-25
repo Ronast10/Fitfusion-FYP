@@ -399,3 +399,8 @@ html {
   from { transform: scale(0.9); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
+.pay-item-info { margin: 20px 0; text-align: left; background: #222; padding: 15px; border-radius: 5px; }
+.pay-method-box { margin-bottom: 20px; font-size: 0.9rem; color: #bbb; }
+.pay-btn { width: 100%; padding: 15px; background: #ff3e3e; color: white; border: none; font-weight: bold; cursor: pointer; }
+.success-screen { text-align: center; padding: 20px; }
+.check-icon { font-size: 50px; color: #4bb543; margin-bottom: 10px; }
