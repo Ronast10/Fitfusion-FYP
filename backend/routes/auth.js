@@ -4,7 +4,21 @@ import User from "../models/User.js";
 
 const router = express.Router();
 
-// REGISTER ROUTE
+// 1. GET USER DATA
+// This is working, but ensure your User model includes 'streak' and 'lastLoggedDate'
+router.get("/user/:email", async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.params.email }).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Server error fetching user" });
+  }
+});
+
+// 2. REGISTER ROUTE
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -16,12 +30,13 @@ router.post("/register", async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Default avatar is set to avg1.png during registration
     const newUser = new User({ 
       name, 
       email, 
       password: hashedPassword,
-      avatar: "avg1.png" 
+      avatar: "avg1.png",
+      streak: 0, // Initialize progress
+      lastLoggedDate: "" 
     });
 
     await newUser.save();
@@ -31,30 +46,27 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// LOGIN ROUTE
+// 3. LOGIN ROUTE
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    // 1. Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: "Email not registered" });
     }
 
-    // 2. Compare hashed password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    // 3. Success - Returning avatar so frontend can save it to localStorage
     res.status(200).json({ 
       message: "Login successful",
       user: { 
         name: user.name, 
         email: user.email, 
-        avatar: user.avatar // Crucial for persistence on login
+        avatar: user.avatar,
+        streak: user.streak // Ensure streak is sent on login
       } 
     });
   } catch (error) {
@@ -62,16 +74,24 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// UPDATE PROFILE ROUTE (New)
-// This is the route called by your Profile.jsx 'updateBackendProfile' function
+// 4. UPDATE PROFILE ROUTE (FIXED)
+// Previously, this was only saving name and avatar. 
+// Now it saves streak and date so they don't reset on refresh
 router.put("/update-profile", async (req, res) => {
   try {
-    const { email, name, avatar } = req.body;
+    const { email, name, avatar, streak, lastLoggedDate } = req.body;
 
     const updatedUser = await User.findOneAndUpdate(
       { email },
-      { name, avatar },
-      { new: true } // Return the updated document instead of the old one
+      { 
+        $set: { 
+          name, 
+          avatar, 
+          streak, 
+          lastLoggedDate 
+        } 
+      },
+      { new: true } // Returns the updated document from MongoDB
     );
 
     if (!updatedUser) {
@@ -79,11 +99,14 @@ router.put("/update-profile", async (req, res) => {
     }
 
     res.status(200).json({
+      success: true, // Frontend checks for this to sync state
       message: "Profile updated successfully",
       user: { 
         name: updatedUser.name, 
         email: updatedUser.email, 
-        avatar: updatedUser.avatar 
+        avatar: updatedUser.avatar,
+        streak: updatedUser.streak,
+        lastLoggedDate: updatedUser.lastLoggedDate
       }
     });
   } catch (error) {

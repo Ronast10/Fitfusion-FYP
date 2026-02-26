@@ -1,8 +1,13 @@
+import mongoose from "mongoose";
+
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  // ADD THIS LINE
-  avatar: { type: String, default: "avg1.png" }, 
-  role: { type: String, default: "user" },
-}, { timestamps: true });
+  avatar: { type: String, default: "avg1.png" },
+  workoutStreak: { type: Number, default: 0 }, // Matches exactly
+  lastLoggedDate: { type: String, default: "" }
+});
+
+const User = mongoose.models.User || mongoose.model("User", userSchema);
+export default User;

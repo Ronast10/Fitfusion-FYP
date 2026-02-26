@@ -5,20 +5,15 @@ import Footer from "../components/Footer";
 import "./Profile.css";
 
 export default function Profile() {
-  // 1. Lazy Initialization
-  const [name, setName] = useState(() => localStorage.getItem("userName") || "Fit User");
+  const [name, setName] = useState("Fit User");
+  const [selectedAvatar, setSelectedAvatar] = useState("avg1.png");
+  const [streak, setStreak] = useState(0);
+  const [lastLoggedDate, setLastLoggedDate] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const [streak, setStreak] = useState(() => parseInt(localStorage.getItem("workoutStreak")) || 0);
-  const [lastLoggedDate, setLastLoggedDate] = useState(() => localStorage.getItem("lastLoggedDate") || "");
+  const [loading, setLoading] = useState(true);
 
   const avatarOptions = ["avg1.png", "avg2.png", "avg3.png", "avg4.png"];
 
-  const [selectedAvatar, setSelectedAvatar] = useState(() => {
-    const saved = localStorage.getItem("userAvatar");
-    return avatarOptions.includes(saved) ? saved : "avg1.png";
-  });
-
-  // 2. Achievements Logic
   const achievements = [
     { id: 1, title: "Starter", desc: "Log your first workout", icon: "🌱", requirement: 1 },
     { id: 2, title: "Consistent", desc: "Reach a 3-day streak", icon: "🔥", requirement: 3 },
@@ -26,18 +21,54 @@ export default function Profile() {
     { id: 4, title: "Warrior", desc: "Reach a 15-day streak", icon: "⚔️", requirement: 15 },
   ];
 
-  const updateBackendProfile = async (updatedName, updatedAvatar) => {
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const email = localStorage.getItem("userEmail");
+      
+      if (!email) {
+        console.error("No userEmail found in localStorage. Login again.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // Fetching from your user/:email route in auth.js
+        const res = await axios.get(`http://localhost:5000/api/auth/user/${email}`);
+        console.log("Database Data Received:", res.data); // Debug check
+
+        if (res.data) {
+          // Match the exact keys from your MongoDB screenshot
+          setName(res.data.name || "Fit User");
+          setSelectedAvatar(res.data.avatar || "avg1.png");
+          setStreak(res.data.streak || 0); 
+          setLastLoggedDate(res.data.lastLoggedDate || "");
+          
+          // Keep Navbar in sync
+          localStorage.setItem("userName", res.data.name);
+          localStorage.setItem("userAvatar", res.data.avatar);
+        }
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUserData();
+  }, []);
+
+  const updateBackendProfile = async (updates) => {
     try {
       const email = localStorage.getItem("userEmail");
-      await axios.put("http://localhost:5000/api/auth/update-profile", {
+      const res = await axios.put("http://localhost:5000/api/auth/update-profile", {
         email,
-        name: updatedName,
-        avatar: updatedAvatar,
+        ...updates,
       });
 
-      localStorage.setItem("userName", updatedName);
-      localStorage.setItem("userAvatar", updatedAvatar);
-      window.dispatchEvent(new Event("storage"));
+      if (res.data.success) {
+        if (updates.name) localStorage.setItem("userName", updates.name);
+        if (updates.avatar) localStorage.setItem("userAvatar", updates.avatar);
+        window.dispatchEvent(new Event("storage"));
+      }
     } catch (err) {
       console.error("Failed to sync profile:", err);
     }
@@ -45,12 +76,12 @@ export default function Profile() {
 
   const handleAvatarSelect = (imgName) => {
     setSelectedAvatar(imgName);
-    updateBackendProfile(name, imgName);
+    updateBackendProfile({ avatar: imgName });
   };
 
   const saveName = () => {
     setIsEditing(false);
-    updateBackendProfile(name, selectedAvatar);
+    updateBackendProfile({ name });
   };
 
   const logWorkout = () => {
@@ -59,18 +90,23 @@ export default function Profile() {
       alert("Workout already logged for today!");
       return;
     }
+
     const newStreak = streak + 1;
     setStreak(newStreak);
     setLastLoggedDate(today);
-    localStorage.setItem("workoutStreak", newStreak);
-    localStorage.setItem("lastLoggedDate", today);
+
+    updateBackendProfile({ 
+      streak: newStreak, 
+      lastLoggedDate: today 
+    });
   };
+
+  if (loading) return <div className="loading">Loading Profile Data...</div>;
 
   return (
     <div className="profile-page">
       <Navbar />
       <section className="profile-container">
-        {/* Profile Info Card */}
         <div className="profile-card">
           <div className="avatar-selection-wrapper">
             <div className="current-avatar-display">
@@ -105,7 +141,6 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Workout Streak Section */}
         <div className="streak-section">
           <h3>Workout Streak</h3>
           <div className="streak-stats">
@@ -117,15 +152,11 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Achievements Section */}
         <div className="achievements-section">
           <h3>Your Achievements</h3>
           <div className="achievements-grid">
             {achievements.map((ach) => (
-              <div 
-                key={ach.id} 
-                className={`achievement-card ${streak >= ach.requirement ? "unlocked" : "locked"}`}
-              >
+              <div key={ach.id} className={`achievement-card ${streak >= ach.requirement ? "unlocked" : "locked"}`}>
                 <div className="ach-icon">{ach.icon}</div>
                 <div className="ach-text">
                   <h4>{ach.title}</h4>
@@ -136,7 +167,6 @@ export default function Profile() {
             ))}
           </div>
         </div>
-
       </section>
       <Footer />
     </div>
