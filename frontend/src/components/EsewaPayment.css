@@ -1,0 +1,87 @@
+.gateway-container {
+  padding: 10px;
+  color: #ffffff;
+  animation: slideUp 0.3s ease-out;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 20px;
+  transition: color 0.2s;
+}
+
+.back-btn:hover {
+  color: #ff2c2c;
+}
+
+.gateway-logo {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.gateway-logo img {
+  height: 45px;
+  filter: drop-shadow(0 0 5px rgba(96, 187, 70, 0.3));
+}
+
+.gateway-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-box {
+  text-align: left;
+}
+
+.input-box label {
+  display: block;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #aaa;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.input-box input {
+  width: 100%;
+  padding: 12px;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.input-box input:focus {
+  border-color: #60bb46;
+}
+
+.esewa-submit-btn {
+  background: #60bb46;
+  color: #fff;
+  border: none;
+  padding: 15px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: transform 0.2s, background 0.3s;
+}
+
+.esewa-submit-btn:hover {
+  background: #52a03c;
+  transform: translateY(-2px);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}

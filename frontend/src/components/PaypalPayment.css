@@ -1,0 +1,37 @@
+.gateway-container {
+  padding: 10px;
+  color: #ffffff;
+  animation: fadeIn 0.4s ease-in;
+}
+
+.gateway-logo img {
+  height: 35px;
+  margin-bottom: 25px;
+}
+
+.paypal-submit-btn {
+  background: #0070ba;
+  color: #fff;
+  border: none;
+  padding: 15px;
+  border-radius: 25px; /* PayPal style rounded button */
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: 0.3s;
+}
+
+.paypal-submit-btn:hover {
+  background: #005ea6;
+  box-shadow: 0 4px 15px rgba(0, 112, 186, 0.3);
+}
+
+.input-box input:focus {
+  border-color: #0070ba;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

@@ -5,22 +5,15 @@ import "./Navbar.css";
 export default function Navbar({ onLoginClick, onRegisterClick }) {
   const navigate = useNavigate();
 
-  // Retrieve login status and user info
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
   const userEmail = localStorage.getItem("userEmail") || "";
-  
-  // 1. Priority: Use renamed name from profile, 2. Fallback: Email prefix
   const storedName = localStorage.getItem("userName");
   const userName = storedName || (userEmail ? userEmail.split('@')[0] : "User");
-
-  // Retrieve avatar from profile (if uploaded)
   const userAvatar = localStorage.getItem("userAvatar");
 
   const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("userEmail");
-    // Note: We keep userName and userAvatar so they persist for next login 
-    // or you can clear them here if you want a fresh start.
+    // Completely clear all user data to prevent account mixing
+    localStorage.clear(); 
     navigate("/"); 
     window.location.reload(); 
   };
@@ -49,14 +42,13 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
             
             {isLoggedIn ? (
               <>
-                {/* CLICKING THIS NOW LOADS THE PROFILE PAGE */}
                 <li 
                   className="user-profile nav-profile-active" 
                   onClick={() => navigate("/profile")}
                   style={{cursor: 'pointer'}}
                 >
                   {userAvatar ? (
-                    <img src={userAvatar} alt="nav-avatar" className="nav-mini-avatar" />
+                    <img src={`/avatars/${userAvatar}`} alt="nav-avatar" className="nav-mini-avatar" />
                   ) : (
                     <span className="user-icon">👤</span>
                   )}

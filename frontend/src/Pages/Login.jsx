@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import "./Login.css";
 
-// 1. Add onLoginSuccess to the props here
+// 1. Ensure onLoginSuccess is passed as a prop
 export default function Login({ switchToRegister, onLoginSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,16 +19,25 @@ export default function Login({ switchToRegister, onLoginSuccess }) {
         password,
       });
 
+      // 2. CHECK: Your backend response now includes the user object
       if (response.status === 200) {
+        const userData = response.data.user;
+
+        // Save everything to localStorage so the UI updates instantly
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("userEmail", email);
         
-        // 2. REMOVE window.location.reload() and call the prop instead
+        // ADD THESE: This prevents "Fit User" appearing on refresh
+        localStorage.setItem("userName", userData.name);
+        localStorage.setItem("userAvatar", userData.avatar || "avg1.png");
+        
+        // 3. Trigger the success callback to close the modal/redirect
         if (onLoginSuccess) {
           onLoginSuccess(); 
         }
       }
     } catch (err) {
+      // Handles error messages from your auth.js logic
       const message = err.response?.data?.message || "Login failed. Please try again.";
       setError(message);
     }
