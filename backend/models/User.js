@@ -5,7 +5,10 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   avatar: { type: String, default: "avg1.png" },
-  workoutStreak: { type: Number, default: 0 }, // Matches exactly
+  
+  // CHANGED THIS LINE:
+  streak: { type: Number, default: 0 }, 
+  
   lastLoggedDate: { type: String, default: "" }
 });
 
