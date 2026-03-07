@@ -11,5 +11,4 @@ const connectDB = async () => {
   }
 };
 
-// This line is what fixes your "SyntaxError"
 export default connectDB;
