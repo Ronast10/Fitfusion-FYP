@@ -1,47 +1,42 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminDashboard() {
   const [products, setProducts] = useState([]);
-  const [formData, setFormData] = useState({ name: "", price: "", category: "Protein", image: "" });
+  const [earnings, setEarnings] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if (localStorage.getItem("isAdmin") !== "true") {
+      navigate("/admin-login");
+      return;
+    }
     fetchProducts();
-  }, []);
+  }, [navigate]);
 
   const fetchProducts = async () => {
     const res = await axios.get("http://localhost:5000/api/products");
     setProducts(res.data);
+    const total = res.data.reduce((acc, p) => acc + Number(p.price), 0);
+    setEarnings(total);
   };
 
-  const handleAdd = async (e) => {
-    e.preventDefault();
-    await axios.post("http://localhost:5000/api/products/add", formData);
-    fetchProducts(); // Refresh list
-  };
-
-  const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:5000/api/products/${id}`);
-    fetchProducts();
+  const logout = () => {
+    localStorage.removeItem("isAdmin");
+    navigate("/admin-login");
   };
 
   return (
-    <div style={{ background: "#000", color: "#fff", padding: "50px" }}>
-      <h1>Admin Shop Management</h1>
-      <form onSubmit={handleAdd} style={{ marginBottom: "50px" }}>
-        <input type="text" placeholder="Name" onChange={(e)=>setFormData({...formData, name:e.target.value})} />
-        <input type="number" placeholder="Price" onChange={(e)=>setFormData({...formData, price:e.target.value})} />
-        <input type="text" placeholder="Image URL" onChange={(e)=>setFormData({...formData, image:e.target.value})} />
-        <button type="submit" style={{background: "#ff4757", color: "#fff"}}>Add Product</button>
-      </form>
-
-      <h2>Current Products</h2>
-      {products.map(p => (
-        <div key={p._id} style={{ borderBottom: "1px solid #333", padding: "10px", display: "flex", justifyContent: "space-between" }}>
-          <span>{p.name} - Rs. {p.price}</span>
-          <button onClick={() => handleDelete(p._id)} style={{ color: "red" }}>Delete</button>
-        </div>
-      ))}
+    <div style={{ background: "#000", color: "#fff", minHeight: "100vh", padding: "50px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <h1>Admin Shop Management</h1>
+        <button onClick={logout} style={{ background: "#ff4757", color: "#fff", border: "none", padding: "10px" }}>Logout</button>
+      </div>
+      <div style={{ background: "#1a1a1a", padding: "20px", margin: "20px 0" }}>
+        <h3>Total Inventory Value: <span style={{ color: "#2ed573" }}>Rs. {earnings}</span></h3>
+      </div>
+      {/* Add Product forms and mapping logic here */}
     </div>
   );
 }

@@ -5,14 +5,16 @@ import "./Navbar.css";
 export default function Navbar({ onLoginClick, onRegisterClick }) {
   const navigate = useNavigate();
 
+  // Check login statuses
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  const isAdmin = localStorage.getItem("isAdmin") === "true"; // Added for Admin check
   const userEmail = localStorage.getItem("userEmail") || "";
   const storedName = localStorage.getItem("userName");
   const userName = storedName || (userEmail ? userEmail.split('@')[0] : "User");
   const userAvatar = localStorage.getItem("userAvatar");
 
   const handleLogout = () => {
-    // Completely clear all user data to prevent account mixing
+    // Completely clear all user and admin data
     localStorage.clear(); 
     navigate("/"); 
     window.location.reload(); 
@@ -39,6 +41,16 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
             <li onClick={() => navigate("/shop")}>Shop</li>
             <li onClick={() => navigate("/tips")}>Tips & Videos</li>
             <li onClick={() => navigate("/contact")}>Contact</li>
+
+            {/* ADMIN PANEL LINK - Only visible if isAdmin is true */}
+            {isAdmin && (
+              <li 
+                onClick={() => navigate("/admin-dashboard")} 
+                style={{color: "#ff4757", fontWeight: "bold", cursor: "pointer"}}
+              >
+                Admin Panel
+              </li>
+            )}
             
             {isLoggedIn ? (
               <>
@@ -57,11 +69,13 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
                 <li className="Logout-btn" onClick={handleLogout}>Logout</li>
               </>
             ) : (
-              <li onClick={onLoginClick} style={{cursor: 'pointer'}}>Login</li>
+              // If not a regular user, check if we should show login (hide if admin is already logged in)
+              !isAdmin && <li onClick={onLoginClick} style={{cursor: 'pointer'}}>Login</li>
             )}
           </ul>
           
-          {!isLoggedIn && (
+          {/* Hide JOIN NOW button if admin or user is logged in */}
+          {!isLoggedIn && !isAdmin && (
             <button className="cta-button-nav" onClick={onRegisterClick}>
               JOIN NOW
             </button>

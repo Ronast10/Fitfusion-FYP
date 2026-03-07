@@ -2,11 +2,15 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
+// Database Connection
 import connectDB from "./db/db.js";
+
+// Routes
 import authRoutes from "./routes/auth.js";
 import productRoutes from "./routes/productRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js"; 
 import contactRoutes from "./routes/contactRoutes.js"; 
+import adminRoutes from "./routes/adminAuth.js"; 
 
 // Load environment variables
 dotenv.config();
@@ -21,18 +25,18 @@ app.use(express.json());
 connectDB();
 
 // API Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/products", productRoutes);
-app.use("/api/messages", messageRoutes); 
-// 2. REGISTER the contact routes
-app.use("/api/contact", contactRoutes); 
+app.use("/api/auth", authRoutes);       // User Login/Register
+app.use("/api/products", productRoutes); // Product CRUD
+app.use("/api/messages", messageRoutes); // User Messages
+app.use("/api/contact", contactRoutes);   // Contact Form
+app.use("/api/admin", adminRoutes);       // Admin Login logic
 
 // Base Route
 app.get("/", (req, res) => {
   res.send("FitFusion Backend Running");
 });
 
-// 404 Handler
+// 404 Handler (Catch-all for routes that don't exist)
 app.use((req, res, next) => {
   res.status(404).json({ message: "Route not found" });
 });
@@ -50,4 +54,5 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🔒 Admin Routes Active at: http://localhost:${PORT}/api/admin/login`);
 });
