@@ -3,9 +3,18 @@ import "./PaymentModal.css";
 // Importing from your components folder
 import EsewaPayment from "../components/EsewaPayment";
 import PaypalPayment from "../components/PaypalPayment";
+
 const PaymentModal = ({ item, onClose }) => {
   const [view, setView] = useState("selection"); // selection, esewa, paypal, success
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // HELPER: Strips symbols like "$", "Rs.", and "," so the payment gateways get a clean number
+  const getNumericPrice = (priceString) => {
+    if (!priceString) return 0;
+    // Removes non-numeric characters except for the decimal point
+    const cleanNumber = parseFloat(priceString.toString().replace(/[^0-9.]/g, ''));
+    return cleanNumber || 0;
+  };
 
   const handlePaymentSuccess = () => {
     setIsProcessing(true);
@@ -21,6 +30,14 @@ const PaymentModal = ({ item, onClose }) => {
     <div className="payment-overlay" onClick={onClose}>
       <div className="payment-content" onClick={(e) => e.stopPropagation()}>
         <span className="payment-close" onClick={onClose}>&times;</span>
+
+        {/* PROCESSING OVERLAY: Shows while verifying payment */}
+        {isProcessing && (
+          <div className="processing-overlay">
+            <div className="spinner"></div>
+            <p>Verifying Transaction...</p>
+          </div>
+        )}
 
         {/* STEP 1: Method Selection */}
         {view === "selection" && (
@@ -53,10 +70,10 @@ const PaymentModal = ({ item, onClose }) => {
           </>
         )}
 
-        {/* STEP 2: Detail Pages */}
+        {/* STEP 2: Detail Pages - Cleaned amount sent to components */}
         {view === "esewa" && (
           <EsewaPayment 
-            amount={item.price} 
+            amount={getNumericPrice(item.price)} 
             onBack={() => setView("selection")} 
             onSuccess={handlePaymentSuccess} 
           />
@@ -64,7 +81,7 @@ const PaymentModal = ({ item, onClose }) => {
 
         {view === "paypal" && (
           <PaypalPayment 
-            amount={item.price} 
+            amount={getNumericPrice(item.price)} 
             onBack={() => setView("selection")} 
             onSuccess={handlePaymentSuccess} 
           />
