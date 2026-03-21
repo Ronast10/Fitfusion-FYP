@@ -8,21 +8,26 @@ const userSchema = new mongoose.Schema({
   streak: { type: Number, default: 0 }, 
   lastLoggedDate: { type: String, default: "" },
 
-  // Membership Data
-  membershipStatus: { 
-    type: String, 
-    default: "Free Member",
-    enum: ["Free Member", "Pro Member", "Elite Member"] 
-  },
-  isMember: { 
-    type: Boolean, 
-    default: false 
-  },
-  subscriptionDate: { 
-    type: Date 
-  },
-  planExpiry: {
-    type: Date // This will store the 3 or 6 month calculated date
+  // --- ADDED CART DATA ---
+  cart: [
+    {
+      _id: { type: String },
+      name: { type: String },
+      price: { type: Number },
+      image: { type: String },
+      quantity: { type: Number, default: 1 }
+    }
+  ],
+
+  membershipData: {
+    membershipStatus: { 
+      type: String, 
+      default: "Free Member",
+      enum: ["Free Member", "Pro Member", "Elite Member"] 
+    },
+    isMember: { type: Boolean, default: false },
+    subscriptionDate: { type: Date },
+    planExpiry: { type: Date }
   }
 });
 

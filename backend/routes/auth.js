@@ -46,19 +46,30 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// 3. LOGIN ROUTE
+// 1. SYNC CART ROUTE (New)
+router.post("/sync-cart", async (req, res) => {
+  try {
+    const { email, cartItems } = req.body;
+    const user = await User.findOneAndUpdate(
+      { email },
+      { $set: { cart: cartItems } },
+      { new: true }
+    );
+    res.status(200).json({ success: true, cart: user.cart });
+  } catch (error) {
+    res.status(500).json({ message: "Error syncing cart" });
+  }
+});
+
+// 2. LOGIN ROUTE (Updated to send cart)
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: "Email not registered" });
-    }
+    if (!user) return res.status(400).json({ message: "Email not registered" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid email or password" });
-    }
+    if (!isMatch) return res.status(400).json({ message: "Invalid email or password" });
 
     res.status(200).json({ 
       message: "Login successful",
@@ -66,7 +77,8 @@ router.post("/login", async (req, res) => {
         name: user.name, 
         email: user.email, 
         avatar: user.avatar,
-        streak: user.streak // Ensure streak is sent on login
+        streak: user.streak,
+        cart: user.cart // Send the saved cart to frontend on login
       } 
     });
   } catch (error) {
@@ -74,9 +86,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// 4. UPDATE PROFILE ROUTE (FIXED)
-// Previously, this was only saving name and avatar. 
-// Now it saves streak and date so they don't reset on refresh
+// 4. UPDATE PROFILE ROUTE 
 router.put("/update-profile", async (req, res) => {
   try {
     const { email, name, avatar, streak, lastLoggedDate } = req.body;

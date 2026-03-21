@@ -135,3 +135,33 @@
     padding: 30px 20px;
   }
 }
+/* Live Popup Notification Styling */
+.shop-notification {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ff0000; /* FitFusion Red */
+  color: white;
+  padding: 12px 30px;
+  border-radius: 50px;
+  font-weight: bold;
+  box-shadow: 0 8px 20px rgba(255, 0, 0, 0.4);
+  z-index: 2000;
+  animation: popUpFade 0.4s ease-out;
+  pointer-events: none;
+}
+
+@keyframes popUpFade {
+  0% { bottom: 0; opacity: 0; }
+  100% { bottom: 30px; opacity: 1; }
+}
+
+/* Ensure section titles stand out */
+.section-title {
+    color: #ff0000;
+    text-align: center;
+    margin: 40px 0;
+    font-size: 2rem;
+    text-transform: uppercase;
+}

@@ -1,17 +1,18 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import "./Login.css";
 
-// 1. Ensure onLoginSuccess is passed as a prop
 export default function Login({ switchToRegister, onLoginSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState(""); 
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(""); 
+    setError("");
+    setLoading(true);
 
     try {
       const response = await axios.post("http://localhost:5000/api/auth/login", {
@@ -19,27 +20,33 @@ export default function Login({ switchToRegister, onLoginSuccess }) {
         password,
       });
 
-      // 2. CHECK: Your backend response now includes the user object
       if (response.status === 200) {
         const userData = response.data.user;
 
-        // Save everything to localStorage so the UI updates instantly
+        // 1. SYNC CART: Load items from MongoDB into LocalStorage
+        // This ensures the Navbar cart icon updates to show their saved items
+        localStorage.setItem("cart", JSON.stringify(userData.cart || []));
+
+        // 2. SET USER SESSION DATA
         localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("userEmail", email);
-        
-        // ADD THESE: This prevents "Fit User" appearing on refresh
+        localStorage.setItem("userEmail", userData.email);
         localStorage.setItem("userName", userData.name);
         localStorage.setItem("userAvatar", userData.avatar || "avg1.png");
         
-        // 3. Trigger the success callback to close the modal/redirect
+        // 3. Optional: Store Streak/Membership if you use them in the Dashboard
+        localStorage.setItem("userStreak", userData.streak || 0);
+
+        // 4. Trigger the success callback (usually closes the modal or redirects)
         if (onLoginSuccess) {
-          onLoginSuccess(); 
+          onLoginSuccess();
         }
       }
     } catch (err) {
-      // Handles error messages from your auth.js logic
-      const message = err.response?.data?.message || "Login failed. Please try again.";
+      // Handles specific error messages from your backend auth.js logic
+      const message = err.response?.data?.message || "Login failed. Please check your credentials.";
       setError(message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -48,28 +55,24 @@ export default function Login({ switchToRegister, onLoginSuccess }) {
       <h1>FitFusion</h1>
       <p>Track your fitness, anytime, anywhere</p>
 
+      {/* Error Message Display */}
       {error && (
-        <p style={{ 
-          color: "#fff", 
-          backgroundColor: "rgba(255, 71, 87, 0.2)", 
-          border: "1px solid #ff4757",
-          padding: "10px", 
-          borderRadius: "8px", 
-          fontSize: "13px",
-          marginBottom: "15px" 
-        }}>
-          {error}
-        </p>
+        <div className="login-error">
+          <span>⚠️</span> {error}
+        </div>
       )}
 
       <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <div className="input-group">
+          <input
+            type="email"
+            placeholder="Email Address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+          />
+        </div>
 
         <div className="password-wrapper">
           <input
@@ -78,21 +81,29 @@ export default function Login({ switchToRegister, onLoginSuccess }) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            autoComplete="current-password"
           />
           <span
             className="toggle-password"
             onClick={() => setShowPassword(!showPassword)}
           >
-            {showPassword ? "👁" : "Ø"}
+            {showPassword ? "👁️" : "🙈"}
           </span>
         </div>
 
-        <button type="submit">Login</button>
+        <button type="submit" className="login-btn" disabled={loading}>
+          {loading ? "Verifying..." : "Login"}
+        </button>
       </form>
 
-      <p className="register-link">
-        Don't have an account? <span onClick={switchToRegister}>Register</span>
-      </p>
+      <div className="login-footer">
+        <p>
+          Don't have an account?{" "}
+          <span className="link-text" onClick={switchToRegister}>
+            Register Now
+          </span>
+        </p>
+      </div>
     </div>
   );
 }

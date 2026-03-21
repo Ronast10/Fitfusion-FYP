@@ -1,20 +1,40 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Navbar.css";
 
 export default function Navbar({ onLoginClick, onRegisterClick }) {
   const navigate = useNavigate();
+  const [cartCount, setCartCount] = useState(0);
 
   // Check login statuses
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-  const isAdmin = localStorage.getItem("isAdmin") === "true"; // Added for Admin check
+  const isAdmin = localStorage.getItem("isAdmin") === "true"; 
   const userEmail = localStorage.getItem("userEmail") || "";
   const storedName = localStorage.getItem("userName");
   const userName = storedName || (userEmail ? userEmail.split('@')[0] : "User");
   const userAvatar = localStorage.getItem("userAvatar");
 
+  // Update cart count from localStorage
+  useEffect(() => {
+    const updateCount = () => {
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      setCartCount(cart.length);
+    };
+
+    updateCount();
+    // Listen for storage changes in other tabs/windows
+    window.addEventListener("storage", updateCount);
+    
+    // Custom interval to check for changes on the same page
+    const interval = setInterval(updateCount, 1000);
+
+    return () => {
+      window.removeEventListener("storage", updateCount);
+      clearInterval(interval);
+    };
+  }, []);
+
   const handleLogout = () => {
-    // Completely clear all user and admin data
     localStorage.clear(); 
     navigate("/"); 
     window.location.reload(); 
@@ -42,7 +62,7 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
             <li onClick={() => navigate("/tips")}>Tips & Videos</li>
             <li onClick={() => navigate("/contact")}>Contact</li>
 
-            {/* ADMIN PANEL LINK - Only visible if isAdmin is true */}
+            {/* ADMIN PANEL LINK */}
             {isAdmin && (
               <li 
                 onClick={() => navigate("/admin-dashboard")} 
@@ -52,6 +72,14 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
               </li>
             )}
             
+            {/* CART ICON - Visible to everyone */}
+            <li className="cart-nav-item" onClick={() => navigate("/cart")} style={{position: 'relative', cursor: 'pointer'}}>
+              <span style={{fontSize: '1.2rem'}}>🛒</span>
+              {cartCount > 0 && (
+                <span className="cart-badge">{cartCount}</span>
+              )}
+            </li>
+
             {isLoggedIn ? (
               <>
                 <li 
@@ -69,12 +97,10 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
                 <li className="Logout-btn" onClick={handleLogout}>Logout</li>
               </>
             ) : (
-              // If not a regular user, check if we should show login (hide if admin is already logged in)
               !isAdmin && <li onClick={onLoginClick} style={{cursor: 'pointer'}}>Login</li>
             )}
           </ul>
           
-          {/* Hide JOIN NOW button if admin or user is logged in */}
           {!isLoggedIn && !isAdmin && (
             <button className="cta-button-nav" onClick={onRegisterClick}>
               JOIN NOW

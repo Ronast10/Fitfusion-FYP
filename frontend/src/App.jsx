@@ -10,7 +10,7 @@ import Tips from "./pages/Tips";
 import Membership from "./pages/Membership";
 import Profile from "./pages/Profile";
 import PaymentSuccess from "./pages/PaymentSuccess";
-
+import Cart from "./components/Cart";
 // ADMIN PAGES
 import AdminLogin from "./pages/AdminLogin"; 
 import AdminDashboard from "./pages/AdminDashboard";
@@ -36,9 +36,10 @@ function App() {
         <Route path="/shop" element={<Shop />} />
         <Route path="/messages/:trainerName" element={<Messages />} />
 
-        {/* 2. ADD ADMIN ROUTES HERE */}
+        
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/cart" element={<Cart />} />
         
 
         {/* 3. ALWAYS KEEP WILDCARD AT THE VERY BOTTOM */}
