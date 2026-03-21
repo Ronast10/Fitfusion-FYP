@@ -12,6 +12,7 @@ import messageRoutes from "./routes/messageRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js"; 
 import adminRoutes from "./routes/adminAuth.js"; 
 import paypalRoutes from "./routes/paypalRoutes.js";
+import esewaRoutes from "./routes/esewaRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -32,6 +33,7 @@ app.use("/api/messages", messageRoutes); // User Messages
 app.use("/api/contact", contactRoutes);   // Contact Form
 app.use("/api/admin", adminRoutes);       // Admin Login logic
 app.use("/api/paypal", paypalRoutes);
+app.use("/api/esewa", esewaRoutes);
 
 // Base Route
 app.get("/", (req, res) => {

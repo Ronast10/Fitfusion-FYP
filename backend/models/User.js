@@ -5,11 +5,25 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   avatar: { type: String, default: "avg1.png" },
-  
-  // CHANGED THIS LINE:
   streak: { type: Number, default: 0 }, 
-  
-  lastLoggedDate: { type: String, default: "" }
+  lastLoggedDate: { type: String, default: "" },
+
+  // Membership Data
+  membershipStatus: { 
+    type: String, 
+    default: "Free Member",
+    enum: ["Free Member", "Pro Member", "Elite Member"] 
+  },
+  isMember: { 
+    type: Boolean, 
+    default: false 
+  },
+  subscriptionDate: { 
+    type: Date 
+  },
+  planExpiry: {
+    type: Date // This will store the 3 or 6 month calculated date
+  }
 });
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);

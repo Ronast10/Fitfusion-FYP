@@ -9,8 +9,9 @@ import About from "./pages/About";
 import Tips from "./pages/Tips"; 
 import Membership from "./pages/Membership";
 import Profile from "./pages/Profile";
+import PaymentSuccess from "./pages/PaymentSuccess";
 
-// 1. IMPORT YOUR NEW ADMIN PAGES
+// ADMIN PAGES
 import AdminLogin from "./pages/AdminLogin"; 
 import AdminDashboard from "./pages/AdminDashboard";
 
@@ -23,7 +24,8 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/tips" element={<Tips />} /> 
         <Route path="/membership" element={<Membership />} />
-        
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+
         {/* User Account Pages */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -37,6 +39,7 @@ function App() {
         {/* 2. ADD ADMIN ROUTES HERE */}
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        
 
         {/* 3. ALWAYS KEEP WILDCARD AT THE VERY BOTTOM */}
         <Route path="*" element={<Navigate to="/" />} />

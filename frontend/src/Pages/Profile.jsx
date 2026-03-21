@@ -12,6 +12,10 @@ export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // --- MEMBERSHIP STATE ---
+  const [membershipStatus, setMembershipStatus] = useState("Free Member");
+  const [planExpiry, setPlanExpiry] = useState(null);
+
   const avatarOptions = ["avg1.png", "avg2.png", "avg3.png", "avg4.png"];
 
   const achievements = [
@@ -20,6 +24,14 @@ export default function Profile() {
     { id: 3, title: "Athlete", desc: "Reach a 7-day streak", icon: "🏆", requirement: 7 },
     { id: 4, title: "Warrior", desc: "Reach a 15-day streak", icon: "⚔️", requirement: 15 },
   ];
+
+  // Helper to calculate days remaining on the plan
+  const getDaysLeft = (expiryDate) => {
+    if (!expiryDate) return null;
+    const diff = new Date(expiryDate) - new Date();
+    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    return days > 0 ? days : 0;
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -32,18 +44,18 @@ export default function Profile() {
       }
 
       try {
-        // Fetching from your user/:email route in auth.js
         const res = await axios.get(`http://localhost:5000/api/auth/user/${email}`);
-        console.log("Database Data Received:", res.data); // Debug check
-
+        
         if (res.data) {
-          // Match the exact keys from your MongoDB screenshot
           setName(res.data.name || "Fit User");
           setSelectedAvatar(res.data.avatar || "avg1.png");
           setStreak(res.data.streak || 0); 
           setLastLoggedDate(res.data.lastLoggedDate || "");
           
-          // Keep Navbar in sync
+          // --- SET MEMBERSHIP DATA FROM DB ---
+          setMembershipStatus(res.data.membershipStatus || "Free Member");
+          setPlanExpiry(res.data.planExpiry || null);
+          
           localStorage.setItem("userName", res.data.name);
           localStorage.setItem("userAvatar", res.data.avatar);
         }
@@ -103,6 +115,8 @@ export default function Profile() {
 
   if (loading) return <div className="loading">Loading Profile Data...</div>;
 
+  const daysRemaining = getDaysLeft(planExpiry);
+
   return (
     <div className="profile-page">
       <Navbar />
@@ -111,7 +125,13 @@ export default function Profile() {
           <div className="avatar-selection-wrapper">
             <div className="current-avatar-display">
               <img src={`/avatars/${selectedAvatar}`} alt="Current" className="user-avatar" />
+              
+              {/* --- MEMBERSHIP BADGE --- */}
+              <div className={`membership-badge ${membershipStatus.toLowerCase().replace(" ", "-")}`}>
+                {membershipStatus}
+              </div>
             </div>
+            
             <p className="pick-text">Choose your Avatar</p>
             <div className="avatar-options-grid">
               {avatarOptions.map((opt) => (
@@ -135,7 +155,16 @@ export default function Profile() {
             ) : (
               <div className="display-name">
                 <h2>Welcome back, <span>{name}</span></h2>
-                <button onClick={() => setIsEditing(true)}>Edit Name</button>
+                
+                {/* --- MEMBERSHIP INFO SECTION --- */}
+                <div className="membership-details">
+                    <p className="plan-label">Plan: <strong>{membershipStatus}</strong></p>
+                    {membershipStatus !== "Free Member" && daysRemaining !== null && (
+                        <p className="days-remaining">{daysRemaining} Days Left</p>
+                    )}
+                </div>
+                
+                <button className="edit-btn" onClick={() => setIsEditing(true)}>Edit Name</button>
               </div>
             )}
           </div>

@@ -14,7 +14,7 @@ const Membership = () => {
     {
       title: "PRO PLAN",
       duration: "3 MONTHS",
-      price: "5,500",
+      price: "RS 4000",
       featured: false,
       perks: [
         "10% Flat Discount on FitFusion Shop",
@@ -26,7 +26,7 @@ const Membership = () => {
     {
       title: "ELITE PLAN",
       duration: "6 MONTHS",
-      price: "8,000",
+      price: "RS 7000",
       featured: true,
       badge: "BEST VALUE",
       perks: [
