@@ -115,4 +115,57 @@ router.put("/update-profile", async (req, res) => {
   }
 });
 
+// 5. ESEWA PAYMENT VERIFICATION & MEMBERSHIP UPDATE
+router.post("/verify-membership", async (req, res) => {
+  try {
+    const { email, amount } = req.body;
+
+    // 1. Find the user
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // 2. Determine Plan and Duration
+    let months = 0;
+    let status = "Free Member";
+
+    if (amount === 4000) {
+      status = "Pro Member";
+      months = 3;
+    } else if (amount === 8000) {
+      status = "Elite Member";
+      months = 6;
+    }
+
+    // 3. Calculate Expiry Date
+    const expiryDate = new Date();
+    expiryDate.setMonth(expiryDate.getMonth() + months);
+
+    // 4. Update Database
+    const updatedUser = await User.findOneAndUpdate(
+      { email },
+      {
+        $set: {
+          membershipStatus: status,
+          isMember: true,
+          subscriptionDate: new Date(),
+          planExpiry: expiryDate,
+        },
+      },
+      { new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: `Successfully upgraded to ${status}`,
+      membershipStatus: updatedUser.membershipStatus,
+      planExpiry: updatedUser.planExpiry
+    });
+  } catch (error) {
+    console.error("Payment Verification Error:", error);
+    res.status(500).json({ message: "Server error updating membership" });
+  }
+});
+
 export default router;

@@ -1,87 +1,130 @@
-.gateway-container {
-  padding: 10px;
-  color: #ffffff;
-  animation: slideUp 0.3s ease-out;
-}
-
-.back-btn {
-  background: none;
-  border: none;
-  color: #888;
-  cursor: pointer;
-  font-size: 14px;
-  margin-bottom: 20px;
-  transition: color 0.2s;
-}
-
-.back-btn:hover {
-  color: #ff2c2c;
-}
-
-.gateway-logo {
-  text-align: center;
-  margin-bottom: 25px;
-}
-
-.gateway-logo img {
-  height: 45px;
-  filter: drop-shadow(0 0 5px rgba(96, 187, 70, 0.3));
-}
-
-.gateway-form {
+/* Container: This centers the card and provides the dark background blur */
+.esewa-container {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  min-height: 70vh;
+  background: white;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px;
 }
 
-.input-box {
-  text-align: left;
-}
-
-.input-box label {
-  display: block;
-  font-size: 12px;
-  text-transform: uppercase;
-  color: #aaa;
-  margin-bottom: 8px;
-  letter-spacing: 1px;
-}
-
-.input-box input {
+/* The Card: Matches the red border and light green inner background */
+.esewa-card {
+  background: #f1f8e9;
+  /* The light green inner color from your image */
+  padding: 40px 30px;
+  border-radius: 20px;
+  border: 1.5px solid #ff2c2c;
+  /* The thin red border from your screenshot */
   width: 100%;
-  padding: 12px;
-  background: #111;
-  border: 1px solid #333;
-  border-radius: 8px;
-  color: #fff;
-  font-size: 15px;
-  outline: none;
-  transition: border-color 0.3s;
+  max-width: 420px;
+  position: relative;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
-.input-box input:focus {
-  border-color: #60bb46;
-}
-
-.esewa-submit-btn {
-  background: #60bb46;
-  color: #fff;
-  border: none;
-  padding: 15px;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 16px;
+/* Back button: Positioned inside the card top-left */
+.esewa-back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: #fff;
+  border: 1.5px solid #4caf50;
+  color: #4caf50;
+  padding: 4px 12px;
+  border-radius: 6px;
   cursor: pointer;
-  margin-top: 10px;
-  transition: transform 0.2s, background 0.3s;
+  font-size: 14px;
+  font-weight: 500;
+  transition: 0.2s;
 }
 
-.esewa-submit-btn:hover {
-  background: #52a03c;
-  transform: translateY(-2px);
+.esewa-back-btn:hover {
+  background-color: #4caf50;
+  color: #fff;
 }
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Close button (X) top-right */
+.esewa-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  color: #ff2c2c;
+  font-size: 20px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Logo placement */
+.esewa-logo-container {
+  margin: 20px 0 30px 0;
+  background: white;
+  padding: 10px;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.esewa-img {
+  width: 140px;
+  display: block;
+}
+
+/* Payment details box: The white floating box in the middle */
+.esewa-details {
+  background: #ffffff;
+  padding: 30px 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  margin-bottom: 25px;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1.5px solid #ff2c2c;
+}
+
+.esewa-details p {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.esewa-amount-text {
+  font-size: 32px;
+  color: #2e7d32;
+  font-weight: 800;
+}
+
+/* Proceed button: Matches eSewa's brand green */
+.esewa-proceed-btn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 14px;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.esewa-proceed-btn:hover {
+  background-color: #43a047;
+}
+
+.esewa-proceed-btn:active {
+  transform: scale(0.98);
+}
+
+/* Note text at the bottom */
+.esewa-note {
+  margin-top: 18px;
+  font-size: 12px;
+  color: #666;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
 }
