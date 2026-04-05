@@ -37,6 +37,7 @@ const formFields = {
       const form = document.createElement("form");
       form.method = "POST";
       form.action = "https://rc-epay.esewa.com.np/api/epay/main/v2/form";
+      form.target = "_self";
 
       Object.keys(formFields).forEach((key) => {
         const input = document.createElement("input");
@@ -70,7 +71,7 @@ const formFields = {
       </div>
 
       <div className="esewa-details">
-        <p>You are paying for your FitFusion membership</p>
+        <p>You are paying </p>
         <h2 className="esewa-amount-text">Rs. {amount}</h2>
       </div>
 

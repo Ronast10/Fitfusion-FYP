@@ -10,7 +10,8 @@ import authRoutes from "./routes/auth.js";
 import productRoutes from "./routes/productRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js"; 
 import contactRoutes from "./routes/contactRoutes.js"; 
-import adminRoutes from "./routes/adminAuth.js"; 
+import adminAuthRoutes from "./routes/adminAuth.js"; 
+import adminDashboardRoutes from "./models/Admin.js"; 
 import paypalRoutes from "./routes/paypalRoutes.js";
 import esewaRoutes from "./routes/esewaRoutes.js";
 
@@ -20,18 +21,23 @@ dotenv.config();
 const app = express();
 
 // Middlewares
-app.use(cors());
+// FIX: Be explicit with CORS if you face issues with port 5173
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json()); 
 
 // Connect to MongoDB Atlas
 connectDB();
 
 // API Routes
-app.use("/api/auth", authRoutes);       // User Login/Register
-app.use("/api/products", productRoutes); // Product CRUD
-app.use("/api/messages", messageRoutes); // User Messages
-app.use("/api/contact", contactRoutes);   // Contact Form
-app.use("/api/admin", adminRoutes);       // Admin Login logic
+app.use("/api/auth", authRoutes);          
+app.use("/api/products", productRoutes); 
+app.use("/api/messages", messageRoutes); 
+app.use("/api/contact", contactRoutes);   
+
+// FIX: Separate Auth from Dashboard Management
+app.use("/api/admin/auth", adminAuthRoutes);    // Login will now be /api/admin/auth/login
+app.use("/api/admin", adminDashboardRoutes);    // Dashboard will be /api/admin/dashboard-stats
+
 app.use("/api/paypal", paypalRoutes);
 app.use("/api/esewa", esewaRoutes);
 
@@ -40,7 +46,7 @@ app.get("/", (req, res) => {
   res.send("FitFusion Backend Running");
 });
 
-// 404 Handler (Catch-all for routes that don't exist)
+// 404 Handler
 app.use((req, res, next) => {
   res.status(404).json({ message: "Route not found" });
 });
@@ -58,5 +64,6 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`🔒 Admin Routes Active at: http://localhost:${PORT}/api/admin/login`);
+  console.log(`🔒 Admin Auth: http://localhost:${PORT}/api/admin/auth/login`);
+  console.log(`📊 Admin Stats: http://localhost:${PORT}/api/admin/dashboard-stats`);
 });

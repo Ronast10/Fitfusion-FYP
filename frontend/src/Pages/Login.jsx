@@ -1,13 +1,19 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./Login.css";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function Login({ switchToRegister, onLoginSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [showForgot, setShowForgot] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetMsg, setResetMsg] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -15,38 +21,44 @@ export default function Login({ switchToRegister, onLoginSuccess }) {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/login", {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        { email, password }
+      );
 
       if (response.status === 200) {
         const userData = response.data.user;
 
-        // 1. SYNC CART: Load items from MongoDB into LocalStorage
-        // This ensures the Navbar cart icon updates to show their saved items
         localStorage.setItem("cart", JSON.stringify(userData.cart || []));
-
-        // 2. SET USER SESSION DATA
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("userEmail", userData.email);
         localStorage.setItem("userName", userData.name);
         localStorage.setItem("userAvatar", userData.avatar || "avg1.png");
-        
-        // 3. Optional: Store Streak/Membership if you use them in the Dashboard
         localStorage.setItem("userStreak", userData.streak || 0);
 
-        // 4. Trigger the success callback (usually closes the modal or redirects)
-        if (onLoginSuccess) {
-          onLoginSuccess();
-        }
+        if (onLoginSuccess) onLoginSuccess();
       }
     } catch (err) {
-      // Handles specific error messages from your backend auth.js logic
-      const message = err.response?.data?.message || "Login failed. Please check your credentials.";
+      const message =
+        err.response?.data?.message ||
+        "Login failed. Please check your credentials.";
       setError(message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+
+    try {
+      await axios.post("http://localhost:5000/api/auth/forgot-password", {
+        email: resetEmail,
+      });
+
+      setResetMsg("Password reset link sent to your email.");
+    } catch (err) {
+      setResetMsg("Unable to send reset email.");
     }
   };
 
@@ -55,10 +67,9 @@ export default function Login({ switchToRegister, onLoginSuccess }) {
       <h1>FitFusion</h1>
       <p>Track your fitness, anytime, anywhere</p>
 
-      {/* Error Message Display */}
       {error && (
         <div className="login-error">
-          <span>⚠️</span> {error}
+          {error}
         </div>
       )}
 
@@ -70,7 +81,6 @@ export default function Login({ switchToRegister, onLoginSuccess }) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            autoComplete="email"
           />
         </div>
 
@@ -81,13 +91,19 @@ export default function Login({ switchToRegister, onLoginSuccess }) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            autoComplete="current-password"
           />
+
           <span
             className="toggle-password"
             onClick={() => setShowPassword(!showPassword)}
           >
-            {showPassword ? "👁️" : "🙈"}
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </span>
+        </div>
+
+        <div className="forgot-password">
+          <span onClick={() => setShowForgot(true)}>
+            Forgot Password?
           </span>
         </div>
 
@@ -104,6 +120,35 @@ export default function Login({ switchToRegister, onLoginSuccess }) {
           </span>
         </p>
       </div>
+
+      {showForgot && (
+        <div className="forgot-modal">
+          <div className="forgot-box">
+            <h3>Reset Password</h3>
+
+            <form onSubmit={handleForgotPassword}>
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={resetEmail}
+                onChange={(e) => setResetEmail(e.target.value)}
+                required
+              />
+
+              <button type="submit">Send Reset Link</button>
+            </form>
+
+            {resetMsg && <p className="reset-msg">{resetMsg}</p>}
+
+            <button
+              className="close-btn"
+              onClick={() => setShowForgot(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

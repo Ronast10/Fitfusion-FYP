@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; // Added axios
+import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import PaymentModal from "../pages/PaymentModal"; 
 import "./Cart.css";
 
 export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const navigate = useNavigate();
 
   // Load cart from localStorage on mount
@@ -15,7 +17,7 @@ export default function Cart() {
     setCartItems(savedCart);
   }, []);
 
-  // Helper function to sync with DB
+  // Helper function to sync with MongoDB
   const syncCartToDB = async (updatedCart) => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
     const userEmail = localStorage.getItem("userEmail");
@@ -32,7 +34,6 @@ export default function Cart() {
     }
   };
 
-  // Update Quantity
   const updateQuantity = (id, delta) => {
     const updatedCart = cartItems.map((item) => {
       if (item._id === id) {
@@ -43,26 +44,37 @@ export default function Cart() {
     });
     setCartItems(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
-    
-    // SYNC CHANGE TO DB
     syncCartToDB(updatedCart);
   };
 
-  // Remove Item
   const removeItem = (id) => {
     const updatedCart = cartItems.filter((item) => item._id !== id);
     setCartItems(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
-    
-    // SYNC CHANGE TO DB
     syncCartToDB(updatedCart);
   };
 
-  // Calculate Total
-  const totalAmount = cartItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
+  // --- PRICING & DISCOUNT LOGIC ---
+  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  
+  // Check membership status for discounts
+  const status = (localStorage.getItem("userMembershipStatus") || "Free Member").toLowerCase();
+  
+  let discountPercent = 0;
+  if (status.includes("pro")) discountPercent = 0.10; // 10% off
+  if (status.includes("elite")) discountPercent = 0.20; // 20% off
+
+  const discountAmount = subtotal * discountPercent;
+  const finalTotal = subtotal - discountAmount;
+
+  // FIX: Round to prevent eSewa decimal errors (e.g., 0.137 issue)
+  const roundedTotal = Math.round(finalTotal);
+
+  const cartOrderSummary = {
+    name: "FitFusion Shop Order",
+    price: `${roundedTotal}`, // Pass as clean string
+    title: `${cartItems.length} Fitness Items`
+  };
 
   return (
     <div className="cart-page">
@@ -106,8 +118,16 @@ export default function Cart() {
               <h3>Order Summary</h3>
               <div className="summary-row">
                 <span>Subtotal</span>
-                <span>Rs. {totalAmount}</span>
+                <span>Rs. {subtotal}</span>
               </div>
+
+              {discountPercent > 0 && (
+                <div className="summary-row" style={{ color: "#2ed573", fontWeight: "600" }}>
+                  <span>Member Discount ({discountPercent * 100}%)</span>
+                  <span>- Rs. {Math.round(discountAmount)}</span>
+                </div>
+              )}
+
               <div className="summary-row">
                 <span>Shipping</span>
                 <span>Free</span>
@@ -115,15 +135,27 @@ export default function Cart() {
               <hr />
               <div className="summary-row total">
                 <span>Total</span>
-                <span>Rs. {totalAmount}</span>
+                <span style={{ color: "#2ed573" }}>Rs. {roundedTotal}</span>
               </div>
-              <button className="checkout-btn" onClick={() => navigate("/checkout")}>
-                Proceed to Checkout
+              
+              <button 
+                className="checkout-btn" 
+                onClick={() => setIsPaymentModalOpen(true)}
+              >
+                PROCEED TO CHECKOUT
               </button>
             </div>
           </div>
         )}
       </div>
+
+      {isPaymentModalOpen && (
+        <PaymentModal 
+          item={cartOrderSummary} 
+          onClose={() => setIsPaymentModalOpen(false)} 
+        />
+      )}
+
       <Footer />
     </div>
   );
