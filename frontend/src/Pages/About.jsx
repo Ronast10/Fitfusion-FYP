@@ -46,17 +46,7 @@ export default function About() {
         </div>
       </section>
 
-      {/* --- STATS COUNTER --- */}
-      <section className="stats-section">
-        <div className="stats-grid">
-          {stats.map((stat, index) => (
-            <div key={index} className="stat-card">
-              <h2>{stat.value}</h2>
-              <p>{stat.label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+
 
       {/* --- CORE VALUES --- */}
       <section className="values-section">

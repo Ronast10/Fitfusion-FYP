@@ -46,7 +46,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// 1. SYNC CART ROUTE (New)
+
 router.post("/sync-cart", async (req, res) => {
   try {
     const { email, cartItems } = req.body;
@@ -61,7 +61,7 @@ router.post("/sync-cart", async (req, res) => {
   }
 });
 
-// 2. LOGIN ROUTE (Updated to send cart)
+
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
