@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2"; 
+import Swal from "sweetalert2";
+import "./AdminDashboard.css"; 
 
 export default function AdminDashboard() {
   const [data, setData] = useState({
@@ -10,11 +11,15 @@ export default function AdminDashboard() {
     inventoryValue: 0,
     members: [],
   });
-  
-  // NEW STATE: For storing user messages
   const [messages, setMessages] = useState([]);
+  const [products, setProducts] = useState([]); 
   const [loading, setLoading] = useState(true);
+  
+  const [file, setFile] = useState(null);
+  const [productForm, setProductForm] = useState({ name: "", price: "", category: "" });
+
   const navigate = useNavigate();
+  const API_BASE_URL = "http://localhost:5000";
 
   useEffect(() => {
     if (localStorage.getItem("isAdmin") !== "true") {
@@ -22,32 +27,85 @@ export default function AdminDashboard() {
       return;
     }
     fetchDashboardData();
-    fetchMessages(); // Fetch messages on load
+    fetchMessages();
+    fetchProducts();
   }, [navigate]);
 
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:5000/api/admin/dashboard-stats");
-      if (res.data.success) {
-        setData(res.data);
-      }
+      const res = await axios.get(`${API_BASE_URL}/api/admin/dashboard-stats`);
+      if (res.data.success) setData(res.data);
     } catch (err) {
-      console.error("Error fetching dashboard data", err);
+      console.error("Dashboard Fetch Error:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  // NEW FUNCTION: Fetch inquiries from the backend
   const fetchMessages = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/admin/message");
+      const res = await axios.get(`${API_BASE_URL}/api/admin/messages`);
+      if (res.data.success) setMessages(res.data.messages);
+    } catch (err) {
+      console.error("Messages Fetch Error:", err);
+    }
+  };
+
+  const fetchProducts = async () => {
+    try {
+      const res = await axios.get(`${API_BASE_URL}/api/products`);
+      setProducts(res.data);
+    } catch (err) {
+      console.error("Shop Fetch Error:", err);
+    }
+  };
+
+  const handleAddProduct = async (e) => {
+    e.preventDefault();
+    if (!file) return Swal.fire("Error", "Please select an image", "error");
+    if (!productForm.category) return Swal.fire("Error", "Please select a category", "error");
+
+    const formData = new FormData();
+    formData.append("name", productForm.name);
+    formData.append("price", productForm.price);
+    formData.append("category", productForm.category);
+    formData.append("image", file);
+
+    try {
+      const res = await axios.post(`${API_BASE_URL}/api/products/add`, formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
       if (res.data.success) {
-        setMessages(res.data.messages);
+        Swal.fire("Success", "Product added successfully!", "success");
+        setProductForm({ name: "", price: "", category: "" });
+        setFile(null);
+        fetchProducts(); 
       }
     } catch (err) {
-      console.error("Error fetching messages", err);
+      Swal.fire("Error", "Upload failed. Check console for details.", "error");
+    }
+  };
+
+  const deleteProduct = async (id) => {
+    const result = await Swal.fire({
+      title: "Delete Product?",
+      text: "This will remove it from the shop.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ff4757",
+      confirmButtonText: "Yes, delete",
+      background: "#1a1a1a",
+      color: "#fff"
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`${API_BASE_URL}/api/products/${id}`);
+        fetchProducts();
+      } catch (err) {
+        console.error("Delete error:", err);
+      }
     }
   };
 
@@ -58,15 +116,14 @@ export default function AdminDashboard() {
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#ff4757",
-      cancelButtonColor: "#2f3542",
       confirmButtonText: "Yes, delete!",
       background: "#1a1a1a",
-      color: "#fff"
+      color: "#fff",
     });
 
     if (result.isConfirmed) {
       try {
-        const res = await axios.delete(`http://localhost:5000/api/admin/user/${id}`);
+        const res = await axios.delete(`${API_BASE_URL}/api/admin/user/${id}`);
         if (res.data.success) {
           Swal.fire({ title: "Deleted!", icon: "success", background: "#1a1a1a", color: "#fff" });
           fetchDashboardData();
@@ -82,42 +139,88 @@ export default function AdminDashboard() {
     navigate("/admin-login");
   };
 
-  // UI Styles
-  const cardStyle = { background: "#1a1a1a", padding: "20px", borderRadius: "12px", flex: 1, margin: "10px", border: "1px solid #333" };
-  const tableStyle = { width: "100%", borderCollapse: "collapse", marginTop: "20px", background: "#111", borderRadius: "8px", overflow: "hidden" };
-
   return (
-    <div style={{ background: "#000", color: "#fff", minHeight: "100vh", padding: "40px", fontFamily: "sans-serif" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px" }}>
-        <h1 style={{ fontSize: "2.5rem", fontWeight: "bold" }}>Admin Management Hub</h1>
-        <button onClick={logout} style={{ background: "#ff4757", color: "#fff", border: "none", padding: "12px 25px", cursor: "pointer", borderRadius: "8px", fontWeight: "600" }}>
-          Logout
-        </button>
-      </div>
+    <div className="admin-page">
+      <header className="admin-header">
+        <h1>Admin Management Hub</h1>
+        <button onClick={logout} className="logout-btn">Logout</button>
+      </header>
 
       {/* Statistics Cards */}
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "30px" }}>
-        <div style={cardStyle}>
-          <h4 style={{ color: "#aaa", marginBottom: "10px" }}>Total Members</h4>
-          <h2 style={{ color: "#3498db", fontSize: "2rem" }}>{data.totalUsers}</h2>
+      <section className="stats-container">
+        <div className="stat-card">
+          <h4>Total Members</h4>
+          <h2 className="blue-text">{data.totalUsers}</h2>
         </div>
-        <div style={cardStyle}>
-          <h4 style={{ color: "#aaa", marginBottom: "10px" }}>Membership Revenue</h4>
-          <h2 style={{ color: "#2ed573", fontSize: "2rem" }}>Rs. {data.totalRevenue}</h2>
+        <div className="stat-card">
+          <h4>Membership Revenue</h4>
+          <h2 className="green-text">Rs. {data.totalRevenue}</h2>
         </div>
-        <div style={cardStyle}>
-          <h4 style={{ color: "#aaa", marginBottom: "10px" }}>Inventory Value</h4>
-          <h2 style={{ color: "#eccc68", fontSize: "2rem" }}>Rs. {data.inventoryValue}</h2>
+        <div className="stat-card">
+          <h4>Inventory Value</h4>
+          <h2 className="yellow-text">Rs. {data.inventoryValue}</h2>
         </div>
-      </div>
+      </section>
+
+      {/* SHOP MANAGEMENT SECTION */}
+      <section className="admin-section">
+        <h3>Shop Management</h3>
+        <form onSubmit={handleAddProduct} className="admin-product-form-inline">
+          <div className="form-group">
+            <input 
+              type="text" placeholder="Name" 
+              value={productForm.name} 
+              onChange={(e) => setProductForm({...productForm, name: e.target.value})} 
+              required 
+            />
+          </div>
+          <div className="form-group">
+            <input 
+              type="number" placeholder="Price" 
+              value={productForm.price} 
+              onChange={(e) => setProductForm({...productForm, price: e.target.value})} 
+              required 
+            />
+          </div>
+          <div className="form-group">
+            <select 
+              value={productForm.category} 
+              onChange={(e) => setProductForm({...productForm, category: e.target.value})} 
+              required
+            >
+              <option value="">Category</option>
+              <option value="Whey Protein">Whey Protein</option>
+              <option value="Creatine">Creatine</option>
+              <option value="Mass Gainer">Mass Gainer</option>
+              <option value="Gym Clothing">Gym Clothing</option>
+              <option value="Best Seller">Best Seller</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <input type="file" id="file-upload" onChange={(e) => setFile(e.target.files[0])} required />
+          </div>
+          <button type="submit" className="add-item-btn">Add Item</button>
+        </form>
+
+        <div className="admin-product-grid">
+          {products.map(p => (
+            <div key={p._id} className="admin-product-item">
+              <img src={`${API_BASE_URL}${p.image}`} alt={p.name} />
+              <p className="p-name">{p.name}</p>
+              <p className="p-cat">[{p.category}]</p>
+              <button onClick={() => deleteProduct(p._id)} className="admin-remove-btn">Remove</button>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* Member Directory */}
-      <div style={{ background: "#1a1a1a", padding: "30px", borderRadius: "12px", border: "1px solid #333", marginBottom: "40px" }}>
-        <h3 style={{ marginBottom: "20px" }}>Member Directory</h3>
-        <table style={tableStyle}>
+      <section className="admin-section">
+        <h3>Member Directory</h3>
+        <table className="admin-table">
           <thead>
-            <tr style={{ textAlign: "left", background: "#222", color: "#aaa" }}>
-              <th style={{ padding: "15px" }}>Name</th>
+            <tr>
+              <th>Name</th>
               <th>Email</th>
               <th>Status</th>
               <th>Actions</th>
@@ -125,41 +228,46 @@ export default function AdminDashboard() {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan="4" style={{ padding: "20px", textAlign: "center" }}>Loading members...</td></tr>
+              <tr><td colSpan="4" style={{ textAlign: "center" }}>Loading members...</td></tr>
             ) : data.members.map((user) => {
-              const status = user.membershipStatus || "Free Member";
+              const status = user.membershipData?.membershipStatus || "Free Member";
               const lowerStatus = status.toLowerCase();
               return (
-                <tr key={user._id} style={{ borderBottom: "1px solid #222" }}>
-                  <td style={{ padding: "15px" }}>{user.name}</td>
+                <tr key={user._id}>
+                  <td>{user.name}</td>
                   <td>{user.email}</td>
                   <td>
-                    <span style={{ 
-                      color: lowerStatus.includes("pro") ? "#2ed573" : lowerStatus.includes("elite") ? "#eccc68" : "#ff4757",
-                      fontWeight: "600"
-                    }}>
+                    <span className="status-text" style={{ color: lowerStatus.includes("pro") ? "#2ed573" : lowerStatus.includes("elite") ? "#eccc68" : "#ff4757" }}>
                       {status}
                     </span>
                   </td>
                   <td>
-                    <button onClick={() => deleteMember(user._id)} style={{ background: "rgba(255, 71, 87, 0.1)", border: "1px solid #ff4757", color: "#ff4757", cursor: "pointer", padding: "6px 12px", borderRadius: "4px" }}>
-                      Remove
-                    </button>
+                    <button onClick={() => deleteMember(user._id)} className="remove-btn">Remove</button>
                   </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
-      </div>
+      </section>
 
-      {/* NEW: MESSAGE CENTER SECTION */}
-      <div style={{ background: "#1a1a1a", padding: "30px", borderRadius: "12px", border: "1px solid #333" }}>
-        <h3 style={{ marginBottom: "20px" }}>Trainer Inquiries</h3>
-        <table style={tableStyle}>
+      {/* Message Center / Trainer Chat Entry */}
+      <section className="admin-section">
+        <div className="section-header-inline">
+          <h3>Trainer Inquiries</h3>
+          {/* NEW: Primary button to enter the two-way chat interface */}
+          <button 
+            className="chat-entry-btn" 
+            onClick={() => navigate("/admin/chat")}
+          >
+            💬 Open Chat Interface
+          </button>
+        </div>
+        
+        <table className="admin-table">
           <thead>
-            <tr style={{ textAlign: "left", background: "#222", color: "#aaa" }}>
-              <th style={{ padding: "15px" }}>Sender Name</th>
+            <tr>
+              <th>Sender Name</th>
               <th>Trainer Assigned</th>
               <th>Message Content</th>
               <th>Date Sent</th>
@@ -167,22 +275,18 @@ export default function AdminDashboard() {
           </thead>
           <tbody>
             {messages.length === 0 ? (
-              <tr><td colSpan="4" style={{ padding: "20px", textAlign: "center" }}>No messages found.</td></tr>
+              <tr><td colSpan="4" style={{ textAlign: "center" }}>No messages found.</td></tr>
             ) : messages.map((msg) => (
-              <tr key={msg._id} style={{ borderBottom: "1px solid #222" }}>
-                <td style={{ padding: "15px" }}>{msg.senderName}</td>
-                <td style={{ color: "#3498db" }}>{msg.trainerName}</td>
-                <td style={{ maxWidth: "450px", padding: "12px 0", lineHeight: "1.4" }}>
-                  {msg.content}
-                </td>
-                <td style={{ fontSize: "0.85rem", color: "#777" }}>
-                  {new Date(msg.createdAt).toLocaleDateString()}
-                </td>
+              <tr key={msg._id}>
+                <td>{msg.senderName}</td>
+                <td className="blue-text">{msg.trainerName}</td>
+                <td className="msg-content">{msg.content}</td>
+                <td className="date-text">{new Date(msg.createdAt).toLocaleDateString()}</td>
               </tr>
             ))}
           </tbody>
         </table>
-      </div>
+      </section>
     </div>
   );
 }

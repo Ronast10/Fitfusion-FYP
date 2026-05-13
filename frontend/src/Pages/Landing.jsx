@@ -23,11 +23,8 @@ export default function Landing() {
   ];
 
   const trainers = [
-    { id: "kishor-karki", name: "Kishor Karki", exp: "7 Years", role: "Prep Coach", img: "https://images.unsplash.com/photo-1696563996353-214a3690bb11?q=80&w=687" },
-    { id: "sarah-tamang", name: "Sarah Tamang", exp: "5 Years", role: "Yoga Specialist", img: "https://images.unsplash.com/photo-1572621988687-3fe290e7c0f6?w=600" },
-    { id: "arjun-thapa", name: "Arjun Thapa", exp: "8 Years", role: "Strength Coach", img: "https://images.unsplash.com/photo-1667890786327-d28da55b0e57?w=600" },
-    { id: "binod-rai", name: "Binod Rai", exp: "6 Years", role: "Crossfit Expert", img: "https://images.unsplash.com/photo-1701481080490-cb2e7f4fd5f8?w=600" },
-    { id: "deepa-gurung", name: "Deepa Gurung", exp: "4 Years", role: "Zumba Trainer", img: "https://images.unsplash.com/photo-1738870558728-720a366830a6?w=600" }
+    { id: "ronast-acharya", name: "Ronast Acharya", exp: "6 Years", role: "Crossfit Expert", img: "https://images.unsplash.com/photo-1701481080490-cb2e7f4fd5f8?w=600" },
+    { id: "ismarika-bista", name: "Ismarika Bista", exp: "4 Years", role: "Zumba Trainer", img: "https://images.unsplash.com/photo-1738870558728-720a366830a6?w=600" }
   ];
 
   // --- LOGIC ---

@@ -5,7 +5,6 @@ import User from "../models/User.js";
 const router = express.Router();
 
 // 1. GET USER DATA
-// This is working, but ensure your User model includes 'streak' and 'lastLoggedDate'
 router.get("/user/:email", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.params.email }).select("-password");
@@ -35,33 +34,26 @@ router.post("/register", async (req, res) => {
       email, 
       password: hashedPassword,
       avatar: "avg1.png",
-      streak: 0, // Initialize progress
-      lastLoggedDate: "" 
+      streak: 0,
+      lastLoggedDate: "",
+      cart: [],
+      purchasedItems: [],
+      membershipData: {
+        isMember: false,
+        membershipStatus: "Free Member",
+        subscriptionDate: null,
+        planExpiry: null
+      }
     });
 
     await newUser.save();
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error during registration" });
   }
 });
 
-
-router.post("/sync-cart", async (req, res) => {
-  try {
-    const { email, cartItems } = req.body;
-    const user = await User.findOneAndUpdate(
-      { email },
-      { $set: { cart: cartItems } },
-      { new: true }
-    );
-    res.status(200).json({ success: true, cart: user.cart });
-  } catch (error) {
-    res.status(500).json({ message: "Error syncing cart" });
-  }
-});
-
-
+// 3. LOGIN ROUTE
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -78,103 +70,110 @@ router.post("/login", async (req, res) => {
         email: user.email, 
         avatar: user.avatar,
         streak: user.streak,
-        cart: user.cart // Send the saved cart to frontend on login
+        cart: user.cart,
+        purchasedItems: user.purchasedItems,
+        membershipData: user.membershipData
       } 
     });
   } catch (error) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error during login" });
   }
 });
 
-// 4. UPDATE PROFILE ROUTE 
-router.put("/update-profile", async (req, res) => {
+// 4. SYNC CART (Updates the active cart in DB)
+router.post("/sync-cart", async (req, res) => {
   try {
-    const { email, name, avatar, streak, lastLoggedDate } = req.body;
-
-    const updatedUser = await User.findOneAndUpdate(
+    const { email, cartItems } = req.body;
+    const user = await User.findOneAndUpdate(
       { email },
-      { 
-        $set: { 
-          name, 
-          avatar, 
-          streak, 
-          lastLoggedDate 
-        } 
-      },
-      { new: true } // Returns the updated document from MongoDB
+      { $set: { cart: cartItems } },
+      { new: true }
     );
+    res.status(200).json({ success: true, cart: user.cart });
+  } catch (error) {
+    res.status(500).json({ message: "Error syncing cart" });
+  }
+});
 
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
+// 5. COMPLETE SHOP PURCHASE (Moves items from cart to history)
+router.post("/complete-purchase", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user || user.cart.length === 0) {
+      return res.status(400).json({ success: false, message: "Cart is empty" });
     }
 
-    res.status(200).json({
-      success: true, // Frontend checks for this to sync state
-      message: "Profile updated successfully",
-      user: { 
-        name: updatedUser.name, 
-        email: updatedUser.email, 
-        avatar: updatedUser.avatar,
-        streak: updatedUser.streak,
-        lastLoggedDate: updatedUser.lastLoggedDate
-      }
-    });
+    const itemsToMove = user.cart.map(item => ({
+      ...item,
+      purchaseDate: new Date()
+    }));
+
+    // Add to history and clear the current cart
+    user.purchasedItems.push(...itemsToMove);
+    user.cart = [];
+
+    await user.save();
+    res.status(200).json({ success: true, purchasedItems: user.purchasedItems });
   } catch (error) {
-    console.error("Update Error:", error);
-    res.status(500).json({ message: "Server error updating profile" });
+    res.status(500).json({ success: false, message: "Failed to record purchase" });
   }
 });
 
-// 5. ESEWA PAYMENT VERIFICATION & MEMBERSHIP UPDATE
+// 6. VERIFY MEMBERSHIP (Updates membership status ONLY)
 router.post("/verify-membership", async (req, res) => {
   try {
     const { email, amount } = req.body;
-
-    // 1. Find the user
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    // 2. Determine Plan and Duration
+    
     let months = 0;
     let status = "Free Member";
+    if (amount === 4000) { status = "Pro Member"; months = 3; } 
+    else if (amount === 7000) { status = "Elite Member"; months = 6; }
 
-    if (amount === 4000) {
-      status = "Pro Member";
-      months = 3;
-    } else if (amount === 8000) {
-      status = "Elite Member";
-      months = 6;
-    }
-
-    // 3. Calculate Expiry Date
     const expiryDate = new Date();
     expiryDate.setMonth(expiryDate.getMonth() + months);
 
-    // 4. Update Database
+    // Using nested dot notation to update ONLY membership fields
     const updatedUser = await User.findOneAndUpdate(
       { email },
       {
         $set: {
-          membershipStatus: status,
-          isMember: true,
-          subscriptionDate: new Date(),
-          planExpiry: expiryDate,
+          "membershipData.membershipStatus": status,
+          "membershipData.isMember": true,
+          "membershipData.subscriptionDate": new Date(),
+          "membershipData.planExpiry": expiryDate,
         },
       },
       { new: true }
     );
 
+    if (!updatedUser) return res.status(404).json({ message: "User not found" });
+
     res.status(200).json({
       success: true,
       message: `Successfully upgraded to ${status}`,
-      membershipStatus: updatedUser.membershipStatus,
-      planExpiry: updatedUser.planExpiry
+      membershipStatus: updatedUser.membershipData.membershipStatus,
+      planExpiry: updatedUser.membershipData.planExpiry
     });
   } catch (error) {
-    console.error("Payment Verification Error:", error);
     res.status(500).json({ message: "Server error updating membership" });
+  }
+});
+
+// 7. UPDATE PROFILE
+router.put("/update-profile", async (req, res) => {
+  try {
+    const { email, name, avatar, streak, lastLoggedDate } = req.body;
+    const updatedUser = await User.findOneAndUpdate(
+      { email },
+      { $set: { name, avatar, streak, lastLoggedDate } },
+      { new: true }
+    );
+    if (!updatedUser) return res.status(404).json({ message: "User not found" });
+    res.status(200).json({ success: true, user: updatedUser });
+  } catch (error) {
+    res.status(500).json({ message: "Server error updating profile" });
   }
 });
 

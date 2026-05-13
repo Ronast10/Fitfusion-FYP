@@ -9,7 +9,6 @@ const userSchema = new mongoose.Schema({
   streak: { type: Number, default: 0 }, 
   lastLoggedDate: { type: String, default: "" },
 
-  // --- ADDED CART DATA ---
   cart: [
     {
       _id: { type: String },
@@ -17,6 +16,17 @@ const userSchema = new mongoose.Schema({
       price: { type: Number },
       image: { type: String },
       quantity: { type: Number, default: 1 }
+    }
+  ],
+
+  // --- ADDED PURCHASED ITEMS ---
+  purchasedItems: [
+    {
+      name: { type: String },
+      price: { type: Number },
+      image: { type: String },
+      quantity: { type: Number },
+      purchaseDate: { type: Date, default: Date.now }
     }
   ],
 

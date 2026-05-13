@@ -1,10 +1,9 @@
 import express from "express";
 import User from "../models/User.js"; 
-import Message from "../models/Message.js"; // 1. Import the Message model
+import Message from "../models/Message.js"; 
 
 const router = express.Router();
 
-// NEW: Route to get all messages for the Admin Dashboard
 router.get("/messages", async (req, res) => {
   try {
     const messages = await Message.find().sort({ createdAt: -1 });
@@ -14,19 +13,23 @@ router.get("/messages", async (req, res) => {
   }
 });
 
-// NEW: Route for Dashboard Stats (Revenue, Users, etc.)
 router.get("/dashboard-stats", async (req, res) => {
   try {
     const users = await User.find({ role: { $ne: "admin" } });
     
-    // Sum up totalPaid field from all users for revenue
-    const totalRevenue = users.reduce((acc, user) => acc + (user.totalPaid || 0), 0);
+    // FIXED: Calculate revenue based on nested membershipStatus
+    const totalRevenue = users.reduce((acc, user) => {
+      const status = user.membershipData?.membershipStatus; // Accessing nested object
+      if (status === "Pro Member") return acc + 4000;
+      if (status === "Elite Member") return acc + 7000;
+      return acc;
+    }, 0);
     
     res.json({
       success: true,
       totalUsers: users.length,
       totalRevenue: totalRevenue,
-      inventoryValue: 0, // Placeholder
+      inventoryValue: 0, 
       members: users
     });
   } catch (err) {

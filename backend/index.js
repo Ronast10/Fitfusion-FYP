@@ -1,42 +1,41 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from "path"; // 1. ADD THIS IMPORT
+import { fileURLToPath } from "url"; // For ES Modules path handling
 
-// Database Connection
 import connectDB from "./db/db.js";
-
-// Routes
 import authRoutes from "./routes/auth.js";
 import productRoutes from "./routes/productRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js"; 
 import contactRoutes from "./routes/contactRoutes.js"; 
 import adminAuthRoutes from "./routes/adminAuth.js"; 
-import adminDashboardRoutes from "./models/Admin.js"; 
 import paypalRoutes from "./routes/paypalRoutes.js";
 import esewaRoutes from "./routes/esewaRoutes.js";
 
-// Load environment variables
 dotenv.config();
-
 const app = express();
 
-// Middlewares
-// FIX: Be explicit with CORS if you face issues with port 5173
+// Path setup for ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json()); 
 
-// Connect to MongoDB Atlas
+// 3. CRITICAL: Serve the uploads folder statically
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 connectDB();
 
-// API Routes
 app.use("/api/auth", authRoutes);          
 app.use("/api/products", productRoutes); 
 app.use("/api/messages", messageRoutes); 
 app.use("/api/contact", contactRoutes);   
 
-// FIX: Separate Auth from Dashboard Management
-app.use("/api/admin/auth", adminAuthRoutes);    // Login will now be /api/admin/auth/login
-app.use("/api/admin", adminDashboardRoutes);    // Dashboard will be /api/admin/dashboard-stats
+app.use("/api/admin/auth", adminAuthRoutes); // Keeps Login/Register working at /auth/login
+app.use("/api/admin", adminAuthRoutes);      // Makes /dashboard-stats and /messages work again
+ 
 
 app.use("/api/paypal", paypalRoutes);
 app.use("/api/esewa", esewaRoutes);
