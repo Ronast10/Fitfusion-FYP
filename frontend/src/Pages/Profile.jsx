@@ -44,23 +44,26 @@ export default function Profile() {
       }
 
       try {
-        const res = await axios.get(`http://localhost:5000/api/auth/user/${email}`);
-        
-        if (res.data) {
-          setName(res.data.name || "Fit User");
-          setSelectedAvatar(res.data.avatar || "avg1.png");
-          setStreak(res.data.streak || 0); 
-          setLastLoggedDate(res.data.lastLoggedDate || "");
-          
-          // --- SET MEMBERSHIP DATA FROM DB ---
-          setMembershipStatus(res.data.membershipStatus || "Free Member");
-          setPlanExpiry(res.data.planExpiry || null);
-          
-          localStorage.setItem("userName", res.data.name);
-          localStorage.setItem("userAvatar", res.data.avatar);
-        }
-      } catch (err) {
-        console.error("Error fetching user data:", err);
+  const res = await axios.get(`http://localhost:5000/api/auth/user/${email}`);
+  
+  if (res.data) {
+    setName(res.data.name || "Fit User");
+    setSelectedAvatar(res.data.avatar || "avg1.png");
+    setStreak(res.data.streak || 0); 
+    setLastLoggedDate(res.data.lastLoggedDate || "");
+    
+    // --- FIX: ACCESS NESTED membershipData OBJECT ---
+    // We check if res.data.membershipData exists first to prevent crashes
+    const mData = res.data.membershipData || {}; 
+    
+    setMembershipStatus(mData.membershipStatus || "Free Member");
+    setPlanExpiry(mData.planExpiry || null);
+    
+    localStorage.setItem("userName", res.data.name);
+    localStorage.setItem("userAvatar", res.data.avatar);
+  }
+} catch (err) {
+  console.error("Error fetching user data:", err);
       } finally {
         setLoading(false);
       }

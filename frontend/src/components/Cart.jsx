@@ -8,23 +8,39 @@ import "./Cart.css";
 
 export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
+  const [purchasedItems, setPurchasedItems] = useState([]); // New state for history
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const navigate = useNavigate();
 
-  // Load cart from localStorage on mount
+  const API_BASE_URL = "http://localhost:5000";
+  const userEmail = localStorage.getItem("userEmail");
+
+  const formatImageUrl = (img) => {
+    if (!img) return "/Img/placeholder.webp";
+    if (img.startsWith("/uploads")) return `${API_BASE_URL}${img}`;
+    return img;
+  };
+
   useEffect(() => {
+    // Load current cart
     const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
     setCartItems(savedCart);
-  }, []);
 
-  // Helper function to sync with MongoDB
+    // Fetch purchase history from DB
+    if (userEmail) {
+      axios.get(`${API_BASE_URL}/api/auth/user/${userEmail}`)
+        .then(res => {
+          setPurchasedItems(res.data.purchasedItems || []);
+        })
+        .catch(err => console.error("Error fetching history:", err));
+    }
+  }, [userEmail]);
+
   const syncCartToDB = async (updatedCart) => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-    const userEmail = localStorage.getItem("userEmail");
-
     if (isLoggedIn && userEmail) {
       try {
-        await axios.post("http://localhost:5000/api/auth/sync-cart", {
+        await axios.post(`${API_BASE_URL}/api/auth/sync-cart`, {
           email: userEmail,
           cartItems: updatedCart,
         });
@@ -54,25 +70,19 @@ export default function Cart() {
     syncCartToDB(updatedCart);
   };
 
-  // --- PRICING & DISCOUNT LOGIC ---
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  
-  // Check membership status for discounts
   const status = (localStorage.getItem("userMembershipStatus") || "Free Member").toLowerCase();
   
   let discountPercent = 0;
-  if (status.includes("pro")) discountPercent = 0.10; // 10% off
-  if (status.includes("elite")) discountPercent = 0.20; // 20% off
+  if (status.includes("pro")) discountPercent = 0.10;
+  if (status.includes("elite")) discountPercent = 0.20;
 
   const discountAmount = subtotal * discountPercent;
-  const finalTotal = subtotal - discountAmount;
-
-  // FIX: Round to prevent eSewa decimal errors (e.g., 0.137 issue)
-  const roundedTotal = Math.round(finalTotal);
+  const roundedTotal = Math.round(subtotal - discountAmount);
 
   const cartOrderSummary = {
     name: "FitFusion Shop Order",
-    price: `${roundedTotal}`, // Pass as clean string
+    price: `${roundedTotal}`,
     title: `${cartItems.length} Fitness Items`
   };
 
@@ -93,7 +103,7 @@ export default function Cart() {
               {cartItems.map((item) => (
                 <div key={item._id} className="cart-item-card">
                   <div className="cart-item-img-wrapper">
-                    <img src={item.image} alt={item.name} />
+                    <img src={formatImageUrl(item.image)} alt={item.name} />
                   </div>
                   <div className="item-details">
                     <h3>{item.name}</h3>
@@ -106,9 +116,7 @@ export default function Cart() {
                   </div>
                   <div className="item-actions">
                     <p className="subtotal">Rs. {item.price * item.quantity}</p>
-                    <button className="remove-btn" onClick={() => removeItem(item._id)}>
-                      Remove
-                    </button>
+                    <button className="remove-btn" onClick={() => removeItem(item._id)}>Remove</button>
                   </div>
                 </div>
               ))}
@@ -116,37 +124,44 @@ export default function Cart() {
 
             <div className="cart-summary">
               <h3>Order Summary</h3>
-              <div className="summary-row">
-                <span>Subtotal</span>
-                <span>Rs. {subtotal}</span>
-              </div>
-
+              <div className="summary-row"><span>Subtotal</span><span>Rs. {subtotal}</span></div>
               {discountPercent > 0 && (
                 <div className="summary-row" style={{ color: "#2ed573", fontWeight: "600" }}>
                   <span>Member Discount ({discountPercent * 100}%)</span>
                   <span>- Rs. {Math.round(discountAmount)}</span>
                 </div>
               )}
-
-              <div className="summary-row">
-                <span>Shipping</span>
-                <span>Free</span>
-              </div>
+              <div className="summary-row"><span>Shipping</span><span>Free</span></div>
               <hr />
               <div className="summary-row total">
                 <span>Total</span>
                 <span style={{ color: "#2ed573" }}>Rs. {roundedTotal}</span>
               </div>
-              
-              <button 
-                className="checkout-btn" 
-                onClick={() => setIsPaymentModalOpen(true)}
-              >
-                PROCEED TO CHECKOUT
-              </button>
+              <button className="checkout-btn" onClick={() => setIsPaymentModalOpen(true)}>PROCEED TO CHECKOUT</button>
             </div>
           </div>
         )}
+
+        {/* --- PURCHASE HISTORY SECTION (NEW) --- */}
+        <div className="purchased-section mt-5">
+          <h2 className="mb-4">Bought Items</h2>
+          {purchasedItems.length === 0 ? (
+            <p className="text-muted">You haven't purchased anything yet.</p>
+          ) : (
+            <div className="purchased-grid">
+              {purchasedItems.map((item, index) => (
+                <div key={index} className="purchased-item-mini">
+                  <img src={formatImageUrl(item.image)} alt={item.name} />
+                  <div className="mini-details">
+                    <h4>{item.name}</h4>
+                    <p>Bought on: {new Date(item.purchaseDate).toLocaleDateString()}</p>
+                    <p className="text-success fw-bold">Rs. {item.price}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {isPaymentModalOpen && (
@@ -155,7 +170,6 @@ export default function Cart() {
           onClose={() => setIsPaymentModalOpen(false)} 
         />
       )}
-
       <Footer />
     </div>
   );

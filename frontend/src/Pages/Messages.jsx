@@ -1,45 +1,54 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 import Navbar from "../components/Navbar";
 import "./Messages.css";
 
 export default function Messages() {
-  const { trainerName } = useParams();
+  const { trainerName } = useParams(); // e.g., "sarah-tamang"
   const [inputText, setInputText] = useState("");
-  const [messages, setMessages] = useState([]); // Array to hold sent messages
+  const [messages, setMessages] = useState([]);
 
-  // --- ADDED ASYNC TO THE FUNCTION ---
+  // Data from your profile
+  const userId = "ronastacharya@gmail.com"; 
+  const userName = "Ronast Acharya";
+  const API_BASE = "http://localhost:5000/api/messages";
+
+  // 1. Load History
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const res = await axios.get(`${API_BASE}/history/${trainerName}/${userId}`);
+        if (res.data.success) {
+          setMessages(res.data.messages);
+        }
+      } catch (err) {
+        console.error("Could not load history. Ensure trainerName in URL matches DB.", err);
+      }
+    };
+    fetchHistory();
+  }, [trainerName, userId]);
+
   const handleSendMessage = async () => {
     if (inputText.trim() === "") return;
 
-    // YOUR EXISTING MESSAGE OBJECT
-    const newMessage = {
-      id: Date.now(),
-      text: inputText,
-      sender: "user", // Identifies this as your message
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      status: "sent"
+    const payload = {
+      trainerId: trainerName,
+      userId: userId,
+      senderName: userName,
+      senderRole: "user",
+      content: inputText
     };
 
-    // --- NEW DB CODE START ---
     try {
-      await fetch('http://localhost:5000/api/messages/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          trainerName: trainerName,
-          senderName: "Rona Stacharya", // Current user
-          content: inputText // The text from the box
-        }),
-      });
-      // Logic continues to show message on screen after sending to DB
-    } catch (error) {
-      console.error("Database storage failed:", error);
+      const res = await axios.post(`${API_BASE}/send`, payload);
+      if (res.data.success) {
+        setMessages([...messages, res.data.message]);
+        setInputText("");
+      }
+    } catch (err) {
+      console.error("Send failed:", err);
     }
-    // --- NEW DB CODE END ---
-
-    setMessages([...messages, newMessage]);
-    setInputText(""); // Clear the input box
   };
 
   return (
@@ -49,30 +58,24 @@ export default function Messages() {
         <div className="chat-header">
           <h2>Conversation with {trainerName.replace("-", " ")}</h2>
         </div>
-        
         <div className="chat-window">
-          <p className="system-msg">Start your fitness consultation...</p>
-          
-          {/* Render messages dynamically */}
           {messages.map((msg) => (
-            <div key={msg.id} className={`message-wrapper ${msg.sender}`}>
+            <div key={msg._id || Math.random()} className={`message-wrapper ${msg.senderRole}`}>
               <div className="message-bubble">
-                <p>{msg.text}</p>
+                <p>{msg.content}</p>
                 <div className="message-info">
-                  <span>{msg.time}</span>
-                  <span className="tick">✓</span> {/* Single tick for sent */}
+                  <span>{new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  {msg.senderRole === "user" && <span className="tick">✓</span>}
                 </div>
               </div>
             </div>
           ))}
         </div>
-
         <div className="chat-input">
           <input 
-            type="text" 
-            placeholder="Type a message..." 
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
+            placeholder="Type a message..."
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
           />
           <button onClick={handleSendMessage}>Send</button>

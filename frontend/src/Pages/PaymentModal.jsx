@@ -1,37 +1,64 @@
 import React, { useState } from "react";
+import axios from "axios"; // Ensure axios is installed
 import "./PaymentModal.css";
-// Importing from your components folder
 import EsewaPayment from "../components/EsewaPayment";
 import PaypalPayment from "../components/PaypalPayment";
 
 const PaymentModal = ({ item, onClose }) => {
-  const [view, setView] = useState("selection"); // selection, esewa, paypal, success
+  const [view, setView] = useState("selection"); 
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // HELPER: Strips symbols like "$", "Rs.", and "," so the payment gateways get a clean number
+  const API_BASE_URL = "http://localhost:5000";
+
   const getNumericPrice = (priceString) => {
     if (!priceString) return 0;
-    // Removes non-numeric characters except for the decimal point
     const cleanNumber = parseFloat(priceString.toString().replace(/[^0-9.]/g, ''));
     return cleanNumber || 0;
   };
 
-  const handlePaymentSuccess = () => {
+  const handlePaymentSuccess = async () => {
     setIsProcessing(true);
-    // Finalizing transaction state
-    setTimeout(() => {
+    const userEmail = localStorage.getItem("userEmail");
+    const itemName = item.title || item.name || "";
+    const isMembership = itemName.toLowerCase().includes("membership");
+
+    try {
+      if (isMembership) {
+        // Call membership logic
+        await axios.post(`${API_BASE_URL}/api/auth/verify-membership`, {
+          email: userEmail,
+          amount: getNumericPrice(item.price)
+        });
+      } else {
+        // Call shop purchase logic
+        await axios.post(`${API_BASE_URL}/api/auth/complete-purchase`, {
+          email: userEmail
+        });
+        localStorage.removeItem("cart"); // Clear local storage for shop items
+      }
+
       setIsProcessing(false);
       setView("success");
-      setTimeout(() => onClose(), 3000);
-    }, 1500);
+      
+      setTimeout(() => {
+        onClose();
+        window.location.reload(); // Refresh to update Cart and Purchase History UI
+      }, 3000);
+
+    } catch (err) {
+      console.error("Payment Verification Error:", err);
+      setIsProcessing(false);
+      alert("Payment verified, but account update failed. Please contact support.");
+    }
   };
+
+  const itemNameDisplay = item.title || item.name || "Fitness Item";
 
   return (
     <div className="payment-overlay" onClick={onClose}>
       <div className="payment-content" onClick={(e) => e.stopPropagation()}>
         <span className="payment-close" onClick={onClose}>&times;</span>
 
-        {/* PROCESSING OVERLAY: Shows while verifying payment */}
         {isProcessing && (
           <div className="processing-overlay">
             <div className="spinner"></div>
@@ -39,18 +66,16 @@ const PaymentModal = ({ item, onClose }) => {
           </div>
         )}
 
-        {/* STEP 1: Method Selection */}
         {view === "selection" && (
           <>
             <h2 className="payment-title">Checkout</h2>
             <div className="item-summary-box">
-              <p className="item-name">{item.title || item.name}</p>
+              <p className="item-name">{itemNameDisplay}</p>
               <p className="item-price">{item.price}</p>
             </div>
 
             <div className="payment-methods-container">
               <p className="method-label">Select Payment Method:</p>
-              
               <div className="method-row" onClick={() => setView("esewa")}>
                 <div className="method-info">
                   <img src="https://upload.wikimedia.org/wikipedia/commons/f/ff/Esewa_logo.webp" alt="eSewa" className="method-logo" />
@@ -58,44 +83,29 @@ const PaymentModal = ({ item, onClose }) => {
                 </div>
                 <div className="arrow-icon">→</div>
               </div>
-
-              <div className="method-row" onClick={() => setView("paypal")}>
-                <div className="method-info">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="method-logo" />
-                  <span>PayPal</span>
-                </div>
-                <div className="arrow-icon">→</div>
-              </div>
             </div>
           </>
         )}
 
-        {/* STEP 2: Detail Pages - Cleaned amount sent to components */}
         {view === "esewa" && (
           <EsewaPayment 
             amount={getNumericPrice(item.price)} 
+            itemName={itemNameDisplay} 
             onBack={() => setView("selection")} 
-            onSuccess={handlePaymentSuccess} 
+            onSuccess={handlePaymentSuccess} // This now triggers the real DB update
           />
         )}
 
-        {view === "paypal" && (
-          <PaypalPayment 
-            amount={getNumericPrice(item.price)} 
-            onBack={() => setView("selection")} 
-            onSuccess={handlePaymentSuccess} 
-          />
-        )}
-
-        {/* STEP 3: Success State */}
         {view === "success" && (
           <div className="payment-success">
-            <div className="success-circle">
-              <div className="success-check">✓</div>
-            </div>
+            <div className="success-circle"><div className="success-check">✓</div></div>
             <h2>Transaction Complete</h2>
-            <p>Order confirmed for <strong>{item.title || item.name}</strong></p>
-            <p className="redirect-text">Finalizing your membership...</p>
+            <p>Order confirmed for <strong>{itemNameDisplay}</strong></p>
+            <p className="redirect-text">
+              {itemNameDisplay.toLowerCase().includes("membership") 
+                ? "Finalizing your membership..." 
+                : "Updating your purchase history..."}
+            </p>
           </div>
         )}
       </div>

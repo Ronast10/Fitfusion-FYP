@@ -1,23 +1,50 @@
-import express from 'express'; // Changed from require
-const router = express.Router();
-import Message from '../models/Message.js'; // Changed from require (added .js)
+import express from 'express';
+import Message from '../models/Message.js';
+import Notification from '../models/Notification.js';
 
-// POST route to save a message
+const router = express.Router();
+
+// Updated Send Route
 router.post('/send', async (req, res) => {
     try {
-        const { trainerName, senderName, content } = req.body;
+        const { trainerId, userId, senderName, senderRole, content } = req.body;
         
+        // 1. Save the message
         const newMessage = new Message({
-            trainerName,
+            trainerId,
+            userId,
             senderName,
+            senderRole,
             content
         });
-
         await newMessage.save();
-        res.status(201).json({ success: true, message: "Message stored successfully!" });
+
+        // 2. Create a notification for the recipient
+        const recipientId = senderRole === 'user' ? trainerId : userId;
+        const newNotification = new Notification({
+            recipientId,
+            senderName,
+            messagePreview: content.substring(0, 50) // Short preview
+        });
+        await newNotification.save();
+
+        res.status(201).json({ success: true, message: "Sent!" });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
 });
 
-export default router; // Changed from module.exports
+// NEW: Get history for a specific conversation
+router.get('/history/:trainerId/:userId', async (req, res) => {
+    try {
+        const history = await Message.find({
+            trainerId: req.params.trainerId,
+            userId: req.params.userId
+        }).sort({ createdAt: 1 });
+        res.json({ success: true, messages: history });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+export default router;
