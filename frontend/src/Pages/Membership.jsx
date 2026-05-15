@@ -25,6 +25,7 @@ const Membership = () => {
   const plans = [
 
     {
+      type: "membership",
 
       title: "PRO PLAN",
 
@@ -49,6 +50,7 @@ const Membership = () => {
     },
 
     {
+      type: "membership",
 
       title: "ELITE PLAN",
 

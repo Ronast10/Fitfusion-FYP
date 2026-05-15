@@ -34,7 +34,7 @@ export default function Cart() {
         })
         .catch(err => console.error("Error fetching history:", err));
     }
-  }, [userEmail]);
+  }, []);
 
   const syncCartToDB = async (updatedCart) => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -70,6 +70,11 @@ export default function Cart() {
     syncCartToDB(updatedCart);
   };
 
+  const handleCheckout = async() => {
+    await syncCartToDB(cartItems);
+    setIsPaymentModalOpen(true);
+  };
+
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const status = (localStorage.getItem("userMembershipStatus") || "Free Member").toLowerCase();
   
@@ -81,6 +86,7 @@ export default function Cart() {
   const roundedTotal = Math.round(subtotal - discountAmount);
 
   const cartOrderSummary = {
+    type: "shop",
     name: "FitFusion Shop Order",
     price: `${roundedTotal}`,
     title: `${cartItems.length} Fitness Items`
@@ -137,7 +143,7 @@ export default function Cart() {
                 <span>Total</span>
                 <span style={{ color: "#2ed573" }}>Rs. {roundedTotal}</span>
               </div>
-              <button className="checkout-btn" onClick={() => setIsPaymentModalOpen(true)}>PROCEED TO CHECKOUT</button>
+              <button className="checkout-btn" onClick={handleCheckout}>PROCEED TO CHECKOUT</button>
             </div>
           </div>
         )}

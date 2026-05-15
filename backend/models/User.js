@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema({
   // --- ADDED PURCHASED ITEMS ---
   purchasedItems: [
     {
+      _id: { type: String },
       name: { type: String },
       price: { type: Number },
       image: { type: String },
