@@ -16,41 +16,46 @@ const PaymentModal = ({ item, onClose }) => {
     return cleanNumber || 0;
   };
 
-  const handlePaymentSuccess = async () => {
-    setIsProcessing(true);
-    const userEmail = localStorage.getItem("userEmail");
-    const itemName = item.title || item.name || "";
-    const isMembership = itemName.toLowerCase().includes("membership");
+  // const handlePaymentSuccess = async () => {
+  //   setIsProcessing(true);
+  //   const userEmail = localStorage.getItem("userEmail");
+  //   console.log("🚀 ~ handlePaymentSuccess ~ userEmail:", userEmail)
+  //   const itemName = item.title || item.name || "";
+  //   console.log("🚀 ~ handlePaymentSuccess ~ itemName:", itemName)
+  //   const isMembership = itemName.toLowerCase().includes("membership");
+  //   console.log("🚀 ~ handlePaymentSuccess ~ isMembership:", isMembership)
 
-    try {
-      if (isMembership) {
-        // Call membership logic
-        await axios.post(`${API_BASE_URL}/api/auth/verify-membership`, {
-          email: userEmail,
-          amount: getNumericPrice(item.price)
-        });
-      } else {
-        // Call shop purchase logic
-        await axios.post(`${API_BASE_URL}/api/auth/complete-purchase`, {
-          email: userEmail
-        });
-        localStorage.removeItem("cart"); // Clear local storage for shop items
-      }
+  //   try {
+  //     if (isMembership) {
+  //       // Call membership logic
+  //       console.log("Membership");
+  //       await axios.post(`${API_BASE_URL}/api/auth/verify-membership`, {
+  //         email: userEmail,
+  //         amount: getNumericPrice(item.price)
+  //       });
+  //     } else {
+  //       // Call shop purchase logic
+  //       await axios.post(`${API_BASE_URL}/api/auth/complete-purchase`, {
+  //         email: userEmail
+  //       });
+  //       console.log("Purchase history updated");
+  //       localStorage.removeItem("cart"); // Clear local storage for shop items
+  //     }
 
-      setIsProcessing(false);
-      setView("success");
+  //     setIsProcessing(false);
+  //     setView("success");
       
-      setTimeout(() => {
-        onClose();
-        window.location.reload(); // Refresh to update Cart and Purchase History UI
-      }, 3000);
+  //     setTimeout(() => {
+  //       onClose();
+  //       window.location.reload(); // Refresh to update Cart and Purchase History UI
+  //     }, 3000);
 
-    } catch (err) {
-      console.error("Payment Verification Error:", err);
-      setIsProcessing(false);
-      alert("Payment verified, but account update failed. Please contact support.");
-    }
-  };
+  //   } catch (err) {
+  //     console.error("Payment Verification Error:", err);
+  //     setIsProcessing(false);
+  //     alert("Payment verified, but account update failed. Please contact support.");
+  //   }
+  // };
 
   const itemNameDisplay = item.title || item.name || "Fitness Item";
 
@@ -59,12 +64,12 @@ const PaymentModal = ({ item, onClose }) => {
       <div className="payment-content" onClick={(e) => e.stopPropagation()}>
         <span className="payment-close" onClick={onClose}>&times;</span>
 
-        {isProcessing && (
+        {/* {isProcessing && (
           <div className="processing-overlay">
             <div className="spinner"></div>
             <p>Verifying Transaction...</p>
           </div>
-        )}
+        )} */}
 
         {view === "selection" && (
           <>
@@ -92,7 +97,7 @@ const PaymentModal = ({ item, onClose }) => {
             amount={getNumericPrice(item.price)} 
             itemName={itemNameDisplay} 
             onBack={() => setView("selection")} 
-            onSuccess={handlePaymentSuccess} // This now triggers the real DB update
+            // onSuccess={handlePaymentSuccess} // This now triggers the real DB update
           />
         )}
 

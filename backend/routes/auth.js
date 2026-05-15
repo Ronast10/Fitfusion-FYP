@@ -98,15 +98,21 @@ router.post("/sync-cart", async (req, res) => {
 // 5. COMPLETE SHOP PURCHASE (Moves items from cart to history)
 router.post("/complete-purchase", async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, cartItems } = req.body;
     const user = await User.findOne({ email });
+
+    const sourceItems = (user.cart && user.cart.length > 0) ? user.cart : cartItems;
 
     if (!user || user.cart.length === 0) {
       return res.status(400).json({ success: false, message: "Cart is empty" });
     }
 
-    const itemsToMove = user.cart.map(item => ({
-      ...item,
+    const itemsToMove = sourceItems.map(item => ({
+      _id: item._id,
+      name: item.name,
+      price: item.price,
+      image: item.image,
+      quantity: item.quantity,
       purchaseDate: new Date()
     }));
 

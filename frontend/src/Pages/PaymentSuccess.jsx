@@ -7,6 +7,7 @@ const PaymentSuccess = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState("Verifying Payment...");
   const [loading, setLoading] = useState(true);
+  const paymentType = localStorage.getItem("paymentType");
 
   useEffect(() => {
     const verify = async () => {
@@ -27,11 +28,26 @@ const PaymentSuccess = () => {
 
         // Check for 'COMPLETE' status which matches your esewa.js logic
         if (res.data.status === "COMPLETE") {
-          setLoading(false);
-          setStatus("✓ Payment Successful!");
+          console.log("Payment verified successfully on backend");
+          if(paymentType === "membership") {
+            console.log("Membership purchase - updating membership status");
+            setLoading(false);
+            setStatus("✓ Payment Successful!");
           
-          // Small delay so user sees the success message
-          setTimeout(() => navigate("/profile"), 2000);
+            // Small delay so user sees the success message
+            setTimeout(() => navigate("/profile"), 2000);
+          } else {
+            console.log("Shop purchase - updating purchase history");
+            const cartitems = JSON.parse(localStorage.getItem("cart") || "[]");
+            await axios.post("http://localhost:5000/api/auth/complete-purchase", {
+              email: email,
+              cartItems: cartitems // Send the cart items to be moved to purchase history
+            });
+            localStorage.removeItem("cart");
+            setLoading(false);
+            setStatus("✓ Payment Successful!");
+            setTimeout(() => navigate("/cart"), 2000);
+          }
         } else {
           setStatus("Payment verification failed.");
           setTimeout(() => navigate("/membership"), 3000);
@@ -58,8 +74,10 @@ const PaymentSuccess = () => {
         <h2 style={{ color: loading ? "#333" : "green" }}>{status}</h2>
         {loading ? (
           <p>Connecting to eSewa to confirm your transaction...</p>
-        ) : (
+        ) : paymentType === "membership" ? (
           <p>Your FitFusion membership is now active! Redirecting to your profile...</p>
+        ) : (
+          <p>Transaction completed successfully! Redirecting to the cart page...</p>
         )}
       </div>
     </div>
