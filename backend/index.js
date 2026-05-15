@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import path from "path"; // 1. ADD THIS IMPORT
+import path from "path"; 
 import { fileURLToPath } from "url"; // For ES Modules path handling
 
 import connectDB from "./db/db.js";

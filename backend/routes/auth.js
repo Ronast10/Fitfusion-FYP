@@ -183,4 +183,32 @@ router.put("/update-profile", async (req, res) => {
   }
 });
 
+// 8. CANCEL MEMBERSHIP (Resets status to Free)
+router.post("/cancel-membership", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const updatedUser = await User.findOneAndUpdate(
+      { email },
+      {
+        $set: {
+          "membershipData.membershipStatus": "Free Member",
+          "membershipData.isMember": false,
+          "membershipData.subscriptionDate": null,
+          "membershipData.planExpiry": null,
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedUser) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json({
+      success: true,
+      message: "Membership cancelled successfully",
+      membershipStatus: "Free Member"
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error cancelling membership" });
+  }
+});
 export default router;
