@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import path from "path"; // 1. ADD THIS IMPORT
+import path from "path"; 
 import { fileURLToPath } from "url"; // For ES Modules path handling
 
 import connectDB from "./db/db.js";
@@ -33,9 +33,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/messages", messageRoutes); 
 app.use("/api/contact", contactRoutes);   
 
-app.use("/api/admin/auth", adminAuthRoutes); // Keeps Login/Register working at /auth/login
-app.use("/api/admin", adminAuthRoutes);      // Makes /dashboard-stats and /messages work again
- 
+app.use("/api/admin", adminAuthRoutes);   
 
 app.use("/api/paypal", paypalRoutes);
 app.use("/api/esewa", esewaRoutes);
@@ -63,6 +61,6 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`🔒 Admin Auth: http://localhost:${PORT}/api/admin/auth/login`);
+  console.log(`🔒 Admin Auth: http://localhost:${PORT}/api/admin/login`);
   console.log(`📊 Admin Stats: http://localhost:${PORT}/api/admin/dashboard-stats`);
 });

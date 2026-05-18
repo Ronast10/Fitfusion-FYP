@@ -22,5 +22,16 @@ router.post("/submit", async (req, res) => {
     res.status(500).json({ success: false, message: "Server failed to save message." });
   }
 });
+// 2. ADD THIS GET ROUTE: Fetches all messages from the 'contacts' collection for the Admin Panel
+router.get("/all", async (req, res) => {
+  try {
+    // Fetches all contacts from DB and sorts by newest first (using the automatic createdAt timestamps)
+    const inquiries = await Contact.find().sort({ createdAt: -1 });
+    res.status(200).json(inquiries);
+  } catch (error) {
+    console.error("Admin Fetch Error:", error);
+    res.status(500).json({ success: false, message: "Server failed to fetch messages." });
+  }
+});
 
 export default router;

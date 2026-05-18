@@ -5,16 +5,18 @@ import axios from "axios";
 import "./Contact.css";
 
 export default function Contact() {
-  // 1. STATE: Synchronized keys with your Contact.js model
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phoneNumber: "", // Must match backend schema
+    phoneNumber: "", 
     subject: "",
     message: ""
   });
 
   const [loading, setLoading] = useState(false);
+  
+  // New state to manage the custom dynamic in-app notification component
+  const [submitStatus, setSubmitStatus] = useState({ type: "", text: "" });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -23,16 +25,18 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setSubmitStatus({ type: "loading", text: "Sending your message..." });
 
     try {
-      // 2. TARGET: Port 5000 (Backend), NOT 5173 (Frontend)
-      // This is the same port used in your working Messages.jsx
       const response = await axios.post("http://localhost:5000/api/contact/submit", formData);
       
       if (response.data.success) {
-        alert("Success! Your message has been saved in the FitFusion database.");
+        // Updated: Replaced window.alert with interactive UI state changes
+        setSubmitStatus({
+          type: "success",
+          text: "Message Sent Successfully."
+        });
         
-        // 3. RESET: Clear the form fields after successful save
         setFormData({ 
           name: "", 
           email: "", 
@@ -43,15 +47,28 @@ export default function Contact() {
       }
     } catch (error) {
       console.error("Submission Error:", error);
-      
-      // 4. ERROR HANDLING: Better alerts for debugging 404/500 errors
       const errorMessage = error.response?.data?.message || "Server unreachable. Ensure backend is running on port 5000.";
-      alert(errorMessage);
+      
+      setSubmitStatus({
+        type: "error",
+        text: errorMessage
+      });
     } finally {
       setLoading(false);
     }
   };
+  React.useEffect(() => {
+    // Only set a timer if there is actually message text showing and it's not still loading
+    if (submitStatus.text && submitStatus.type !== "loading") {
+      const timer = setTimeout(() => {
+        setSubmitStatus({ type: "", text: "" }); // Clears the banner after 5 seconds
+      }, 5000); // 5000 milliseconds = 5 seconds (change to 6000 for 6 seconds)
 
+      // Clean up the timer if the component unmounts or if a new message comes in
+      return () => clearTimeout(timer);
+    }
+  }, [submitStatus]);
+  
   return (
     <div className="contact-page-wrapper">
       <Navbar />
@@ -107,6 +124,17 @@ export default function Contact() {
             </div>
 
             <form className="elite-contact-form" onSubmit={handleSubmit}>
+              
+              {/* --- NEW IN-APP WEBSITE POPUP CONTAINER --- */}
+              {submitStatus.text && (
+                <div className={`form-status-banner ${submitStatus.type}`}>
+                  <span className="status-icon">
+                    {submitStatus.type === "success" ? "✓" : submitStatus.type === "error" ? "✕" : "⏳"}
+                  </span>
+                    {submitStatus.text}
+                </div>
+              )}
+
               <div className="input-group">
                 <input 
                   type="text" 
@@ -128,7 +156,7 @@ export default function Contact() {
               <div className="input-group">
                 <input 
                   type="text" 
-                  name="phoneNumber" // Matches state key and backend schema
+                  name="phoneNumber" 
                   placeholder="Phone Number" 
                   required 
                   onChange={handleChange} 

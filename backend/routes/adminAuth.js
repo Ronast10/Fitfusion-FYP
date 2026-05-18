@@ -37,7 +37,7 @@ router.get("/dashboard-stats", async (req, res) => {
   }
 });
 
-// --- Your existing Login/Register code below ---
+
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -81,6 +81,15 @@ router.post("/register", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Server error during registration" });
+  }
+});
+
+router.delete("/user/:id", async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: "User deleted" });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 

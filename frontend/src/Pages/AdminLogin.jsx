@@ -13,7 +13,7 @@ export default function AdminLogin() {
     const endpoint = isRegistering ? "register" : "login";
     
     try {
-      const res = await axios.post(`http://localhost:5000/api/admin/auth/${endpoint}`, { 
+      const res = await axios.post(`http://localhost:5000/api/admin/${endpoint}`, { 
         email: email, // Backend expects email
         password: password 
       });

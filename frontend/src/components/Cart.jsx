@@ -8,8 +8,12 @@ import "./Cart.css";
 
 export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
-  const [purchasedItems, setPurchasedItems] = useState([]); // New state for history
+  const [purchasedItems, setPurchasedItems] = useState([]); 
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  
+  // Directly tracks the verified membership status from the DB
+  const [membershipStatus, setMembershipStatus] = useState("Free Member");
+  
   const navigate = useNavigate();
 
   const API_BASE_URL = "http://localhost:5000";
@@ -22,19 +26,26 @@ export default function Cart() {
   };
 
   useEffect(() => {
-    // Load current cart
+    // 1. Load current cart items from local storage
     const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
     setCartItems(savedCart);
 
-    // Fetch purchase history from DB
+    // 2. Fetch user profile data 
     if (userEmail) {
       axios.get(`${API_BASE_URL}/api/auth/user/${userEmail}`)
         .then(res => {
           setPurchasedItems(res.data.purchasedItems || []);
+          
+          // Capture membership data directly using MongoDB naming convention
+          if (res.data.membershipData?.membershipStatus) {
+            setMembershipStatus(res.data.membershipData.membershipStatus);
+            // Sync to local storage as a silent background backup
+            localStorage.setItem("userMembershipStatus", res.data.membershipData.membershipStatus);
+          }
         })
         .catch(err => console.error("Error fetching history:", err));
     }
-  }, []);
+  }, []); 
 
   const syncCartToDB = async (updatedCart) => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -75,13 +86,15 @@ export default function Cart() {
     setIsPaymentModalOpen(true);
   };
 
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const status = (localStorage.getItem("userMembershipStatus") || "Free Member").toLowerCase();
+  // --- LIVE DISCOUNT CONFIGURATION BLOCK ---
+  const statusLower = membershipStatus.toLowerCase();
   
   let discountPercent = 0;
-  if (status.includes("pro")) discountPercent = 0.10;
-  if (status.includes("elite")) discountPercent = 0.20;
+  if (statusLower.includes("pro")) discountPercent = 0.10;
+  if (statusLower.includes("elite")) discountPercent = 0.20;
 
+  // Subtotal is calculated directly from the standard shop price
+  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const discountAmount = subtotal * discountPercent;
   const roundedTotal = Math.round(subtotal - discountAmount);
 
@@ -106,26 +119,48 @@ export default function Cart() {
         ) : (
           <div className="cart-content">
             <div className="cart-items-list">
-              {cartItems.map((item) => (
-                <div key={item._id} className="cart-item-card">
-                  <div className="cart-item-img-wrapper">
-                    <img src={formatImageUrl(item.image)} alt={item.name} />
-                  </div>
-                  <div className="item-details">
-                    <h3>{item.name}</h3>
-                    <p className="item-price">Rs. {item.price}</p>
-                    <div className="quantity-controls">
-                      <button onClick={() => updateQuantity(item._id, -1)}>-</button>
-                      <span>{item.quantity}</span>
-                      <button onClick={() => updateQuantity(item._id, 1)}>+</button>
+              {cartItems.map((item) => {
+                const itemOriginalPrice = item.price;
+                const itemDiscountedPrice = Math.round(itemOriginalPrice * (1 - discountPercent));
+                
+                return (
+                  <div key={item._id} className="cart-item-card">
+                    <div className="cart-item-img-wrapper">
+                      <img src={formatImageUrl(item.image)} alt={item.name} />
+                    </div>
+                    <div className="item-details">
+                      <h3>{item.name}</h3>
+                      
+                      <div className="price-display-wrapper">
+                        {discountPercent > 0 ? (
+                          <p className="item-price">
+                            <span style={{ textDecoration: "line-through", color: "#777", marginRight: "8px" }}>
+                              Rs. {itemOriginalPrice}
+                            </span>
+                            <span style={{ color: "#2ed573", fontWeight: "bold" }}>
+                              Rs. {itemDiscountedPrice}
+                            </span>
+                          </p>
+                        ) : (
+                          <p className="item-price">Rs. {itemOriginalPrice}</p>
+                        )}
+                      </div>
+
+                      <div className="quantity-controls">
+                        <button onClick={() => updateQuantity(item._id, -1)}>-</button>
+                        <span>{item.quantity}</span>
+                        <button onClick={() => updateQuantity(item._id, 1)}>+</button>
+                      </div>
+                    </div>
+                    <div className="item-actions">
+                      <p className="subtotal">
+                        Rs. {itemDiscountedPrice * item.quantity}
+                      </p>
+                      <button className="remove-btn" onClick={() => removeItem(item._id)}>Remove</button>
                     </div>
                   </div>
-                  <div className="item-actions">
-                    <p className="subtotal">Rs. {item.price * item.quantity}</p>
-                    <button className="remove-btn" onClick={() => removeItem(item._id)}>Remove</button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="cart-summary">
@@ -148,7 +183,7 @@ export default function Cart() {
           </div>
         )}
 
-        {/* --- PURCHASE HISTORY SECTION (NEW) --- */}
+        {/* --- PURCHASE HISTORY SECTION --- */}
         <div className="purchased-section mt-5">
           <h2 className="mb-4">Bought Items</h2>
           {purchasedItems.length === 0 ? (
