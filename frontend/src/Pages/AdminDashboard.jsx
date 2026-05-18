@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import "./AdminDashboard.css"; 
+import "./AdminDashboard.css";
 
 export default function AdminDashboard() {
   const [data, setData] = useState({
@@ -11,10 +11,13 @@ export default function AdminDashboard() {
     inventoryValue: 0,
     members: [],
   });
-  const [messages, setMessages] = useState([]);
-  const [products, setProducts] = useState([]); 
-  const [loading, setLoading] = useState(true);
   
+  // Separate states so collections don't overwrite each other
+  const [messages, setMessages] = useState([]); // For Trainer Inquiries
+  const [contacts, setContacts] = useState([]); // For General Contacts
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const [file, setFile] = useState(null);
   const [productForm, setProductForm] = useState({ name: "", price: "", category: "" });
 
@@ -28,6 +31,7 @@ export default function AdminDashboard() {
     }
     fetchDashboardData();
     fetchMessages();
+    fetchContacts();
     fetchProducts();
   }, [navigate]);
 
@@ -43,12 +47,30 @@ export default function AdminDashboard() {
     }
   };
 
+  // 1. Fetches the Trainer Inquiries from the original messages route
   const fetchMessages = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/admin/messages`);
-      if (res.data.success) setMessages(res.data.messages);
+      const res = await axios.get(`${API_BASE_URL}/api/messages`);
+      if (res.data.success && Array.isArray(res.data.messages)) {
+        setMessages(res.data.messages);
+      } else if (Array.isArray(res.data)) {
+        setMessages(res.data);
+      }
     } catch (err) {
-      console.error("Messages Fetch Error:", err);
+      console.error("Trainer Messages Fetch Error:", err);
+    }
+  };
+  // 2. Fetches General Contact Forms / Payment Submissions
+  const fetchContacts = async () => {
+    try {
+      const res = await axios.get(`${API_BASE_URL}/api/contact/all`);
+      if (Array.isArray(res.data)) {
+        setContacts(res.data);
+      } else if (res.data && Array.isArray(res.data.messages)) {
+        setContacts(res.data.messages);
+      }
+    } catch (err) {
+      console.error("Contacts Fetch Error:", err);
     }
   };
 
@@ -80,7 +102,7 @@ export default function AdminDashboard() {
         Swal.fire("Success", "Product added successfully!", "success");
         setProductForm({ name: "", price: "", category: "" });
         setFile(null);
-        fetchProducts(); 
+        fetchProducts();
       }
     } catch (err) {
       Swal.fire("Error", "Upload failed. Check console for details.", "error");
@@ -124,11 +146,13 @@ export default function AdminDashboard() {
     if (result.isConfirmed) {
       try {
         const res = await axios.delete(`${API_BASE_URL}/api/admin/user/${id}`);
+
         if (res.data.success) {
           Swal.fire({ title: "Deleted!", icon: "success", background: "#1a1a1a", color: "#fff" });
           fetchDashboardData();
         }
       } catch (err) {
+        console.error("Delete Member Error:", err);
         Swal.fire("Error", "Could not remove member", "error");
       }
     }
@@ -167,25 +191,25 @@ export default function AdminDashboard() {
         <h3>Shop Management</h3>
         <form onSubmit={handleAddProduct} className="admin-product-form-inline">
           <div className="form-group">
-            <input 
-              type="text" placeholder="Name" 
-              value={productForm.name} 
-              onChange={(e) => setProductForm({...productForm, name: e.target.value})} 
-              required 
+            <input
+              type="text" placeholder="Name"
+              value={productForm.name}
+              onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
+              required
             />
           </div>
           <div className="form-group">
-            <input 
-              type="number" placeholder="Price" 
-              value={productForm.price} 
-              onChange={(e) => setProductForm({...productForm, price: e.target.value})} 
-              required 
+            <input
+              type="number" placeholder="Price"
+              value={productForm.price}
+              onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
+              required
             />
           </div>
           <div className="form-group">
-            <select 
-              value={productForm.category} 
-              onChange={(e) => setProductForm({...productForm, category: e.target.value})} 
+            <select
+              value={productForm.category}
+              onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
               required
             >
               <option value="">Category</option>
@@ -251,37 +275,83 @@ export default function AdminDashboard() {
         </table>
       </section>
 
-      {/* Message Center / Trainer Chat Entry */}
+      {/* Section A: Trainer Inquiries (Chat Logs) */}
       <section className="admin-section">
         <div className="section-header-inline">
           <h3>Trainer Inquiries</h3>
-          {/* NEW: Primary button to enter the two-way chat interface */}
-          <button 
-            className="chat-entry-btn" 
+          <button
+            className="chat-entry-btn"
             onClick={() => navigate("/admin/chat")}
           >
             💬 Open Chat Interface
           </button>
         </div>
-        
+
         <table className="admin-table">
           <thead>
             <tr>
               <th>Sender Name</th>
-              <th>Trainer Assigned</th>
+              <th>Role</th>
               <th>Message Content</th>
               <th>Date Sent</th>
             </tr>
           </thead>
           <tbody>
             {messages.length === 0 ? (
-              <tr><td colSpan="4" style={{ textAlign: "center" }}>No messages found.</td></tr>
+              <tr><td colSpan="4" style={{ textAlign: "center" }}>No trainer inquiries found.</td></tr>
             ) : messages.map((msg) => (
               <tr key={msg._id}>
-                <td>{msg.senderName}</td>
-                <td className="blue-text">{msg.trainerName}</td>
-                <td className="msg-content">{msg.content}</td>
-                <td className="date-text">{new Date(msg.createdAt).toLocaleDateString()}</td>
+                <td>
+                  <strong>{msg.senderName || "Unknown User"}</strong>
+                </td>
+                <td>
+                  <span className="status-text" style={{ color: msg.senderRole === "trainer" ? "#eccc68" : "#2ed573", fontSize: "12px", textTransform: "uppercase" }}>
+                    {msg.senderRole}
+                  </span>
+                </td>
+                <td className="msg-content" style={{ maxWidth: "300px", wordBreak: "break-word" }}>
+                  {msg.content}
+                </td>
+                <td className="date-text">
+                  {msg.createdAt ? new Date(msg.createdAt).toLocaleDateString() : "Recent"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+
+      {/* Section B: General Contacts & Payment Submissions */}
+      <section className="admin-section">
+        <h3>General Contacts</h3>
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Sender Name</th>
+              <th>Subject</th>
+              <th>Message Content</th>
+              <th>Date Sent</th>
+            </tr>
+          </thead>
+          <tbody>
+            {contacts.length === 0 ? (
+              <tr><td colSpan="4" style={{ textAlign: "center" }}>No website contact messages found.</td></tr>
+            ) : contacts.map((c) => (
+              <tr key={c._id}>
+                <td>
+                  <strong>{c.name}</strong>
+                  <br />
+                  <span style={{ fontSize: "11px", color: "#666" }}>
+                    {c.email} {c.phoneNumber ? `| ${c.phoneNumber}` : ""}
+                  </span>
+                </td>
+                <td style={{ color: "#2ed573", fontWeight: "600" }}>{c.subject}</td>
+                <td className="msg-content" style={{ maxWidth: "300px", wordBreak: "break-word" }}>
+                  {c.message}
+                </td>
+                <td className="date-text">
+                  {c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "Recent"}
+                </td>
               </tr>
             ))}
           </tbody>

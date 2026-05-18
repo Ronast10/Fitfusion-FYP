@@ -4,12 +4,22 @@ import Notification from '../models/Notification.js';
 
 const router = express.Router();
 
-// Updated Send Route
+// --- NEW ROUTE FOR ADMIN PANEL: Fetches all message logs globally ---
+router.get('/', async (req, res) => {
+    try {
+        // Fetches all messages from the database and sorts them by newest first
+        const allMessages = await Message.find().sort({ createdAt: -1 });
+        res.status(200).json({ success: true, messages: allMessages });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Send Route
 router.post('/send', async (req, res) => {
     try {
         const { trainerId, userId, senderName, senderRole, content } = req.body;
         
-        // 1. Save the message
         const newMessage = new Message({
             trainerId,
             userId,
@@ -19,12 +29,11 @@ router.post('/send', async (req, res) => {
         });
         await newMessage.save();
 
-        // 2. Create a notification for the recipient
         const recipientId = senderRole === 'user' ? trainerId : userId;
         const newNotification = new Notification({
             recipientId,
             senderName,
-            messagePreview: content.substring(0, 50) // Short preview
+            messagePreview: content.substring(0, 50)
         });
         await newNotification.save();
 
@@ -34,7 +43,7 @@ router.post('/send', async (req, res) => {
     }
 });
 
-// NEW: Get history for a specific conversation
+// Get history for a specific conversation
 router.get('/history/:trainerId/:userId', async (req, res) => {
     try {
         const history = await Message.find({

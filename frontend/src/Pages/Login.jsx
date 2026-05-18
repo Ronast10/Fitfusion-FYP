@@ -15,10 +15,10 @@ export default function Login({ switchToRegister, onLoginSuccess }) {
   const [resetEmail, setResetEmail] = useState("");
   const [resetMsg, setResetMsg] = useState("");
 
-  const handleLogin = async (e) => {
+ const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
+    loading || setLoading(true);
 
     try {
       const response = await axios.post(
@@ -29,12 +29,31 @@ export default function Login({ switchToRegister, onLoginSuccess }) {
       if (response.status === 200) {
         const userData = response.data.user;
 
+        // Debugging log: check exactly what your backend returns in your browser console
+        console.log("User Data Payload at Login:", userData);
+
         localStorage.setItem("cart", JSON.stringify(userData.cart || []));
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("userEmail", userData.email);
         localStorage.setItem("userName", userData.name);
         localStorage.setItem("userAvatar", userData.avatar || "avg1.png");
         localStorage.setItem("userStreak", userData.streak || 0);
+
+        // BULLETPROOF CHECK: Fallback options just in case the nesting is structured differently
+        let extractedStatus = "Free Member";
+        
+        if (userData?.membershipData?.membershipStatus) {
+          extractedStatus = userData.membershipData.membershipStatus;
+        } else if (userData?.membershipStatus) {
+          // Fallback if your backend flattened the object properties
+          extractedStatus = userData.membershipStatus;
+        } else if (response.data?.membershipData?.membershipStatus) {
+          // Fallback if it is attached directly to response.data instead of user
+          extractedStatus = response.data.membershipData.membershipStatus;
+        }
+
+        console.log("Extracted Membership Status:", extractedStatus);
+        localStorage.setItem("userMembershipStatus", extractedStatus);
 
         if (onLoginSuccess) onLoginSuccess();
       }
