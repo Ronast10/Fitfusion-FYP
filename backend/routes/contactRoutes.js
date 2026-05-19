@@ -22,6 +22,7 @@ router.post("/submit", async (req, res) => {
     res.status(500).json({ success: false, message: "Server failed to save message." });
   }
 });
+
 // 2. ADD THIS GET ROUTE: Fetches all messages from the 'contacts' collection for the Admin Panel
 router.get("/all", async (req, res) => {
   try {
@@ -31,6 +32,23 @@ router.get("/all", async (req, res) => {
   } catch (error) {
     console.error("Admin Fetch Error:", error);
     res.status(500).json({ success: false, message: "Server failed to fetch messages." });
+  }
+});
+
+// ADDED ROUTE: Delete a general contact submission by ID
+router.delete('/:id', async (req, res) => {
+  try {
+    const id = req.params.id.trim();
+    const deletedContact = await Contact.findByIdAndDelete(id);
+
+    if (!deletedContact) {
+      return res.status(404).json({ success: false, message: "Contact record not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Record successfully removed!" });
+  } catch (error) {
+    console.error("Remove Contact Error:", error);
+    res.status(500).json({ success: false, message: "Server failed to remove record." });
   }
 });
 

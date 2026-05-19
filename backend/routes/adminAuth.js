@@ -15,28 +15,42 @@ router.get("/messages", async (req, res) => {
 
 router.get("/dashboard-stats", async (req, res) => {
   try {
+    // 1. Fetch all non-admin users
     const users = await User.find({ role: { $ne: "admin" } });
     
-    // FIXED: Calculate revenue based on nested membershipStatus
+    // 2. Calculate Gym Membership Revenue based on nested membershipStatus
     const totalRevenue = users.reduce((acc, user) => {
-      const status = user.membershipData?.membershipStatus; // Accessing nested object
+      const status = user.membershipData?.membershipStatus; 
       if (status === "Pro Member") return acc + 4000;
       if (status === "Elite Member") return acc + 7000;
       return acc;
     }, 0);
     
+    // 🛒 3. CALCULATE SHOP REVENUE FROM NESTED USER PURCHASES
+    let totalShopRevenue = 0;
+    
+    users.forEach((user) => {
+      if (user.purchasedItems && user.purchasedItems.length > 0) {
+        user.purchasedItems.forEach((item) => {
+          const itemPrice = Number(item.price) || 0;
+          const itemQuantity = Number(item.quantity) || 1; // Fallbacks safely to 1 if quantity isn't captured
+          totalShopRevenue += itemPrice * itemQuantity;
+        });
+      }
+    });
+    
+    // 4. Send clean payload back to the Admin Dashboard
     res.json({
       success: true,
       totalUsers: users.length,
-      totalRevenue: totalRevenue,
-      inventoryValue: 0, 
+      totalRevenue: totalRevenue,      // Gym Memberships Total Revenue (e.g., Rs. 11000)
+      shopRevenue: totalShopRevenue,   // 💡 Dynamic total tracking from items bought!
       members: users
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 });
-
 
 router.post("/login", async (req, res) => {
   try {

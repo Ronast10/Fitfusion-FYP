@@ -12,6 +12,8 @@ import contactRoutes from "./routes/contactRoutes.js";
 import adminAuthRoutes from "./routes/adminAuth.js"; 
 import paypalRoutes from "./routes/paypalRoutes.js";
 import esewaRoutes from "./routes/esewaRoutes.js";
+// 1. IMPORT THE NOTIFICATION ROUTES
+import notificationRoutes from "./routes/notificationRoutes.js"; 
 
 dotenv.config();
 const app = express();
@@ -37,6 +39,8 @@ app.use("/api/admin", adminAuthRoutes);
 
 app.use("/api/paypal", paypalRoutes);
 app.use("/api/esewa", esewaRoutes);
+// 2. REGISTER THE NOTIFICATION ROUTE MIDDLEWARE
+app.use("/api/notifications", notificationRoutes); 
 
 // Base Route
 app.get("/", (req, res) => {

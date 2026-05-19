@@ -1,0 +1,86 @@
+/* --- Admin Navbar Layout --- */
+.admin-nav {
+  background-color: #0d0d0d;
+  border-bottom: 1px solid #222222;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  height: 70px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Logo Styling */
+.admin-nav .logo {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 1px;
+}
+
+/* Center Links Navigation */
+.admin-links {
+  display: flex;
+  list-style: none;
+  gap: 30px;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-links li {
+  color: #888888;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.admin-links li:hover {
+  color: #ffffff;
+}
+
+.admin-links li.active {
+  color: #28a745; /* FitFusion Green */
+  font-weight: 600;
+}
+
+/* Right-side Profile text */
+.admin-profile {
+  color: #cccccc;
+  font-size: 0.9rem;
+}
+
+.admin-profile strong {
+  color: #ffffff;
+  margin-left: 4px;
+}
+/* Container to group profile text and logout button horizontally */
+.admin-profile-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Custom Nav Logout Button Styling */
+.nav-logout-btn {
+  background: transparent;
+  border: 1px solid #ff4757;
+  color: #ff4757;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-logout-btn:hover {
+  background: #ff4757;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(255, 71, 87, 0.2);
+}
+.admin-nav .logo .logo-highlight {
+  color: #ff4757; /* Matches the custom crimson red from your login button and alerts */
+  font-weight: 900;
+}

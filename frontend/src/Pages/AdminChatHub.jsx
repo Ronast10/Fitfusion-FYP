@@ -7,38 +7,41 @@ export default function AdminChatHub() {
   const [view, setView] = useState(null);
 
   return (
-    <div className="admin-chat-hub bg-black min-vh-100 text-white">
-      {/* Pass the admin name prop so it's not blank */}
+    <div className="admin-chat-hub">
       <AdminNavbar adminName="Ronast (Admin)" />
       
-      <div className="container py-5">
-        <h2 className="text-center mb-4">Trainer Communication Hub</h2>
-        <div className="row text-center">
-          <div className="col-md-6 mb-3">
-            <div className={`card p-4 bg-dark text-white shadow ${view === 'ronast-acharya' ? 'border-success' : 'border-secondary'}`}
-                 onClick={() => setView('ronast-acharya')} style={{ cursor: 'pointer', transition: '0.3s' }}>
-              <h3>Ronast Acharya</h3>
-              <p className="text-success">Senior Trainer Desk</p>
-            </div>
+      <div className="hub-content-wrapper">
+        <h2 className="hub-main-title">Trainer Communication Hub</h2>
+        
+        {/* Main Selection Grid */}
+        <div className="trainer-selection-grid">
+          <div 
+            className={`trainer-card ${view === 'ronast-acharya' ? 'selected' : ''}`}
+            onClick={() => setView('ronast-acharya')}
+          >
+            <h3>Ronast Acharya</h3>
+            <span className="desk-tag senior-desk">Senior Trainer Desk</span>
           </div>
-          <div className="col-md-6 mb-3">
-            <div className={`card p-4 bg-dark text-white shadow ${view === 'ismarika-bista' ? 'border-success' : 'border-secondary'}`}
-                 onClick={() => setView('ismarika-bista')} style={{ cursor: 'pointer', transition: '0.3s' }}>
-              <h3>Ismarika Bista</h3>
-              <p className="text-info">Fitness Consultant Desk</p>
-            </div>
+
+          <div 
+            className={`trainer-card ${view === 'ismarika-bista' ? 'selected' : ''}`}
+            onClick={() => setView('ismarika-bista')}
+          >
+            <h3>Ismarika Bista</h3>
+            <span className="desk-tag consultant-desk">Fitness Consultant Desk</span>
           </div>
         </div>
 
+        {/* Dynamic chat section display container */}
         {view ? (
-          <div className="mt-5 animate__animated animate__fadeIn">
+          <div className="active-chat-container">
             <TrainerChatSection 
               trainerSlug={view} 
               trainerName={view === 'ronast-acharya' ? 'Ronast Acharya' : 'Ismarika Bista'} 
             />
           </div>
         ) : (
-          <div className="text-center mt-5 text-secondary">
+          <div className="hub-placeholder-text">
             <h4>Select a trainer desk to manage student inquiries</h4>
           </div>
         )}
