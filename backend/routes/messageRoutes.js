@@ -29,15 +29,22 @@ router.post('/send', async (req, res) => {
         });
         await newMessage.save();
 
+        // Dynamically shift target destinations: if client sends it, alert the trainer, and vice versa.
         const recipientId = senderRole === 'user' ? trainerId : userId;
+        
+        // Formulate a clean preview string for the toast layouts
+        const previewText = content.length > 45 ? `${content.substring(0, 45)}...` : content;
+
         const newNotification = new Notification({
             recipientId,
             senderName,
-            messagePreview: content.substring(0, 50)
+            messagePreview: previewText,
+            type: 'chat', // Explicitly maps to your schema layout option
+            isRead: false
         });
         await newNotification.save();
 
-        res.status(201).json({ success: true, message: "Sent!" });
+        res.status(201).json({ success: true, message: newMessage });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
@@ -51,6 +58,22 @@ router.get('/history/:trainerId/:userId', async (req, res) => {
             userId: req.params.userId
         }).sort({ createdAt: 1 });
         res.json({ success: true, messages: history });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+//  Delete an individual trainer inquiry message by ID
+router.delete('/:id', async (req, res) => {
+    try {
+        const id = req.params.id.trim();
+        const deletedMessage = await Message.findByIdAndDelete(id);
+
+        if (!deletedMessage) {
+            return res.status(404).json({ success: false, message: "Message not found" });
+        }
+
+        res.status(200).json({ success: true, message: "Record successfully removed!" });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }

@@ -2,16 +2,17 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import AdminNavbar from "../components/AdminNavbar";
 import "./AdminDashboard.css";
 
 export default function AdminDashboard() {
   const [data, setData] = useState({
     totalUsers: 0,
     totalRevenue: 0,
-    inventoryValue: 0,
+    shopRevenue: 0,
     members: [],
   });
-  
+
   // Separate states so collections don't overwrite each other
   const [messages, setMessages] = useState([]); // For Trainer Inquiries
   const [contacts, setContacts] = useState([]); // For General Contacts
@@ -60,6 +61,7 @@ export default function AdminDashboard() {
       console.error("Trainer Messages Fetch Error:", err);
     }
   };
+
   // 2. Fetches General Contact Forms / Payment Submissions
   const fetchContacts = async () => {
     try {
@@ -158,6 +160,60 @@ export default function AdminDashboard() {
     }
   };
 
+  // REMOVE FUNCTION FOR TRAINER INQUIRIES
+  const handleRemoveInquiry = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This inquiry message will be permanently removed.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ff4757",
+      confirmButtonText: "Yes, remove!",
+      background: "#1a1a1a",
+      color: "#fff",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const res = await axios.delete(`${API_BASE_URL}/api/messages/${id}`);
+        if (res.data.success) {
+          Swal.fire({ title: "Removed!", icon: "success", background: "#1a1a1a", color: "#fff" });
+          setMessages(messages.filter((msg) => msg._id !== id));
+        }
+      } catch (err) {
+        console.error("Remove Inquiry Error:", err);
+        Swal.fire("Error", "Could not remove inquiry message", "error");
+      }
+    }
+  };
+
+  // 💡 NEW REMOVE FUNCTION FOR GENERAL CONTACTS
+  const handleRemoveContact = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This contact submission will be permanently removed.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ff4757",
+      confirmButtonText: "Yes, remove!",
+      background: "#1a1a1a",
+      color: "#fff",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const res = await axios.delete(`${API_BASE_URL}/api/contact/${id}`);
+        if (res.data.success) {
+          Swal.fire({ title: "Removed!", icon: "success", background: "#1a1a1a", color: "#fff" });
+          setContacts(contacts.filter((c) => c._id !== id));
+        }
+      } catch (err) {
+        console.error("Remove Contact Error:", err);
+        Swal.fire("Error", "Could not remove contact record", "error");
+      }
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem("isAdmin");
     navigate("/admin-login");
@@ -165,24 +221,22 @@ export default function AdminDashboard() {
 
   return (
     <div className="admin-page">
-      <header className="admin-header">
-        <h1>Admin Management Hub</h1>
-        <button onClick={logout} className="logout-btn">Logout</button>
-      </header>
+
+      <AdminNavbar adminName="Ronast (Admin)" activeTab="dashboard" onLogout={logout} />
 
       {/* Statistics Cards */}
       <section className="stats-container">
         <div className="stat-card">
           <h4>Total Members</h4>
-          <h2 className="blue-text">{data.totalUsers}</h2>
+          <h2 className="blue-text">{data.totalUsers || 0}</h2>
         </div>
         <div className="stat-card">
           <h4>Membership Revenue</h4>
-          <h2 className="green-text">Rs. {data.totalRevenue}</h2>
+          <h2 className="green-text">Rs. {data.totalRevenue || 0}</h2>
         </div>
         <div className="stat-card">
-          <h4>Inventory Value</h4>
-          <h2 className="yellow-text">Rs. {data.inventoryValue}</h2>
+          <h4>Shop Revenue</h4>
+          <h2 className="yellow-text">Rs. {data.shopRevenue || 0}</h2>
         </div>
       </section>
 
@@ -275,18 +329,11 @@ export default function AdminDashboard() {
         </table>
       </section>
 
-      {/* Section A: Trainer Inquiries (Chat Logs) */}
+      {/*Trainer Inquiries (Chat Logs) */}
       <section className="admin-section">
         <div className="section-header-inline">
           <h3>Trainer Inquiries</h3>
-          <button
-            className="chat-entry-btn"
-            onClick={() => navigate("/admin/chat")}
-          >
-            💬 Open Chat Interface
-          </button>
         </div>
-
         <table className="admin-table">
           <thead>
             <tr>
@@ -294,11 +341,12 @@ export default function AdminDashboard() {
               <th>Role</th>
               <th>Message Content</th>
               <th>Date Sent</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {messages.length === 0 ? (
-              <tr><td colSpan="4" style={{ textAlign: "center" }}>No trainer inquiries found.</td></tr>
+              <tr><td colSpan="5" style={{ textAlign: "center" }}>No trainer inquiries found.</td></tr>
             ) : messages.map((msg) => (
               <tr key={msg._id}>
                 <td>
@@ -315,13 +363,17 @@ export default function AdminDashboard() {
                 <td className="date-text">
                   {msg.createdAt ? new Date(msg.createdAt).toLocaleDateString() : "Recent"}
                 </td>
+                <td>
+                  {/*Integrated uniform Remove Button */}
+                  <button onClick={() => handleRemoveInquiry(msg._id)} className="remove-btn">Remove</button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </section>
 
-      {/* Section B: General Contacts & Payment Submissions */}
+      {/* General Contacts & Payment Submissions */}
       <section className="admin-section">
         <h3>General Contacts</h3>
         <table className="admin-table">
@@ -331,11 +383,12 @@ export default function AdminDashboard() {
               <th>Subject</th>
               <th>Message Content</th>
               <th>Date Sent</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {contacts.length === 0 ? (
-              <tr><td colSpan="4" style={{ textAlign: "center" }}>No website contact messages found.</td></tr>
+              <tr><td colSpan="5" style={{ textAlign: "center" }}>No website contact messages found.</td></tr>
             ) : contacts.map((c) => (
               <tr key={c._id}>
                 <td>
@@ -351,6 +404,10 @@ export default function AdminDashboard() {
                 </td>
                 <td className="date-text">
                   {c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "Recent"}
+                </td>
+                <td>
+                  {/*  Integrated uniform Remove Button */}
+                  <button onClick={() => handleRemoveContact(c._id)} className="remove-btn">Remove</button>
                 </td>
               </tr>
             ))}

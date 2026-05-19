@@ -1,13 +1,29 @@
 /* AdminDashboard.css */
 
 .admin-page {
-  background: #000;
-  color: #fff;
-  min-height: 100vh;
-  padding: 40px;
+  background-color: #000000;
+  color: #ffffff;
+  min-height: 100vh; 
+  margin: 0;
+  padding: 0; 
   font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+.stats-container, 
+.admin-section {
+  max-width: 1300px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 40px;
+  padding-right: 40px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
+.stats-container {
+  margin-top: 40px;
+}
 /* HEADER */
 
 .admin-header {
