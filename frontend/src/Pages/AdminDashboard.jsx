@@ -17,6 +17,8 @@ export default function AdminDashboard() {
   const [messages, setMessages] = useState([]); // For Trainer Inquiries
   const [contacts, setContacts] = useState([]); // For General Contacts
   const [products, setProducts] = useState([]);
+  const [videos, setVideos] = useState([]); // NEW STATE
+  const [videoForm, setVideoForm] = useState({ title: "", category: "Weight Gain", videoId: "" });
   const [loading, setLoading] = useState(true);
 
   const [file, setFile] = useState(null);
@@ -34,6 +36,7 @@ export default function AdminDashboard() {
     fetchMessages();
     fetchContacts();
     fetchProducts();
+    fetchVideos();
   }, [navigate]);
 
   const fetchDashboardData = async () => {
@@ -45,6 +48,46 @@ export default function AdminDashboard() {
       console.error("Dashboard Fetch Error:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  //Fetching Videos
+  const fetchVideos = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/videos");
+      setVideos(res.data);
+    } catch (err) { console.error("Videos Fetch Error:", err); }
+  };
+
+  const handleAddVideo = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post("http://localhost:5000/api/videos", videoForm);
+      Swal.fire("Success", "Video added!", "success");
+      setVideoForm({ title: "", category: "Weight Gain", videoId: "" });
+      fetchVideos();
+    } catch (err) { Swal.fire("Error", "Could not add video", "error"); }
+  };
+  const deleteVideo = async (id) => {
+    const result = await Swal.fire({
+      title: "Delete Video?",
+      text: "This video will be removed from the tips page.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ff4757",
+      confirmButtonText: "Yes, delete",
+      background: "#1a1a1a",
+      color: "#fff"
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`http://localhost:5000/api/videos/${id}`);
+        Swal.fire("Deleted!", "Video has been removed.", "success");
+        fetchVideos(); // Refresh the list
+      } catch (err) {
+        Swal.fire("Error", "Could not remove video", "error");
+      }
     }
   };
 
@@ -371,6 +414,37 @@ export default function AdminDashboard() {
             ))}
           </tbody>
         </table>
+      </section>
+
+      {/* NEW VIDEO MANAGEMENT SECTION */}
+      <section className="admin-section">
+        <h3>Video Management</h3>
+        <form onSubmit={handleAddVideo} className="admin-product-form-inline">
+          <input type="text" placeholder="Title" value={videoForm.title} onChange={(e) => setVideoForm({ ...videoForm, title: e.target.value })} required />
+          <select value={videoForm.category} onChange={(e) => setVideoForm({ ...videoForm, category: e.target.value })}>
+            <option>Weight Gain</option><option>Weight Loss</option><option>Bulk</option>
+            <option>Cut</option><option>Bodybuilding</option><option>Body Recomposition</option>
+          </select>
+          <input type="text" placeholder="YouTube ID" value={videoForm.videoId} onChange={(e) => setVideoForm({ ...videoForm, videoId: e.target.value })} required />
+          <button type="submit" className="add-item-btn">Add Video</button>
+        </form>
+
+        <div className="admin-product-grid">
+          {videos.map(v => (
+            <div key={v._id} className="admin-product-item">
+              <iframe src={`https://www.youtube.com/embed/${v.videoId}`} title={v.title} width="100%" height="110px" frameBorder="0"></iframe>
+              <p className="p-name">{v.title}</p>
+              <p className="p-cat">[{v.category}]</p>
+              {/* The Delete Button */}
+              <button
+                onClick={() => deleteVideo(v._id)}
+                className="admin-remove-btn"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* General Contacts & Payment Submissions */}
