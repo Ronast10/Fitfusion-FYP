@@ -1,10 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "./Tips.css";
 
 export default function Tips() {
   const [filter, setFilter] = useState("All");
+  const [videoData, setVideoData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // BMI States
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
   const [gender, setGender] = useState("male");
@@ -13,23 +18,20 @@ export default function Tips() {
   const [bmiAdvice, setBmiAdvice] = useState("");
   const [recommendedCategory, setRecommendedCategory] = useState(null);
 
-  const videoData = [
-    { id: 1, title: "Complete Weight Gain Guide", category: "Weight Gain", videoId: "996mkJwILiQ" },
-    { id: 2, title: "How to Gain Weight Fast & Healthy", category: "Weight Gain", videoId: "S21o1IdwWf8" },
-    { id: 3, title: "High Calorie Diet Plan", category: "Weight Gain", videoId: "9T43EDBs1jw" },
-    { id: 4, title: "Best Foods for Weight Gain", category: "Weight Gain", videoId: "lu_BObG6dj8" },
-    { id: 5, title: "Science Based Fat Loss", category: "Weight Loss", videoId: "roHQ3F7d9YQ" },
-    { id: 6, title: "Beginner Fat Loss Plan", category: "Weight Loss", videoId: "TuRv8gRfvb8" },
-    { id: 7, title: "How to Lose Belly Fat", category: "Weight Loss", videoId: "uKXF3eS79_A" },
-    { id: 8, title: "Complete Weight Loss Strategy", category: "Weight Loss", videoId: "LTM-tSGGhI4" },
-    { id: 16, title: "How To Bulk Like A Pro", category: "Bulk", videoId: "OqRvmJ2eyBA" },
-    { id: 17, title: "Best Bulking Strategies", category: "Bulk", videoId: "gygPB6RN-Rc" },
-    { id: 11, title: "How to Cut Without Losing Muscle", category: "Cut", videoId: "DzjWEn2BS_k" },
-    { id: 15, title: "Bodybuilding Simplified: Cutting", category: "Cut", videoId: "VWkLHxwfB94" },
-    { id: 13, title: "Casually Explained: Bodybuilding", category: "Bodybuilding", videoId: "liTwZSJEzsE" },
-    { id: 14, title: "Classic Physique Training Guide", category: "Bodybuilding", videoId: "wkBtHOBmpb0" },
-    { id: 18, title: "The Secret to Burn Fat & Build Muscle", category: "Body Recomposition", videoId: "szm4Kx2CCyQ" }
-  ];
+  // Fetch videos from backend
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/videos");
+        setVideoData(res.data);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching videos:", err);
+        setLoading(false);
+      }
+    };
+    fetchVideos();
+  }, []);
 
   const calculateBMI = () => {
     if (!height || !weight) {
@@ -60,6 +62,7 @@ export default function Tips() {
   };
 
   const categories = ["All", "Weight Gain", "Weight Loss", "Bulk", "Cut", "Bodybuilding", "Body Recomposition"];
+  
   const filteredVideos = filter === "All" ? videoData : videoData.filter(v => v.category === filter);
   const recommendedVideos = videoData.filter(v => v.category === recommendedCategory);
 
@@ -88,7 +91,6 @@ export default function Tips() {
             <button className="analyze-btn" onClick={calculateBMI}>Analyze My Physique</button>
           </div>
 
-          {/* FIXED RESULT BOX */}
           {bmiResult && (
             <div className="bmi-result-card">
               <div className="result-main">
@@ -109,7 +111,7 @@ export default function Tips() {
           </div>
           <div className="video-grid">
             {recommendedVideos.map(video => (
-              <div key={video.id} className="video-card recommended">
+              <div key={video._id} className="video-card recommended">
                 <div className="iframe-container">
                     <iframe src={`https://www.youtube.com/embed/${video.videoId}`} title={video.title} allowFullScreen></iframe>
                 </div>
@@ -121,7 +123,6 @@ export default function Tips() {
       )}
 
       <section className="video-explorer">
-        {/* FIXED WHITE LINE DIVIDER */}
         <div className="browse-divider">
           <div className="line"></div>
           <span>Browse All Knowledge</span>
@@ -133,9 +134,10 @@ export default function Tips() {
             <button key={cat} className={filter === cat ? "active" : ""} onClick={() => setFilter(cat)}>{cat}</button>
           ))}
         </div>
+        
         <div className="video-grid">
-          {filteredVideos.map(video => (
-            <div key={video.id} className="video-card">
+          {loading ? <p>Loading videos...</p> : filteredVideos.map(video => (
+            <div key={video._id} className="video-card">
                <div className="iframe-container">
                 <iframe src={`https://www.youtube.com/embed/${video.videoId}`} title={video.title} allowFullScreen></iframe>
                </div>
