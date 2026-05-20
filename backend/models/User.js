@@ -8,7 +8,8 @@ const userSchema = new mongoose.Schema({
   avatar: { type: String, default: "avg1.png" },
   streak: { type: Number, default: 0 }, 
   lastLoggedDate: { type: String, default: "" },
-
+  resetPasswordToken: { type: String, default: null },
+  resetPasswordExpires: { type: Date, default: null },
   cart: [
     {
       _id: { type: String },
@@ -40,6 +41,20 @@ const userSchema = new mongoose.Schema({
     isMember: { type: Boolean, default: false },
     subscriptionDate: { type: Date },
     planExpiry: { type: Date }
+  },
+
+  // --- SECURE AUTHENTIC EMAIL GATEKEEPER FIELDS ---
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
+  verificationToken: {
+    type: String,
+    default: null
+  },
+  verificationTokenExpires: {
+    type: Date,
+    default: null
   }
 });
 

@@ -5,7 +5,7 @@ const EsewaPayment = ({ amount, itemName, onBack }) => {
   const handlePayment = async () => {
     try {
       const formattedAmount = String(Math.floor(Number(amount)));
-      const transaction_uuid = `FF-${Date.now()}`;
+      const transaction_uuid = `FF-${Date.now()}-${Math.floor(Math.random()*1000)}`;
 
       const response = await fetch("http://localhost:5000/api/esewa/create-signature", {
         method: "POST",
