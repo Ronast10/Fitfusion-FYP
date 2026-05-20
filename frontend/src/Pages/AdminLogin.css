@@ -1,0 +1,260 @@
+/* AdminLogin.css - Premium Matte Black Admin Module */
+
+.admin-login-container {
+  background: #000000;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.admin-card {
+  background: #111111; 
+  padding: 45px 40px;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+  width: 380px;
+  text-align: center;
+  box-sizing: border-box;
+  position: relative;
+  
+  border: none !important; 
+}
+
+/* Subtle glowing top border to give Admin controls an exclusive feel */
+.admin-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #ff4757; /* FitFusion Brand Red */
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+.admin-card h2 {
+  margin: 0 0 25px 0;
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+/* Integrated Status Notification Banners */
+.admin-error {
+  background-color: rgba(255, 71, 87, 0.15);
+  color: #ff4757 !important;
+  border: 1px solid #ff4757;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.admin-success {
+  background-color: rgba(46, 213, 115, 0.15);
+  color: #2ed573 !important;
+  border: 1px solid #2ed573;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Matte Dark Input Fields */
+.admin-card input {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  border: 1px solid #333;
+  font-size: 15px;
+  background-color: #1a1a1a !important; 
+  color: #ffffff !important; /* Fixed text readability */
+  box-sizing: border-box; 
+  transition: all 0.3s ease;
+}
+
+.admin-card input:focus {
+  border-color: #ff4757;
+  outline: none;
+  background-color: #222 !important;
+  box-shadow: 0 0 0 2px rgba(255, 71, 87, 0.1);
+}
+
+.admin-card input::placeholder {
+  color: #666;
+}
+
+.admin-card input:last-of-type {
+  margin-bottom: 25px;
+}
+
+/* Action Execution Button */
+.admin-btn {
+  width: 100%;
+  padding: 14px;
+  background: #ff4757;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1sps;
+  transition: all 0.3s ease;
+}
+
+.admin-btn:hover {
+  background: #ff6b81;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
+}
+
+.admin-btn:disabled {
+  background: #444;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Navigation Links */
+.admin-footer-toggle {
+  color: #888;
+  text-align: center;
+  margin-top: 25px;
+  font-size: 14px;
+  margin-bottom: 0;
+  transition: color 0.2s ease;
+}
+
+.admin-footer-toggle span {
+  color: #ff4757;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-left: 5px;
+}
+
+.admin-footer-toggle span:hover {
+  color: #ff6b81;
+}
+.password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Ensure the input reserves right padding space for the icon */
+.password-wrapper input {
+  padding-right: 45px !important;
+  margin-bottom: 25px !important; /* Preserves the spacing layout cleanly */
+}
+
+/* Eye Toggle Icon Absolute Positioning */
+.toggle-password {
+  position: absolute;
+  top: 38%; /* Vertically centers neatly relative to the input field height */
+  right: 15px; /* Pins icon to the inner right edge */
+  transform: translateY(-50%); 
+  cursor: pointer;
+  color: #ffffff;
+  font-size: 18px;
+  opacity: 0.6; /* Perfectly muted, matches your user-facing design language */
+  z-index: 10;
+  transition: opacity 0.2s ease;
+}
+
+.toggle-password:hover {
+  opacity: 1; /* Pops out on cursor hover */
+}
+/* --- Forgot Password Modal Styles --- */
+
+.forgot-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* The card box inside the modal */
+.forgot-box {
+  background: #1a1a1a;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  border: 1px solid #333;
+  color: white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.forgot-box h3 {
+  color: #ff4757;
+  margin-bottom: 20px;
+}
+
+.forgot-box input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: white;
+  box-sizing: border-box;
+}
+
+.forgot-box .admin-btn {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+/* Close button style */
+.close-btn {
+  background: transparent;
+  color: #888;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 0.9rem;
+}
+
+.close-btn:hover {
+  color: #ff4757;
+}
+
+/* Trigger link style */
+.forgot-trigger {
+  color: #888;
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.forgot-trigger:hover {
+  text-decoration: underline;
+  color: #ff4757;
+}
+
+/* Message styling */
+.msg {
+  color: #27ae60;
+  font-size: 0.85rem;
+  margin-top: 10px;
+}

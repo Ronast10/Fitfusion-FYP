@@ -14,7 +14,8 @@ import Membership from "./pages/Membership";
 import Profile from "./pages/Profile";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import AdminChatHub from "./pages/AdminChatHub";
-
+import VerifyEmail from "./pages/VerifyEmail";
+import ResetPassword from "./pages/ResetPassword";
 
 // --- COMPONENTS ---
 import Cart from "./components/Cart";
@@ -35,7 +36,9 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
         
         {/* Shop & Membership */}
         <Route path="/shop" element={<Shop />} />

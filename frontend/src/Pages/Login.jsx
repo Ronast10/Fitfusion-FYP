@@ -71,13 +71,14 @@ export default function Login({ switchToRegister, onLoginSuccess }) {
     e.preventDefault();
 
     try {
-      await axios.post("http://localhost:5000/api/auth/forgot-password", {
+      // Add a loading state here if you want to disable the button
+      const response = await axios.post("http://localhost:5000/api/auth/forgot-password", {
         email: resetEmail,
       });
-
-      setResetMsg("Password reset link sent to your email.");
+      setResetMsg(response.data.message); // Will show "Password reset link sent..."
     } catch (err) {
-      setResetMsg("Unable to send reset email.");
+      // FIXED: Use the actual error message from the backend (e.g., "User not found")
+      setResetMsg(err.response?.data?.message || "Unable to send reset email.");
     }
   };
 

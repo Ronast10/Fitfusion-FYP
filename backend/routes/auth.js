@@ -1,6 +1,10 @@
+// backend/routes/auth.js
 import express from "express";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import User from "../models/User.js";
+import { sendVerificationEmail } from "../utils/emailService.js";
+import { sendPasswordResetEmail } from "../utils/emailService.js";
 
 const router = express.Router();
 
@@ -17,7 +21,7 @@ router.get("/user/:email", async (req, res) => {
   }
 });
 
-// 2. REGISTER ROUTE
+// 2. REGISTER ROUTE (UPDATED FOR SECURE EMAIL VALIDATION)
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -28,6 +32,9 @@ router.post("/register", async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Generate secure token sequence
+    const emailToken = crypto.randomBytes(32).toString("hex");
 
     const newUser = new User({ 
       name, 
@@ -43,22 +50,37 @@ router.post("/register", async (req, res) => {
         membershipStatus: "Free Member",
         subscriptionDate: null,
         planExpiry: null
-      }
+      },
+      isVerified: false, // Explicitly locked down by default
+      verificationToken: emailToken,
+      verificationTokenExpires: Date.now() + 3600000 // Link expires in exactly 1 hour
     });
 
     await newUser.save();
-    res.status(201).json({ message: "User registered successfully" });
+
+    // Fire off automated email verification loop dispatch
+    await sendVerificationEmail(newUser.email, emailToken);
+
+    res.status(201).json({ message: "Registration successful! A verification link has been sent to your email. Please verify it to log in." });
   } catch (error) {
+    console.error("Registration error:", error);
     res.status(500).json({ message: "Server error during registration" });
   }
 });
 
-// 3. LOGIN ROUTE
+// 3. LOGIN ROUTE (UPDATED TO BLOCK UNVERIFIED USERS)
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "Email not registered" });
+
+    // CRITICAL SECURITY CHECK: Lockout unverified emails instantly
+    if (!user.isVerified) {
+      return res.status(401).json({ 
+        message: "Your email address has not been verified yet. Please check your inbox and click the activation link to log in." 
+      });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Invalid email or password" });
@@ -77,6 +99,38 @@ router.post("/login", async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: "Server error during login" });
+  }
+});
+
+// NEW: EMAIL ACTIVATION LINK CALLBACK ENDPOINT
+router.get("/verify-email", async (req, res) => {
+  try {
+    const { token } = req.query;
+
+    if (!token) {
+      return res.status(400).json({ message: "Verification token is missing." });
+    }
+
+    // Search database for unexpired token matching our parameters
+    const user = await User.findOne({
+      verificationToken: token,
+      verificationTokenExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "The verification link is invalid or has expired." });
+    }
+
+    // Activate user and wipe validation keys
+    user.isVerified = true;
+    user.verificationToken = null;
+    user.verificationTokenExpires = null;
+    await user.save();
+
+    res.status(200).json({ message: "Email verified successfully! Your account is active. You can now log in." });
+  } catch (error) {
+    console.error("Email verification error:", error);
+    res.status(500).json({ message: "Server error during account verification." });
   }
 });
 
@@ -116,7 +170,6 @@ router.post("/complete-purchase", async (req, res) => {
       purchaseDate: new Date()
     }));
 
-    // Add to history and clear the current cart
     user.purchasedItems.push(...itemsToMove);
     user.cart = [];
 
@@ -140,7 +193,6 @@ router.post("/verify-membership", async (req, res) => {
     const expiryDate = new Date();
     expiryDate.setMonth(expiryDate.getMonth() + months);
 
-    // Using nested dot notation to update ONLY membership fields
     const updatedUser = await User.findOneAndUpdate(
       { email },
       {
@@ -211,4 +263,57 @@ router.post("/cancel-membership", async (req, res) => {
     res.status(500).json({ message: "Server error cancelling membership" });
   }
 });
+// FORGOT PASSWORD ROUTE
+router.post("/forgot-password", async (req, res) => {
+  const { email } = req.body;
+  
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Generate token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    
+    // Save token to user model (Make sure these fields exist in your User model)
+    user.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+    await user.save();
+
+    // Send email
+    await sendPasswordResetEmail(user.email, resetToken);
+
+    res.status(200).json({ message: "Password reset link sent to your email." });
+  } catch (error) {
+    res.status(500).json({ message: "Server error during forgot password process." });
+  }
+});
+
+// RESET PASSWORD ROUTE
+router.post("/reset-password", async (req, res) => {
+  const { token, password } = req.body;
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+  try {
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+
+    if (!user) return res.status(400).json({ message: "Token is invalid or expired." });
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+    
+    // Clear tokens
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.status(200).json({ message: "Password updated successfully." });
+  } catch (error) {
+    res.status(500).json({ message: "Server error resetting password." });
+  }
+});
+
 export default router;

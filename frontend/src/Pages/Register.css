@@ -1,63 +1,92 @@
-/* Card styling - This sits in the middle of your Landing page blur */
-.login-card {
-  background: white;
+/* Register.css - Matte Black Styling matching Login */
+
+.register-card {
+  background: #111111 !important; /* Solid Dark Card Background */
   padding: 40px;
   border-radius: 20px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-  width: 380px; /* Fixed width prevents the 'full screen red' issue */
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+  width: 380px;
   text-align: center;
   box-sizing: border-box;
+  border: 1px solid #222;
   position: relative;
 }
 
-.login-card h1 {
+.register-card h1 {
   margin: 0 0 10px 0;
-  color: #ff4757;
+  color: #ff4757; /* FitFusion Brand Red */
   font-size: 32px;
   font-weight: 800;
   text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
-.login-card p {
+.register-card p {
   margin: 0 0 30px 0;
-  color: #666;
+  color: #888888;
   font-size: 15px;
 }
 
-.login-card input {
+.input-group {
+  width: 100%;
+  position: relative; /* Context for children */
+}
+
+/* Base input styling, ensuring padding accommodates the icon overlay */
+.register-card input {
   width: 100%;
   padding: 14px;
   margin-bottom: 15px;
   border-radius: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid #333;
   font-size: 15px;
-  background-color: #fcfcfc !important;
-  color: #000 !important;
+  background-color: #1a1a1a !important; 
+  color: #ffffff !important;
   box-sizing: border-box; 
   transition: all 0.3s ease;
 }
 
-.login-card input:focus {
+.register-card input:focus {
   border-color: #ff4757;
   outline: none;
-  box-shadow: 0 0 0 2px rgba(255, 71, 87, 0.1);
+  background-color: #222 !important;
 }
 
+.register-card input::placeholder {
+  color: #666;
+}
+
+/* Password Eye Styling Overrides */
 .password-wrapper {
   position: relative;
   width: 100%;
 }
 
-.toggle-password {
-  position: absolute;
-  top: 50%;
-  right: 15px;
-  transform: translateY(-80%); 
-  cursor: pointer;
-  color: #888;
+/* Force padding on the right so text doesn't hide behind the icon */
+.password-wrapper input {
+  padding-right: 45px !important;
 }
 
-.login-card button {
+/* FIXED: Icon Positioning and Styling */
+.toggle-password {
+  position: absolute;
+  top: 42%; /* Center vertically over input */
+  right: 15px; /* Pin to far right border */
+  transform: translateY(-50%); 
+  cursor: pointer;
+  color: #ffffff; /* Contrast white icon on dark input */
+  font-size: 18px;
+  opacity: 0.6; /* Subtly greyed, matching design */
+  z-index: 10;
+  transition: opacity 0.2s ease;
+}
+
+.toggle-password:hover {
+  opacity: 1; /* Vibrant on hover */
+}
+
+/* Action Execution Button */
+.register-card button {
   width: 100%;
   padding: 14px;
   background: #ff4757;
@@ -67,20 +96,21 @@
   cursor: pointer;
   font-weight: bold;
   font-size: 16px;
+  text-transform: uppercase;
   margin-top: 10px;
   transition: all 0.3s ease;
 }
 
-.login-card button:hover {
+.register-card button:hover {
   background: #ff6b81;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+  box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
 }
 
 .register-link {
   margin-top: 25px;
   font-size: 14px;
-  color: #666;
+  color: #888;
 }
 
 .register-link span {
@@ -89,4 +119,30 @@
   font-weight: bold;
   text-decoration: underline;
   margin-left: 5px;
+}
+/* FIXED: High-visibility Registration Success/Verification Banner */
+.register-success {
+  background-color: rgba(46, 213, 115, 0.15) !important;
+  color: #2ed573 !important; /* High-contrast emerald green text */
+  border: 1px solid #2ed573 !important;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+  line-height: 1.4;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Subtle emergence animation for smooth display */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
