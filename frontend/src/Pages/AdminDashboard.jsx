@@ -20,6 +20,7 @@ export default function AdminDashboard() {
   const [videos, setVideos] = useState([]); // NEW STATE
   const [videoForm, setVideoForm] = useState({ title: "", category: "Weight Gain", videoId: "" });
   const [loading, setLoading] = useState(true);
+  const [allPurchases, setAllPurchases] = useState([]);
 
   const [file, setFile] = useState(null);
   const [productForm, setProductForm] = useState({ name: "", price: "", category: "" });
@@ -37,6 +38,7 @@ export default function AdminDashboard() {
     fetchContacts();
     fetchProducts();
     fetchVideos();
+    fetchAllPurchases();
   }, [navigate]);
 
   const fetchDashboardData = async () => {
@@ -90,6 +92,14 @@ export default function AdminDashboard() {
       }
     }
   };
+  const fetchAllPurchases = async () => {
+  try {
+    const res = await axios.get(`${API_BASE_URL}/api/admin/all-purchases`);
+    if (res.data.success) {
+      setAllPurchases(res.data.purchases);
+    }
+  } catch (err) { console.error("Error fetching purchases:", err); }
+};
 
   // 1. Fetches the Trainer Inquiries from the original messages route
   const fetchMessages = async () => {
@@ -334,6 +344,35 @@ export default function AdminDashboard() {
           ))}
         </div>
       </section>
+
+      <section className="admin-section">
+  <h3>User Purchase History</h3>
+  <table className="admin-table">
+    <thead>
+      <tr>
+        <th>Buyer</th>
+        <th>Product</th>
+        <th>Price</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {allPurchases.length === 0 ? (
+        <tr><td colSpan="4" style={{ textAlign: "center" }}>No purchases found.</td></tr>
+      ) : allPurchases.map((p, index) => (
+        <tr key={index}>
+          <td>
+            <strong>{p.buyerName}</strong><br />
+            <span style={{ fontSize: "11px", color: "#666" }}>{p.buyerEmail}</span>
+          </td>
+          <td>{p.itemName}</td>
+          <td style={{ color: "#2ed573", fontWeight: "600" }}>Rs. {p.itemPrice}</td>
+          <td className="date-text">{new Date(p.purchaseDate).toLocaleDateString()}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</section>
 
       {/* Member Directory */}
       <section className="admin-section">

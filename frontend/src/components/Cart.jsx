@@ -1,15 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useReactToPrint } from "react-to-print";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import PaymentModal from "../pages/PaymentModal"; 
+import Receipt from "../components/Receipt"; 
 import "./Cart.css";
 
 export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [purchasedItems, setPurchasedItems] = useState([]); 
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  
+  // New state for Receipt Modal
+  const [selectedReceipt, setSelectedReceipt] = useState(null);
+  const receiptRef = useRef();
   
   // Directly tracks the verified membership status from the DB
   const [membershipStatus, setMembershipStatus] = useState("Free Member");
@@ -24,6 +30,8 @@ export default function Cart() {
     if (img.startsWith("/uploads")) return `${API_BASE_URL}${img}`;
     return img;
   };
+
+  const handlePrint = useReactToPrint({ contentRef: receiptRef });
 
   useEffect(() => {
     // 1. Load current cart items from local storage
@@ -191,7 +199,12 @@ export default function Cart() {
           ) : (
             <div className="purchased-grid">
               {purchasedItems.map((item, index) => (
-                <div key={index} className="purchased-item-mini">
+                <div 
+                  key={index} 
+                  className="purchased-item-mini" 
+                  onClick={() => setSelectedReceipt(item)}
+                  style={{ cursor: "pointer" }}
+                >
                   <img src={formatImageUrl(item.image)} alt={item.name} />
                   <div className="mini-details">
                     <h4>{item.name}</h4>
@@ -211,6 +224,24 @@ export default function Cart() {
           onClose={() => setIsPaymentModalOpen(false)} 
         />
       )}
+
+      {/* --- RECEIPT MODAL --- */}
+      {selectedReceipt && (
+        <div className="modal-overlay" onClick={() => setSelectedReceipt(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <Receipt 
+              ref={receiptRef} 
+              items={[selectedReceipt]} 
+              total={selectedReceipt.price} 
+            />
+            <div className="modal-actions" style={{ padding: "20px", display: "flex", gap: "10px", justifyContent: "center" }}>
+              <button onClick={handlePrint} className="esewa-proceed-btn">Download/Print PDF</button>
+              <button onClick={() => setSelectedReceipt(null)} className="remove-btn">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );
