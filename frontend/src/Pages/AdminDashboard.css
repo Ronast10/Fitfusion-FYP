@@ -357,3 +357,18 @@
 .chat-entry-btn:active {
   transform: translateY(0);
 }
+
+.message-text {
+  transition: max-height 0.3s ease; /* Animate max-height */
+  overflow: hidden;
+  word-break: break-word;
+  line-height: 1.5; /* Essential for consistency */
+}
+
+.collapsed {
+  max-height: 4.5em; /* Exactly 3 lines (1.5 line-height * 3) */
+}
+
+.expanded {
+  max-height: 500px;
+}
