@@ -227,20 +227,20 @@ export default function Cart() {
 
       {/* --- RECEIPT MODAL --- */}
       {selectedReceipt && (
-        <div className="modal-overlay" onClick={() => setSelectedReceipt(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <Receipt 
-              ref={receiptRef} 
-              items={[selectedReceipt]} 
-              total={selectedReceipt.price} 
-            />
-            <div className="modal-actions" style={{ padding: "20px", display: "flex", gap: "10px", justifyContent: "center" }}>
-              <button onClick={handlePrint} className="esewa-proceed-btn">Download/Print PDF</button>
-              <button onClick={() => setSelectedReceipt(null)} className="remove-btn">Close</button>
-            </div>
-          </div>
-        </div>
-      )}
+  <div className="receipt-modal-overlay" onClick={() => setSelectedReceipt(null)}>
+    <div className="receipt-modal-content" onClick={(e) => e.stopPropagation()}>
+      <Receipt 
+        ref={receiptRef} 
+        items={[selectedReceipt]} 
+        total={selectedReceipt.price} 
+      />
+      <div className="receipt-modal-actions" style={{ padding: "20px", display: "flex", gap: "10px", justifyContent: "center" }}>
+        <button onClick={handlePrint} className="esewa-proceed-btn">Download/Print PDF</button>
+        <button onClick={() => setSelectedReceipt(null)} className="remove-btn">Close</button>
+      </div>
+    </div>
+  </div>
+)}
 
       <Footer />
     </div>

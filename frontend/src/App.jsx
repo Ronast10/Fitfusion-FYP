@@ -16,6 +16,7 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import AdminChatHub from "./pages/AdminChatHub";
 import VerifyEmail from "./pages/VerifyEmail";
 import ResetPassword from "./pages/ResetPassword";
+import DietPlanPage from "./pages/DietPlanSection";
 
 // --- COMPONENTS ---
 import Cart from "./components/Cart";
@@ -45,6 +46,7 @@ function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/membership" element={<Membership />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/diet-plans" element={<DietPlanPage />} />
 
         {/* Messaging System */}
         <Route path="/messages/:trainerName" element={<Messages />} />

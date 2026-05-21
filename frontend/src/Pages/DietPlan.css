@@ -1,0 +1,119 @@
+/* --- Global Styles --- */
+.diet-page-container {
+    background-color: #000;
+    min-height: 100vh;
+    color: #fff;
+    font-family: sans-serif;
+}
+
+/* --- Hero Section --- */
+.hero-section {
+    height: 400px;
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+        url('https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1600');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+/* --- Layout & Controls --- */
+.main-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.controls {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 50px;
+}
+
+select,
+button {
+    padding: 15px 30px;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+select {
+    background: #1a1a1a;
+    color: white;
+}
+
+button {
+    background: #ff0000;
+    color: white;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #d00000;
+}
+
+/* --- Premium Result Card --- */
+.diet-card-premium {
+    display: flex;
+    background: #111;
+    border-radius: 20px;
+    border: 1px solid #333;
+    overflow: hidden;
+}
+
+.plan-image {
+    width: 45%;
+    object-fit: cover;
+}
+
+.content-side {
+    padding: 40px;
+    width: 55%;
+}
+
+/* --- Fixed Header (Title + Badge) --- */
+.plan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.plan-header {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;            
+    margin-bottom: 25px;
+}
+.stats-badge {
+    background: #ff0000;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    display: inline-block;   
+    width: fit-content;      
+    white-space: nowrap;     
+}
+
+/* --- Meals & Tips --- */
+.meal-breakdown p {
+    border-bottom: 1px solid #222;
+    padding: 12px 0;
+    color: #bbb;
+    margin: 0;
+}
+
+.pro-tip {
+    margin-top: 25px;
+    padding: 15px;
+    background: #000;
+    border-left: 3px solid #ff0000;
+    font-style: italic;
+}

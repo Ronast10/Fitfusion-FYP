@@ -268,7 +268,8 @@
   color: #2ed573 !important;
   font-size: 0.95rem;
 }
-.modal-overlay {
+
+.receipt-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -281,7 +282,7 @@
   z-index: 1000;
 }
 
-.modal-content {
+.receipt-modal-content {
   background: #fff;
   border-radius: 8px;
   overflow: hidden;
@@ -290,7 +291,7 @@
   box-shadow: 0 10px 25px rgba(0,0,0,0.3);
 }
 
-.modal-actions {
+.receipt-modal-actions {
   background: #f9f9f9;
   border-top: 1px solid #ddd;
 }
