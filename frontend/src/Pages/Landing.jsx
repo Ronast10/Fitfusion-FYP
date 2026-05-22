@@ -14,6 +14,8 @@ export default function Landing() {
   const [showRegister, setShowRegister] = useState(false);
   const [openIndex, setOpenIndex] = useState(null);
 
+  const [toastMsg, setToastMsg] = useState("");
+
   // --- DATA ---
   const faqData = [
     { q: "Do you offer personalized training programs?", a: "Yes! Our elite trainers design custom workout and nutrition plans tailored specifically to your body type and fitness goals." },
@@ -26,6 +28,19 @@ export default function Landing() {
     { id: "ronast-acharya", name: "Ronast Acharya", exp: "6 Years", role: "Crossfit Expert", img: "https://images.unsplash.com/photo-1701481080490-cb2e7f4fd5f8?w=600" },
     { id: "ismarika-bista", name: "Ismarika Bista", exp: "4 Years", role: "Zumba Trainer", img: "https://images.unsplash.com/photo-1738870558728-720a366830a6?w=600" }
   ];
+
+  const handleMembershipClick = () => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+
+    if (!isLoggedIn) {
+      setToastMsg("Please log in to purchase a membership!");
+      setTimeout(() => setToastMsg(""), 3000);
+      openLoginModal();
+      return;
+    }
+
+    navigate("/membership");
+  };
 
   // --- LOGIC ---
   useEffect(() => {
@@ -47,9 +62,38 @@ export default function Landing() {
     setShowLogin(false); 
     setShowRegister(false); 
   };
+ 
+  const handleMessage = (trainerId) => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    // FIX: Look for the correct key
+    const status = localStorage.getItem("userMembershipStatus");
+
+    if (!isLoggedIn) {
+      setToastMsg("Please log in to perform this action!");
+      setTimeout(() => setToastMsg(""), 3000);
+      openLoginModal();
+      return;
+    }
+ 
+    // If status is "Pro" or "Elite", this condition will be false (allowing access)
+    if (!status || status === "Free Member") {
+      setToastMsg("Become a member to gain access to trainer messaging!");
+      setTimeout(() => setToastMsg(""), 3000);
+      return;
+    }
+
+    navigate(`/messages/${trainerId}`);
+  };
 
   return (
     <>
+    {toastMsg && (
+  <div className="toast-container">
+    <div className="custom-toast">
+      {toastMsg}
+    </div>
+  </div>
+)}
       <div className={showLogin || showRegister ? "content-blur" : ""}>
         <Navbar onLoginClick={openLoginModal} onRegisterClick={openRegisterModal} />
         
@@ -60,7 +104,7 @@ export default function Landing() {
               <h1>BUILD YOUR <span>LEGACY</span></h1>
               <h3>THE ULTIMATE FITNESS DESTINATION</h3>
               {/* UPDATED: Navigates to membership page instead of scrolling */}
-              <button className="hero-btn" onClick={() => navigate("/membership")}>START TODAY</button>
+              <button className="hero-btn" onClick={handleMembershipClick}>START TODAY</button>
             </div>
           </div>
         </section>
@@ -111,23 +155,30 @@ export default function Landing() {
         
         {/* TRAINERS */}
         <section className="section trainers" id="trainers-section">
-          <h2 className="trainers-title">MEET OUR TRAINERS</h2>
-          <div className="trainers-container">
-            {trainers.map((trainer) => (
-              <div className="trainer-card" key={trainer.id}>
-                <img src={trainer.img} alt={trainer.name} />
-                <div className="trainer-overlay">
-                  <h3>{trainer.name}</h3>
-                  <p>{trainer.exp} Experience</p>
-                  <p>{trainer.role}</p>
-                  <div className="trainer-message-box" onClick={() => navigate(`/messages/${trainer.id}`)}>
-                    <span className="msg-icon">💬</span><p>Message</p>
-                  </div>
-                </div>
-              </div>
-            ))}
+  <h2 className="trainers-title">MEET OUR TRAINERS</h2>
+  <div className="trainers-container">
+    {trainers.map((trainer) => (
+      <div className="trainer-card" key={trainer.id}>
+        <img src={trainer.img} alt={trainer.name} />
+        <div className="trainer-overlay">
+          <h3>{trainer.name}</h3>
+          <p>{trainer.exp} Experience</p>
+          <p>{trainer.role}</p>
+          
+          {/* UPDATED: Calling the handleMessage function instead of direct navigation */}
+          <div 
+            className="trainer-message-box" 
+            onClick={() => handleMessage(trainer.id)}
+            style={{ cursor: 'pointer' }}
+          >
+            <span className="msg-icon">💬</span>
+            <p>Message</p>
           </div>
-        </section>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
 
         {/* FAQ */}
         <section className="faq-section" id="faq-section">

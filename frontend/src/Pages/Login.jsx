@@ -85,7 +85,7 @@ export default function Login({ switchToRegister, onLoginSuccess }) {
   return (
     <div className="login-card">
       <h1>FitFusion</h1>
-      <p>Track your fitness, anytime, anywhere</p>
+      <p className="subtitle-text">Track your fitness, anytime, anywhere</p>
 
       {error && (
         <div className="login-error">

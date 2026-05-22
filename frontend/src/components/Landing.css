@@ -404,3 +404,37 @@ html {
 .pay-btn { width: 100%; padding: 15px; background: #ff3e3e; color: white; border: none; font-weight: bold; cursor: pointer; }
 .success-screen { text-align: center; padding: 20px; }
 .check-icon { font-size: 50px; color: #4bb543; margin-bottom: 10px; }
+
+/* This container is always locked in the center */
+/* Container locks to top-middle and stays there */
+.toast-container {
+  position: fixed;
+  top: 20px; /* Adjust this to change how far from the top it sits */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  pointer-events: none; /* Keeps buttons behind it clickable */
+  display: flex;
+  justify-content: center;
+  width: 100%; /* Ensures it has a full-width reference for centering */
+}
+
+/* The visual bubble */
+.custom-toast {
+  background-color: #f41616;
+  color: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  font-weight: 500;
+  border: 1px solid #ff0000;
+  text-align: center;
+  /* Add min-width or max-width if you want consistent sizing */
+  min-width: 300px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

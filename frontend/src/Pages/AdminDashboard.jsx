@@ -19,6 +19,7 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState([]);
   const [videos, setVideos] = useState([]); // NEW STATE
   const [videoForm, setVideoForm] = useState({ title: "", category: "Weight Gain", videoId: "" });
+  const [classFile, setClassFile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [allPurchases, setAllPurchases] = useState([]);
 
@@ -27,6 +28,11 @@ export default function AdminDashboard() {
 
   const navigate = useNavigate();
   const API_BASE_URL = "http://localhost:5000";
+
+  const [classes, setClasses] = useState([]);
+const [classForm, setClassForm] = useState({ 
+  title: "", focus: "", day: "", time: "", link: "", description: "" 
+});
 
   useEffect(() => {
     if (localStorage.getItem("isAdmin") !== "true") {
@@ -38,6 +44,7 @@ export default function AdminDashboard() {
     fetchContacts();
     fetchProducts();
     fetchVideos();
+    fetchClasses();
     fetchAllPurchases();
   }, [navigate]);
 
@@ -52,6 +59,58 @@ export default function AdminDashboard() {
       setLoading(false);
     }
   };
+
+  const fetchClasses = async () => {
+  try {
+    const res = await axios.get("http://localhost:5000/api/classes");
+    setClasses(res.data);
+  } catch (err) { console.error("Classes Fetch Error:", err); }
+};
+
+// Add Class
+const handleAddClass = async (e) => {
+  e.preventDefault();
+  
+  // Validation: Ensure an image is selected
+  if (!classFile) {
+    Swal.fire("Error", "Please select an image for the class!", "error");
+    return;
+  }
+
+  // Create FormData object to handle both text and files
+  const formData = new FormData();
+  formData.append("title", classForm.title);
+  formData.append("focus", classForm.focus);
+  formData.append("day", classForm.day);
+  formData.append("time", classForm.time);
+  formData.append("link", classForm.link);
+  formData.append("description", classForm.description);
+  formData.append("image", classFile); // 'image' must match the field name in your multer setup
+
+  try {
+    await axios.post("http://localhost:5000/api/classes/add", formData, {
+      headers: { "Content-Type": "multipart/form-data" }
+    });
+    
+    Swal.fire("Success", "Class scheduled!", "success");
+    
+    // Reset form and file state
+    setClassForm({ title: "", focus: "", day: "", time: "", link: "", description: "" });
+    setClassFile(null);
+    document.getElementById("class-file-input").value = ""; // Clear the file input visually
+    fetchClasses();
+  } catch (err) { 
+    console.error(err);
+    Swal.fire("Error", "Could not add class. Check console for details.", "error"); 
+  }
+};
+// Delete Class
+const deleteClass = async (id) => {
+  try {
+    await axios.delete(`http://localhost:5000/api/classes/${id}`); // Ensure your route supports DELETE
+    fetchClasses();
+  } catch (err) { Swal.fire("Error", "Could not delete class", "error"); }
+};
 
   //Fetching Videos
   const fetchVideos = async () => {
@@ -275,7 +334,7 @@ export default function AdminDashboard() {
   return (
     <div className="admin-page">
 
-      <AdminNavbar adminName="Ronast (Admin)" activeTab="dashboard" onLogout={logout} />
+      <AdminNavbar adminName="Admin" activeTab="dashboard" onLogout={logout} />
 
       {/* Statistics Cards */}
       <section className="stats-container">
@@ -485,6 +544,43 @@ export default function AdminDashboard() {
           ))}
         </div>
       </section>
+      <section className="admin-section">
+  <h3>Class Schedule Management</h3>
+  <form onSubmit={handleAddClass} className="admin-product-form-inline">
+  <input type="text" placeholder="Title" value={classForm.title} onChange={e => setClassForm({...classForm, title: e.target.value})} required />
+  <input type="text" placeholder="Focus" value={classForm.focus} onChange={e => setClassForm({...classForm, focus: e.target.value})} required />
+  <input type="text" placeholder="Day" value={classForm.day} onChange={e => setClassForm({...classForm, day: e.target.value})} required />
+  <input type="text" placeholder="Time" value={classForm.time} onChange={e => setClassForm({...classForm, time: e.target.value})} required />
+  <input type="text" placeholder="Link" value={classForm.link} onChange={e => setClassForm({...classForm, link: e.target.value})} required />
+  <input type="text" placeholder="Description" value={classForm.description} onChange={e => setClassForm({...classForm, description: e.target.value})} required />
+  
+  {/* The File Input */}
+  <input 
+    type="file" 
+    id="class-file-input" 
+    onChange={(e) => setClassFile(e.target.files[0])} 
+    required 
+  />
+  
+  <button type="submit" className="add-item-btn">Add Class</button>
+</form>
+
+  <table className="admin-table">
+    <thead>
+      <tr><th>Title</th><th>Day/Time</th><th>Focus</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {classes.map(c => (
+        <tr key={c._id}>
+          <td>{c.title}</td>
+          <td>{c.day} at {c.time}</td>
+          <td>{c.focus}</td>
+          <td><button onClick={() => deleteClass(c._id)} className="remove-btn">Remove</button></td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</section>
 
       {/* General Contacts & Payment Submissions */}
       <section className="admin-section">

@@ -212,3 +212,20 @@
   font-size: 13px;
   color: #2ed573;
 }
+/* FIX: Text Color and Spacing */
+.login-card .subtitle-text {
+  margin: 5px 0 30px 0 !important; /* Increased bottom margin for better spacing */
+  color: #aaaaaa !important;       /* Changed to a lighter grey for better readability */
+  font-size: 14px;
+  font-weight: 400;
+  display: block;                  /* Ensures it behaves correctly as a line */
+}
+
+/* Optional: Tighten input spacing if needed */
+.login-card input {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 20px;            /* Increased slightly to separate from the next element */
+  border-radius: 10px;
+  /* ... rest of your existing input styles ... */
+}

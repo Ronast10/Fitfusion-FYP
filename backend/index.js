@@ -14,6 +14,7 @@ import esewaRoutes from "./routes/esewaRoutes.js";
 import videoRoutes from "./routes/videoRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js"; 
 import khaltiRoutes from "./routes/khaltiRoutes.js";
+import classRoutes from "./routes/classRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -41,7 +42,7 @@ app.use("/api/khalti", khaltiRoutes);
 app.use("/api/esewa", esewaRoutes);
 app.use("/api/notifications", notificationRoutes); 
 app.use("/api/videos", videoRoutes);
-
+app.use('/api/classes', classRoutes);
 // Base Route
 app.get("/", (req, res) => {
   res.send("FitFusion Backend Running");

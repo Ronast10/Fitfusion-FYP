@@ -2,12 +2,18 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import Login from "./Login";
+import Register from "./Register";
 import "./Tips.css";
 
 export default function Tips() {
   const [filter, setFilter] = useState("All");
   const [videoData, setVideoData] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Modal States
+  const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
 
   // BMI States
   const [height, setHeight] = useState("");
@@ -62,13 +68,37 @@ export default function Tips() {
   };
 
   const categories = ["All", "Weight Gain", "Weight Loss", "Bulk", "Cut", "Bodybuilding", "Body Recomposition"];
-  
+
   const filteredVideos = filter === "All" ? videoData : videoData.filter(v => v.category === filter);
   const recommendedVideos = videoData.filter(v => v.category === recommendedCategory);
 
   return (
     <div className="tips-page">
-      <Navbar />
+      {/* 1. Navbar with Modal Props */}
+      <Navbar
+        onLoginClick={() => setShowLogin(true)}
+        onRegisterClick={() => setShowRegister(true)}
+      />
+
+      {/* 2. Modal Overlay Logic */}
+      {(showLogin || showRegister) && (
+        <div className="modal-overlay" onClick={() => { setShowLogin(false); setShowRegister(false); }}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <span className="close-x" onClick={() => { setShowLogin(false); setShowRegister(false); }}>&times;</span>
+            {showLogin && (
+              <Login
+                switchToRegister={() => { setShowLogin(false); setShowRegister(true); }}
+                onLoginSuccess={() => setShowLogin(false)}
+              />
+            )}
+            {showRegister && (
+              <Register
+                switchToLogin={() => { setShowRegister(false); setShowLogin(true); }}
+              />
+            )}
+          </div>
+        </div>
+      )}
 
       <section className="tips-hero">
         <h1>FITNESS <span>INTELLIGENCE</span></h1>
@@ -79,10 +109,10 @@ export default function Tips() {
         <div className="bmi-card-wrapper">
           <h2>Personalized Assessment</h2>
           <p className="bmi-subtext">Enter your details below to analyze your physique.</p>
-          
+
           <div className="gender-selector">
-              <button className={gender === "male" ? "active" : ""} onClick={() => setGender("male")}>MALE</button>
-              <button className={gender === "female" ? "active" : ""} onClick={() => setGender("female")}>FEMALE</button>
+            <button className={gender === "male" ? "active" : ""} onClick={() => setGender("male")}>MALE</button>
+            <button className={gender === "female" ? "active" : ""} onClick={() => setGender("female")}>FEMALE</button>
           </div>
 
           <div className="bmi-input-area">
@@ -113,7 +143,7 @@ export default function Tips() {
             {recommendedVideos.map(video => (
               <div key={video._id} className="video-card recommended">
                 <div className="iframe-container">
-                    <iframe src={`https://www.youtube.com/embed/${video.videoId}`} title={video.title} allowFullScreen></iframe>
+                  <iframe src={`https://www.youtube.com/embed/${video.videoId}`} title={video.title} allowFullScreen></iframe>
                 </div>
                 <h4>{video.title}</h4>
               </div>
@@ -128,19 +158,19 @@ export default function Tips() {
           <span>Browse All Knowledge</span>
           <div className="line"></div>
         </div>
-        
+
         <div className="filter-bar">
           {categories.map(cat => (
             <button key={cat} className={filter === cat ? "active" : ""} onClick={() => setFilter(cat)}>{cat}</button>
           ))}
         </div>
-        
+
         <div className="video-grid">
           {loading ? <p>Loading videos...</p> : filteredVideos.map(video => (
             <div key={video._id} className="video-card">
-               <div className="iframe-container">
+              <div className="iframe-container">
                 <iframe src={`https://www.youtube.com/embed/${video.videoId}`} title={video.title} allowFullScreen></iframe>
-               </div>
+              </div>
               <h4>{video.title}</h4>
             </div>
           ))}
