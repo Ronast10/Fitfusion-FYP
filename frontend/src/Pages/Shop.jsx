@@ -56,30 +56,97 @@ export default function Shop() {
     setActiveCategory({ name: categoryName, items: filtered });
   };
 
- const addToCart = (product) => {
-    // 1. Check if user is logged in
-    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+ const addToCart = async (product) => {
 
-    if (!isLoggedIn) {
-      setNotification({ show: true, message: "❌ Please log in to add items to your cart!" });
-      
-      // Clear after 3 seconds
-      setTimeout(() => setNotification({ show: false, message: "" }), 3000);
-      openLoginModal();
+  // 1. Check login
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
-      return;
-    }
+  if (!isLoggedIn) {
+    setNotification({
+      show: true,
+      message: "❌ Please log in to add items to your cart!"
+    });
 
-    // 2. Existing Add to Cart Logic
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    if (cart.find((item) => item._id === product._id)) {
-      setNotification({ show: true, message: "⚠️ Item already in cart!" });
-    } else {
-      localStorage.setItem("cart", JSON.stringify([...cart, { ...product, quantity: 1 }]));
-      setNotification({ show: true, message: `✅ ${product.name} added!` });
-    }
-    setTimeout(() => setNotification({ show: false, message: "" }), 3000);
-  };
+    setTimeout(() =>
+      setNotification({ show: false, message: "" }),
+      3000
+    );
+
+    openLoginModal();
+    return;
+  }
+
+  // 2. Get current cart
+  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+  // 3. Check if already exists
+  const existingItem = cart.find(
+    (item) => item._id === product._id
+  );
+
+  let updatedCart;
+
+  if (existingItem) {
+
+    // Increase quantity
+    updatedCart = cart.map((item) =>
+      item._id === product._id
+        ? { ...item, quantity: item.quantity + 1 }
+        : item
+    );
+
+    setNotification({
+      show: true,
+      message: `✅ ${product.name} quantity updated!`
+    });
+
+  } else {
+
+    // Add new item
+    updatedCart = [
+      ...cart,
+      { ...product, quantity: 1 }
+    ];
+
+    setNotification({
+      show: true,
+      message: `✅ ${product.name} added!`
+    });
+  }
+
+  // 4. Save to localStorage
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(updatedCart)
+  );
+
+  // 5. SYNC TO DATABASE
+  try {
+
+    const userEmail = localStorage.getItem("userEmail");
+
+    await axios.post(
+      `${API_BASE_URL}/api/auth/sync-cart`,
+      {
+        email: userEmail,
+        cartItems: updatedCart
+      }
+    );
+
+    console.log("Cart synced successfully");
+
+  } catch (err) {
+
+    console.error("DB cart sync failed:", err);
+
+  }
+
+  // 6. Hide notification
+  setTimeout(() =>
+    setNotification({ show: false, message: "" }),
+    3000
+  );
+};
 
  return (
     <div className="shop-container">
