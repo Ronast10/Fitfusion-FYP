@@ -23,9 +23,11 @@ const userSchema = new mongoose.Schema({
   // --- ADDED PURCHASED ITEMS ---
   purchasedItems: [
     {
-      _id: { type: String },
+      productId: { type: String }, // Rename _id to productId for clarity
       name: { type: String },
-      price: { type: Number },
+      originalPrice: { type: Number },    // ADD THIS: The price before discount
+      discountApplied: { type: Number },  // ADD THIS: The discount amount (e.g., 200)
+      price: { type: Number },            // This is the final price the user paid
       image: { type: String },
       quantity: { type: Number },
       purchaseDate: { type: Date, default: Date.now }

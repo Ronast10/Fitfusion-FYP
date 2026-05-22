@@ -53,9 +53,9 @@ const Membership = () => {
       featured: false,
       perks: [
         "10% Flat Discount on FitFusion Shop",
-        "One-Time Personalized Workout Plan",
+        "Personalized Workout Meal Plans",
         "Full Gym & Equipment Access",
-        "Digital Progress Tracking",
+        "Progress Tracking in the gym",
       ],
     },
     {
@@ -67,7 +67,7 @@ const Membership = () => {
       badge: "BEST VALUE",
       perks: [
         "20% Flat Discount on FitFusion Shop",
-        "One-Time Personalized Workout Plan",
+        "Personalized Workout Meal Plans",
         "Proper Guidance from Senior Trainers",
         "Full Gym & Equipment Access",
         "Priority Access to New Facilities",

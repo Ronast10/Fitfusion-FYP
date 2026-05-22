@@ -21,7 +21,7 @@
   object-fit: cover; 
 }
 
-.user-info h2 span { color: #ff2c2c; }
+.user-info h2 span { color: #d03b3b; }
 .edit-name input { 
   background: #000; 
   border: 1px solid #333; 
@@ -106,7 +106,7 @@
 }
 
 .log-btn { 
-  background: #ff2c2c; 
+  background: #d43c3c; 
   color: white; 
   border: none; 
   padding: 15px 30px; 
@@ -117,7 +117,7 @@
 }
 
 .log-btn:hover { 
-  background: #ff4444; 
+  background: #d13434; 
   transform: translateY(-2px); 
 }
 
@@ -220,7 +220,7 @@
 .pro-member {
   background: linear-gradient(135deg, #ff2c2c 0%, #a30000 100%);
   color: white;
-  border: 1px solid #ff4d4d;
+  border: 1px solid #d33939;
 }
 
 .elite-member {
@@ -237,7 +237,7 @@
 }
 
 .plan-label strong {
-  color: #ff2c2c; /* Matches your FitFusion red */
+  color: #cb3d3d; /* Matches your FitFusion red */
 }
 /* Badge Positioning */
 .membership-badge {
@@ -267,7 +267,7 @@
 }
 
 .plan-label { font-size: 14px; color: #666; margin-bottom: 1px; }
-.days-remaining { font-size: 12px; color: #ff8c00; font-weight: bold; }
+.days-remaining { font-size: 12px; color: #b04c33; font-weight: bold; }
 
 .edit-btn {
   background: transparent;
@@ -281,3 +281,23 @@
 }
 
 .edit-btn:hover { background: #eee; }
+
+.custom-toast {
+  position: fixed;
+  top: 90px; /* Adjusted to sit just below your Navbar */
+  right: 20px;
+  background-color: #8b0000; /* Matching your dim red theme */
+  color: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  z-index: 9999; /* Higher z-index to ensure it sits above other elements */
+  animation: fadeIn 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  font-weight: 500;
+  border: 1px solid #ff0000;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
