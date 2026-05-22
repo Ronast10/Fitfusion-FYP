@@ -1,15 +1,23 @@
 import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import Login from "./Login";
+import Register from "./Register";
 import { dietPlans } from "../dietPlans";
 import "./DietPlan.css";
 
 export default function DietPlanPage() {
     const status = localStorage.getItem("userMembershipStatus");
     const isPremium = status === "Pro Member" || status === "Elite Member";
+    
+    // State for generated plan
     const [weightClass, setWeightClass] = useState("");
     const [goal, setGoal] = useState("");
     const [plan, setPlan] = useState(null);
+
+    // NEW: State for modals
+    const [showLogin, setShowLogin] = useState(false);
+    const [showRegister, setShowRegister] = useState(false);
 
     const handleGenerate = () => {
         if (weightClass && goal) {
@@ -22,7 +30,31 @@ export default function DietPlanPage() {
 
     return (
         <div className="diet-page-container">
-            <Navbar />
+            {/* Pass modal handlers to Navbar */}
+            <Navbar 
+                onLoginClick={() => setShowLogin(true)} 
+                onRegisterClick={() => setShowRegister(true)} 
+            />
+
+            {/* Modal Overlay Logic */}
+            {(showLogin || showRegister) && (
+                <div className="modal-overlay" onClick={() => {setShowLogin(false); setShowRegister(false);}}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <span className="close-x" onClick={() => {setShowLogin(false); setShowRegister(false);}}>&times;</span>
+                        {showLogin && (
+                            <Login 
+                                switchToRegister={() => {setShowLogin(false); setShowRegister(true);}} 
+                                onLoginSuccess={() => setShowLogin(false)} 
+                            />
+                        )}
+                        {showRegister && (
+                            <Register 
+                                switchToLogin={() => {setShowRegister(false); setShowLogin(true);}} 
+                            />
+                        )}
+                    </div>
+                </div>
+            )}
 
             <section className="hero-section">
                 <h1>FITFUSION DIET GENERATOR</h1>
@@ -55,7 +87,6 @@ export default function DietPlanPage() {
                                 <div className="diet-card-premium">
                                     <img src={plan.image} alt="Plan" className="plan-image" />
                                     <div className="content-side">
-                                        
                                         <div className="plan-header">
                                             <h3>{goal.toUpperCase()} PLAN ({weightClass} kg)</h3>
                                             <div className="stats-badge">Calories: {plan.calories}</div>

@@ -19,7 +19,7 @@ export default function Footer() {
         <div className="footer-section">
           <h4>Our Services</h4>
           <ul>
-            <li>Nutritionist</li>
+            
             <li>Group Classes</li>
             <li>Personal Trainers</li>
             <li>Consultations</li>
@@ -36,7 +36,7 @@ export default function Footer() {
 
         <div className="footer-section">
           <h4>Contact</h4>
-          <p>📞 01-5919988</p>
+          <p>📞 01-5119911</p>
           <p>✉️ info@fitfusion.com.np</p>
           <div className="social-icons">
            

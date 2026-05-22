@@ -145,6 +145,7 @@ export default function Navbar({ onLoginClick, onRegisterClick }) {
             <li onClick={() => navigate("/shop")}>Shop</li>
             <li onClick={() => navigate("/tips")}>Tips & Videos</li>
             <li onClick={() => navigate("/diet-plans")}>Diet Plans</li>
+            <li onClick={() => navigate("/schedule")} style={{cursor: 'pointer'}}>Classes</li>
             <li onClick={() => navigate("/contact")}>Contact</li>
             
             {/* CART ICON - Visible to everyone */}

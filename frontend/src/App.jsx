@@ -17,7 +17,7 @@ import AdminChatHub from "./pages/AdminChatHub";
 import VerifyEmail from "./pages/VerifyEmail";
 import ResetPassword from "./pages/ResetPassword";
 import DietPlanPage from "./pages/DietPlanSection";
-
+import Schedule from "./pages/Schedule";
 // --- COMPONENTS ---
 import Cart from "./components/Cart";
 import TrainerChatSection from "./components/TrainerChatSection";
@@ -40,6 +40,7 @@ function App() {
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/schedule" element={<Schedule />} />
         
         {/* Shop & Membership */}
         <Route path="/shop" element={<Shop />} />

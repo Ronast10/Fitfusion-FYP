@@ -3,6 +3,8 @@ import axios from "axios";
 import "./Shop.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import Login from "./Login"; 
+import Register from "./Register";
 
 export default function Shop() {
   const [dbProducts, setDbProducts] = useState([]);
@@ -11,6 +13,13 @@ export default function Shop() {
   const [activeCategory, setActiveCategory] = useState(null);
 
   const API_BASE_URL = "http://localhost:5000";
+
+  const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
+
+  const openLoginModal = () => {
+    setShowLogin(true);
+  };
 
   // Helper to handle image paths
   const formatImageUrl = (img) => {
@@ -47,7 +56,21 @@ export default function Shop() {
     setActiveCategory({ name: categoryName, items: filtered });
   };
 
-  const addToCart = (product) => {
+ const addToCart = (product) => {
+    // 1. Check if user is logged in
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+
+    if (!isLoggedIn) {
+      setNotification({ show: true, message: "❌ Please log in to add items to your cart!" });
+      
+      // Clear after 3 seconds
+      setTimeout(() => setNotification({ show: false, message: "" }), 3000);
+      openLoginModal();
+
+      return;
+    }
+
+    // 2. Existing Add to Cart Logic
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
     if (cart.find((item) => item._id === product._id)) {
       setNotification({ show: true, message: "⚠️ Item already in cart!" });
@@ -58,9 +81,24 @@ export default function Shop() {
     setTimeout(() => setNotification({ show: false, message: "" }), 3000);
   };
 
-  return (
+ return (
     <div className="shop-container">
-      <Navbar />
+      {/* 1. Pass the handlers as props to Navbar */}
+      <Navbar 
+        onLoginClick={() => setShowLogin(true)} 
+        onRegisterClick={() => setShowRegister(true)} 
+      />
+
+      {/* 2. Render the Modal Overlay */}
+      {(showLogin || showRegister) && (
+        <div className="modal-overlay" onClick={() => {setShowLogin(false); setShowRegister(false);}}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <span className="close-x" onClick={() => {setShowLogin(false); setShowRegister(false);}}>&times;</span>
+            {showLogin && <Login switchToRegister={() => {setShowLogin(false); setShowRegister(true);}} onLoginSuccess={() => setShowLogin(false)} />}
+            {showRegister && <Register switchToLogin={() => {setShowRegister(false); setShowLogin(true);}} />}
+          </div>
+        </div>
+      )}
       {notification.show && <div className="shop-notification">{notification.message}</div>}
 
       {/* --- CATEGORY POPUP MODAL --- */}

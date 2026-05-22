@@ -1,19 +1,42 @@
-import React from "react";
+import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import Login from "./Login";
+import Register from "./Register";
 import "./About.css";
 
 export default function About() {
-  const stats = [
-    { label: "Active Members", value: "500+" },
-    { label: "Expert Trainers", value: "15+" },
-    { label: "Success Stories", value: "1.2k" },
-    { label: "Digital Plans", value: "200+" }
-  ];
+  // Modal States
+  const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
 
   return (
     <div className="about-page">
-      <Navbar />
+      {/* 1. Navbar with Modal Props */}
+      <Navbar 
+        onLoginClick={() => setShowLogin(true)} 
+        onRegisterClick={() => setShowRegister(true)} 
+      />
+
+      {/* 2. Modal Overlay Logic */}
+      {(showLogin || showRegister) && (
+        <div className="modal-overlay" onClick={() => {setShowLogin(false); setShowRegister(false);}}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <span className="close-x" onClick={() => {setShowLogin(false); setShowRegister(false);}}>&times;</span>
+            {showLogin && (
+              <Login 
+                switchToRegister={() => {setShowLogin(false); setShowRegister(true);}} 
+                onLoginSuccess={() => setShowLogin(false)} 
+              />
+            )}
+            {showRegister && (
+              <Register 
+                switchToLogin={() => {setShowRegister(false); setShowLogin(true);}} 
+              />
+            )}
+          </div>
+        </div>
+      )}
 
       {/* --- HERO SECTION --- */}
       <header className="about-hero">
@@ -45,8 +68,6 @@ export default function About() {
           </div>
         </div>
       </section>
-
-
 
       {/* --- CORE VALUES --- */}
       <section className="values-section">
