@@ -7,11 +7,15 @@ import Footer from "../components/Footer";
 import PaymentModal from "../pages/PaymentModal";
 import Receipt from "../components/Receipt";
 import "./Cart.css";
+import Login from "../pages/Login";
+import Register from "../pages/Register";
 
 export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [purchasedItems, setPurchasedItems] = useState([]);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
 
   // New state for Receipt Modal
   const [selectedReceipt, setSelectedReceipt] = useState(null);
@@ -44,6 +48,11 @@ export default function Cart() {
         .then(res => {
           setPurchasedItems(res.data.purchasedItems || []);
 
+          if (res.data.cart && res.data.cart.length > 0) {
+            setCartItems(res.data.cart);
+            localStorage.setItem("cart", JSON.stringify(res.data.cart));
+          }
+
           // Capture membership data directly using MongoDB naming convention
           if (res.data.membershipData?.membershipStatus) {
             setMembershipStatus(res.data.membershipData.membershipStatus);
@@ -53,7 +62,7 @@ export default function Cart() {
         })
         .catch(err => console.error("Error fetching history:", err));
     }
-  }, []);
+  }, [userEmail]);;
 
   const syncCartToDB = async (updatedCart) => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -115,7 +124,30 @@ export default function Cart() {
 
   return (
     <div className="cart-page">
-      <Navbar />
+      <Navbar 
+        onLoginClick={() => setShowLogin(true)} 
+        onRegisterClick={() => setShowRegister(true)} 
+      />
+
+      {/* MODAL OVERLAY LOGIC (Same as About.jsx) */}
+      {(showLogin || showRegister) && (
+        <div className="modal-overlay" onClick={() => {setShowLogin(false); setShowRegister(false);}}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <span className="close-x" onClick={() => {setShowLogin(false); setShowRegister(false);}}>&times;</span>
+            {showLogin && (
+              <Login 
+                switchToRegister={() => {setShowLogin(false); setShowRegister(true);}} 
+                onLoginSuccess={() => setShowLogin(false)} 
+              />
+            )}
+            {showRegister && (
+              <Register 
+                switchToLogin={() => {setShowRegister(false); setShowLogin(true);}} 
+              />
+            )}
+          </div>
+        </div>
+      )}
       <div className="cart-container">
         <h1>Your Fitness Cart</h1>
 
@@ -224,6 +256,7 @@ export default function Cart() {
           onClose={() => setIsPaymentModalOpen(false)}
         />
       )}
+      
 
       {/* --- RECEIPT MODAL --- */}
       {selectedReceipt && (
@@ -249,6 +282,7 @@ export default function Cart() {
           </div>
         </div>
       )}
+      
 
       <Footer />
     </div>

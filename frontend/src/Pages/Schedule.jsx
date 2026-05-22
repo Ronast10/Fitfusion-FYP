@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Navbar from "../components/Navbar"; // Ensure the path is correct
-import Footer from "../components/Footer"; // Ensure the path is correct
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import Login from "./Login";
+import Register from "./Register";
 import "./Schedule.css";
 
 export default function Schedule() {
     const [classes, setClasses] = useState([]);
+    // 1. Add modal state
+    const [showLogin, setShowLogin] = useState(false);
+    const [showRegister, setShowRegister] = useState(false);
 
     useEffect(() => {
         axios.get("http://localhost:5000/api/classes")
@@ -15,7 +20,31 @@ export default function Schedule() {
 
     return (
         <>
-            <Navbar />
+            {/* 2. Pass the trigger functions to Navbar */}
+            <Navbar 
+                onLoginClick={() => setShowLogin(true)} 
+                onRegisterClick={() => setShowRegister(true)} 
+            />
+
+            {/* 3. Add the Modal Overlay logic */}
+            {(showLogin || showRegister) && (
+                <div className="modal-overlay" onClick={() => {setShowLogin(false); setShowRegister(false);}}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <span className="close-x" onClick={() => {setShowLogin(false); setShowRegister(false);}}>&times;</span>
+                        {showLogin && (
+                            <Login 
+                                switchToRegister={() => {setShowLogin(false); setShowRegister(true);}} 
+                                onLoginSuccess={() => setShowLogin(false)} 
+                            />
+                        )}
+                        {showRegister && (
+                            <Register 
+                                switchToLogin={() => {setShowRegister(false); setShowLogin(true);}} 
+                            />
+                        )}
+                    </div>
+                </div>
+            )}
 
             <div className="schedule-page">
                 <div className="schedule-content">

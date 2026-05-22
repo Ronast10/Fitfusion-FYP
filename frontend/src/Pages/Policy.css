@@ -1,0 +1,32 @@
+.policy-page {
+    background-color: #ffffff;
+    min-height: 100vh;
+    color: #333;
+}
+
+.policy-content {
+    max-width: 850px;
+    margin: 60px auto;
+    padding: 0 30px;
+    line-height: 1.7;
+}
+
+.policy-content h1 {
+    font-size: 2.5rem;
+    color: #000;
+    margin-bottom: 30px;
+}
+
+.policy-content h3 {
+    margin-top: 35px;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.policy-content p {
+    margin-bottom: 20px;
+    color: #444;
+}
