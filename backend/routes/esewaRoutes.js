@@ -7,14 +7,20 @@ const router = express.Router();
 // 1. Route to create the signature
 router.post("/create-signature", async (req, res) => {
   const { amount, transaction_uuid } = req.body;
-  // Ensure no spaces after commas
-  const data = `total_amount=${amount},transaction_uuid=${transaction_uuid},product_code=${process.env.ESEWA_PRODUCT_CODE}`;
+  
+  // FIX: Force 2 decimal places (e.g., 4000 -> "4000.00")
+  // eSewa V2 signature verification fails if this format is missing
+  const formattedAmount = Number(amount).toFixed(2);
+  
+  // FIX: Signature string must strictly follow this order and format
+  const data = `total_amount=${formattedAmount},transaction_uuid=${transaction_uuid},product_code=${process.env.ESEWA_PRODUCT_CODE}`;
 
   const signature = generateHmacSha256Hash(data, process.env.ESEWA_SECRET_KEY);
 
   return res.json({
     signature,
     product_code: process.env.ESEWA_PRODUCT_CODE,
+    total_amount: formattedAmount // Send this formatted amount to frontend
   });
 });
 
@@ -22,10 +28,12 @@ router.post("/create-signature", async (req, res) => {
 router.post("/verify-payment", async (req, res) => {
   try {
     const { data, email } = req.body;
+    // Decode base64 data from eSewa
     const decodedData = JSON.parse(Buffer.from(data, "base64").toString("utf-8"));
 
     if (decodedData.status === "COMPLETE") {
-      const amount = parseInt(decodedData.total_amount.replace(/,/g, ''));
+      // FIX: Use parseFloat to handle potential decimals and Math.round for safe integer conversion
+      const amount = Math.round(parseFloat(decodedData.total_amount));
       let months = 0;
       let status = "Free Member";
 
@@ -41,7 +49,6 @@ router.post("/verify-payment", async (req, res) => {
         const expiryDate = new Date();
         expiryDate.setMonth(expiryDate.getMonth() + months);
 
-        // FIX: Using dot notation to update nested object 'membershipData'
         const updatedUser = await User.findOneAndUpdate(
           { email: email.trim().toLowerCase() }, 
           {

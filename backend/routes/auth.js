@@ -155,20 +155,32 @@ router.post("/complete-purchase", async (req, res) => {
     const { email, cartItems } = req.body;
     const user = await User.findOne({ email });
 
-    const sourceItems = (user.cart && user.cart.length > 0) ? user.cart : cartItems;
-
-    if (!user || user.cart.length === 0) {
+    if (!user || cartItems.length === 0) {
       return res.status(400).json({ success: false, message: "Cart is empty" });
     }
 
-    const itemsToMove = sourceItems.map(item => ({
-      _id: item._id,
-      name: item.name,
-      price: item.price,
-      image: item.image,
-      quantity: item.quantity,
-      purchaseDate: new Date()
-    }));
+    // Determine discount based on current membership status
+    const status = user.membershipData.membershipStatus.toLowerCase();
+    let discountPercent = 0;
+    if (status.includes("pro")) discountPercent = 0.10;
+    if (status.includes("elite")) discountPercent = 0.20;
+
+    const itemsToMove = cartItems.map(item => {
+      const originalPrice = item.price; // This is the shop price
+      const discountApplied = Math.round(originalPrice * discountPercent);
+      const finalPrice = originalPrice - discountApplied;
+
+      return {
+        productId: item._id, // Match your updated Schema
+        name: item.name,
+        originalPrice: originalPrice,   // SAVED TO DB
+        discountApplied: discountApplied, // SAVED TO DB
+        price: finalPrice,              // SAVED TO DB
+        image: item.image,
+        quantity: item.quantity,
+        purchaseDate: new Date()
+      };
+    });
 
     user.purchasedItems.push(...itemsToMove);
     user.cart = [];
@@ -176,6 +188,7 @@ router.post("/complete-purchase", async (req, res) => {
     await user.save();
     res.status(200).json({ success: true, purchasedItems: user.purchasedItems });
   } catch (error) {
+    console.error("Purchase error:", error);
     res.status(500).json({ success: false, message: "Failed to record purchase" });
   }
 });

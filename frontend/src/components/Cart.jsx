@@ -4,22 +4,22 @@ import { useReactToPrint } from "react-to-print";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import PaymentModal from "../pages/PaymentModal"; 
-import Receipt from "../components/Receipt"; 
+import PaymentModal from "../pages/PaymentModal";
+import Receipt from "../components/Receipt";
 import "./Cart.css";
 
 export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
-  const [purchasedItems, setPurchasedItems] = useState([]); 
+  const [purchasedItems, setPurchasedItems] = useState([]);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  
+
   // New state for Receipt Modal
   const [selectedReceipt, setSelectedReceipt] = useState(null);
   const receiptRef = useRef();
-  
+
   // Directly tracks the verified membership status from the DB
   const [membershipStatus, setMembershipStatus] = useState("Free Member");
-  
+
   const navigate = useNavigate();
 
   const API_BASE_URL = "http://localhost:5000";
@@ -43,7 +43,7 @@ export default function Cart() {
       axios.get(`${API_BASE_URL}/api/auth/user/${userEmail}`)
         .then(res => {
           setPurchasedItems(res.data.purchasedItems || []);
-          
+
           // Capture membership data directly using MongoDB naming convention
           if (res.data.membershipData?.membershipStatus) {
             setMembershipStatus(res.data.membershipData.membershipStatus);
@@ -53,7 +53,7 @@ export default function Cart() {
         })
         .catch(err => console.error("Error fetching history:", err));
     }
-  }, []); 
+  }, []);
 
   const syncCartToDB = async (updatedCart) => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -89,14 +89,14 @@ export default function Cart() {
     syncCartToDB(updatedCart);
   };
 
-  const handleCheckout = async() => {
+  const handleCheckout = async () => {
     await syncCartToDB(cartItems);
     setIsPaymentModalOpen(true);
   };
 
   // --- LIVE DISCOUNT CONFIGURATION BLOCK ---
   const statusLower = membershipStatus.toLowerCase();
-  
+
   let discountPercent = 0;
   if (statusLower.includes("pro")) discountPercent = 0.10;
   if (statusLower.includes("elite")) discountPercent = 0.20;
@@ -130,7 +130,7 @@ export default function Cart() {
               {cartItems.map((item) => {
                 const itemOriginalPrice = item.price;
                 const itemDiscountedPrice = Math.round(itemOriginalPrice * (1 - discountPercent));
-                
+
                 return (
                   <div key={item._id} className="cart-item-card">
                     <div className="cart-item-img-wrapper">
@@ -138,7 +138,7 @@ export default function Cart() {
                     </div>
                     <div className="item-details">
                       <h3>{item.name}</h3>
-                      
+
                       <div className="price-display-wrapper">
                         {discountPercent > 0 ? (
                           <p className="item-price">
@@ -199,9 +199,9 @@ export default function Cart() {
           ) : (
             <div className="purchased-grid">
               {purchasedItems.map((item, index) => (
-                <div 
-                  key={index} 
-                  className="purchased-item-mini" 
+                <div
+                  key={index}
+                  className="purchased-item-mini"
                   onClick={() => setSelectedReceipt(item)}
                   style={{ cursor: "pointer" }}
                 >
@@ -219,28 +219,36 @@ export default function Cart() {
       </div>
 
       {isPaymentModalOpen && (
-        <PaymentModal 
-          item={cartOrderSummary} 
-          onClose={() => setIsPaymentModalOpen(false)} 
+        <PaymentModal
+          item={cartOrderSummary}
+          onClose={() => setIsPaymentModalOpen(false)}
         />
       )}
 
       {/* --- RECEIPT MODAL --- */}
       {selectedReceipt && (
-  <div className="receipt-modal-overlay" onClick={() => setSelectedReceipt(null)}>
-    <div className="receipt-modal-content" onClick={(e) => e.stopPropagation()}>
-      <Receipt 
-        ref={receiptRef} 
-        items={[selectedReceipt]} 
-        total={selectedReceipt.price} 
-      />
-      <div className="receipt-modal-actions" style={{ padding: "20px", display: "flex", gap: "10px", justifyContent: "center" }}>
-        <button onClick={handlePrint} className="esewa-proceed-btn">Download/Print PDF</button>
-        <button onClick={() => setSelectedReceipt(null)} className="remove-btn">Close</button>
-      </div>
-    </div>
-  </div>
-)}
+        <div className="receipt-modal-overlay" onClick={() => setSelectedReceipt(null)}>
+          <div className="receipt-modal-content" onClick={(e) => e.stopPropagation()}>
+            <Receipt
+              ref={receiptRef}
+              // We map the single item to the structure Receipt.jsx expects
+              items={[{
+                name: selectedReceipt.name,
+                originalPrice: selectedReceipt.originalPrice || selectedReceipt.price,
+                // Match the exact field name from your MongoDB schema (discountApplied)
+                discount: selectedReceipt.discountApplied || selectedReceipt.discount || 0,
+                price: selectedReceipt.price
+              }]}
+              total={selectedReceipt.price}
+              discountTotal={selectedReceipt.discountApplied || selectedReceipt.discount || 0}
+            />
+            <div className="receipt-modal-actions" style={{ padding: "20px", display: "flex", gap: "10px", justifyContent: "center" }}>
+              <button onClick={handlePrint} className="esewa-proceed-btn">Download</button>
+              <button onClick={() => setSelectedReceipt(null)} className="remove-btn">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

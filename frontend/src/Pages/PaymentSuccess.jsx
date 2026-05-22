@@ -7,42 +7,84 @@ const PaymentSuccess = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState("Verifying Payment...");
   const [loading, setLoading] = useState(true);
-  const paymentType = localStorage.getItem("paymentType");
+  const [paymentTypeDisplay, setPaymentTypeDisplay] = useState("shop");
 
   useEffect(() => {
     const verify = async () => {
-      const data = searchParams.get("data");
       const email = localStorage.getItem("userEmail");
+      const eSewaData = searchParams.get("data");
+      const khaltiPidx = searchParams.get("pidx"); 
+      const gateway = searchParams.get("gateway");  
+      
+      // 1. Capture type from URL param (Khalti route) or fallback to localStorage (eSewa route)
+      const currentPaymentType = searchParams.get("type") || localStorage.getItem("paymentType") || "shop";
+      setPaymentTypeDisplay(currentPaymentType);
 
-      if (!data || !email) {
-        console.error("Missing payment data or user email");
+      // 💡 FIX: Instantly wipe the local storage entry clean!
+      // This ensures the next checkout starts completely fresh without remembering old choices.
+      localStorage.removeItem("paymentType");
+
+      if (!email) {
+        console.error("Missing user email context");
         return navigate("/membership");
       }
 
       try {
-        // --- UPDATED TO CALL YOUR ESEWA VERIFY ROUTE ---
-        const res = await axios.post("http://localhost:5000/api/esewa/verify-payment", {
-          data: data, // Send the raw base64 data to backend
-          email: email // Send the email to link the payment to the user
-        });
+        let responseStatus = "";
 
-        // Check for 'COMPLETE' status which matches your esewa.js logic
-        if (res.data.status === "COMPLETE") {
-          console.log("Payment verified successfully on backend");
-          if(paymentType === "membership") {
+        // ==============================================================================
+        // 1. KHALTI VERIFICATION FLOW
+        // ==============================================================================
+        if (gateway === "khalti" || khaltiPidx) {
+          if (!khaltiPidx) {
+            console.error("Missing Khalti pidx token");
+            return navigate("/membership");
+          }
+
+          const res = await axios.post("http://localhost:5000/api/khalti/khalti-verify", {
+            pidx: khaltiPidx,
+            email: email
+          });
+          
+          responseStatus = res.data.status; 
+        } 
+        // ==============================================================================
+        // 2. ESEWA VERIFICATION FLOW (Default Fallback)
+        // ==============================================================================
+        else {
+          if (!eSewaData) {
+            console.error("Missing eSewa validation payload data");
+            return navigate("/membership");
+          }
+
+          const res = await axios.post("http://localhost:5000/api/esewa/verify-payment", {
+            data: eSewaData,
+            email: email 
+          });
+
+          responseStatus = res.data.status; 
+        }
+
+        // ==============================================================================
+        // 3. UNIFIED PROFILE / STORE SYNC LOGIC
+        // ==============================================================================
+        if (responseStatus === "COMPLETE") {
+          console.log("Payment successfully verified on secure server-side pipeline");
+          
+          if (currentPaymentType === "membership") {
             console.log("Membership purchase - updating membership status");
             setLoading(false);
             setStatus("✓ Payment Successful!");
-          
-            // Small delay so user sees the success message
             setTimeout(() => navigate("/profile"), 2000);
           } else {
             console.log("Shop purchase - updating purchase history");
             const cartitems = JSON.parse(localStorage.getItem("cart") || "[]");
+            
             await axios.post("http://localhost:5000/api/auth/complete-purchase", {
               email: email,
-              cartItems: cartitems // Send the cart items to be moved to purchase history
+              cartItems: cartitems 
             });
+            
             localStorage.removeItem("cart");
             setLoading(false);
             setStatus("✓ Payment Successful!");
@@ -53,11 +95,12 @@ const PaymentSuccess = () => {
           setTimeout(() => navigate("/membership"), 3000);
         }
       } catch (err) {
-        console.error("Verification Error:", err);
+        console.error("Verification Loop Failure Error:", err);
         setStatus("Server error during verification.");
         setTimeout(() => navigate("/membership"), 3000);
       }
     };
+    
     verify();
   }, [searchParams, navigate]);
 
@@ -73,8 +116,8 @@ const PaymentSuccess = () => {
       }}>
         <h2 style={{ color: loading ? "#333" : "green" }}>{status}</h2>
         {loading ? (
-          <p>Connecting to eSewa to confirm your transaction...</p>
-        ) : paymentType === "membership" ? (
+          <p>Connecting to secure server channels to confirm your transaction...</p>
+        ) : paymentTypeDisplay === "membership" ? (
           <p>Your FitFusion membership is now active! Redirecting to your profile...</p>
         ) : (
           <p>Transaction completed successfully! Redirecting to the cart page...</p>

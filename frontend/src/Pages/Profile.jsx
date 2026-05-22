@@ -11,6 +11,7 @@ export default function Profile() {
   const [lastLoggedDate, setLastLoggedDate] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
 
   // --- MEMBERSHIP STATE ---
   const [membershipStatus, setMembershipStatus] = useState("Free Member");
@@ -36,7 +37,7 @@ export default function Profile() {
   useEffect(() => {
     const fetchUserData = async () => {
       const email = localStorage.getItem("userEmail");
-      
+
       if (!email) {
         console.error("No userEmail found in localStorage. Login again.");
         setLoading(false);
@@ -44,26 +45,26 @@ export default function Profile() {
       }
 
       try {
-  const res = await axios.get(`http://localhost:5000/api/auth/user/${email}`);
-  
-  if (res.data) {
-    setName(res.data.name || "Fit User");
-    setSelectedAvatar(res.data.avatar || "avg1.png");
-    setStreak(res.data.streak || 0); 
-    setLastLoggedDate(res.data.lastLoggedDate || "");
-    
-    // --- FIX: ACCESS NESTED membershipData OBJECT ---
-    // We check if res.data.membershipData exists first to prevent crashes
-    const mData = res.data.membershipData || {}; 
-    
-    setMembershipStatus(mData.membershipStatus || "Free Member");
-    setPlanExpiry(mData.planExpiry || null);
-    
-    localStorage.setItem("userName", res.data.name);
-    localStorage.setItem("userAvatar", res.data.avatar);
-  }
-} catch (err) {
-  console.error("Error fetching user data:", err);
+        const res = await axios.get(`http://localhost:5000/api/auth/user/${email}`);
+
+        if (res.data) {
+          setName(res.data.name || "Fit User");
+          setSelectedAvatar(res.data.avatar || "avg1.png");
+          setStreak(res.data.streak || 0);
+          setLastLoggedDate(res.data.lastLoggedDate || "");
+
+          // --- FIX: ACCESS NESTED membershipData OBJECT ---
+          // We check if res.data.membershipData exists first to prevent crashes
+          const mData = res.data.membershipData || {};
+
+          setMembershipStatus(mData.membershipStatus || "Free Member");
+          setPlanExpiry(mData.planExpiry || null);
+
+          localStorage.setItem("userName", res.data.name);
+          localStorage.setItem("userAvatar", res.data.avatar);
+        }
+      } catch (err) {
+        console.error("Error fetching user data:", err);
       } finally {
         setLoading(false);
       }
@@ -102,7 +103,9 @@ export default function Profile() {
   const logWorkout = () => {
     const today = new Date().toDateString();
     if (lastLoggedDate === today) {
-      alert("Workout already logged for today!");
+      setMessage("Workout already logged for today!");
+      // Auto-hide the message after 3 seconds
+      setTimeout(() => setMessage(""), 3000);
       return;
     }
 
@@ -110,9 +113,9 @@ export default function Profile() {
     setStreak(newStreak);
     setLastLoggedDate(today);
 
-    updateBackendProfile({ 
-      streak: newStreak, 
-      lastLoggedDate: today 
+    updateBackendProfile({
+      streak: newStreak,
+      lastLoggedDate: today
     });
   };
 
@@ -125,16 +128,21 @@ export default function Profile() {
       <Navbar />
       <section className="profile-container">
         <div className="profile-card">
+          {message && (
+  <div className="custom-toast">
+    {message}
+  </div>
+)}
           <div className="avatar-selection-wrapper">
             <div className="current-avatar-display">
               <img src={`/avatars/${selectedAvatar}`} alt="Current" className="user-avatar" />
-              
+
               {/* --- MEMBERSHIP BADGE --- */}
               <div className={`membership-badge ${membershipStatus.toLowerCase().replace(" ", "-")}`}>
                 {membershipStatus}
               </div>
             </div>
-            
+
             <p className="pick-text">Choose your Avatar</p>
             <div className="avatar-options-grid">
               {avatarOptions.map((opt) => (
@@ -157,16 +165,16 @@ export default function Profile() {
               </div>
             ) : (
               <div className="display-name">
-                <h2>Welcome back, <span>{name}</span></h2>
-                
+                <h2>Welcome, <span>{name}</span></h2>
+
                 {/* --- MEMBERSHIP INFO SECTION --- */}
                 <div className="membership-details">
-                    <p className="plan-label">Plan: <strong>{membershipStatus}</strong></p>
-                    {membershipStatus !== "Free Member" && daysRemaining !== null && (
-                        <p className="days-remaining">{daysRemaining} Days Left</p>
-                    )}
+                  <p className="plan-label">Plan: <strong>{membershipStatus}</strong></p>
+                  {membershipStatus !== "Free Member" && daysRemaining !== null && (
+                    <p className="days-remaining">{daysRemaining} Days Left</p>
+                  )}
                 </div>
-                
+
                 <button className="edit-btn" onClick={() => setIsEditing(true)}>Edit Name</button>
               </div>
             )}

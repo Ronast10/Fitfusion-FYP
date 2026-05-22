@@ -81,23 +81,19 @@ router.get("/all-purchases", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const admin = await User.findOne({ email: email, role: "admin" });
+    const admin = await User.findOne({ email, role: "admin" });
 
-    if (!admin) {
-      return res.status(401).json({ success: false, message: "Admin account not found" });
-    }
+    if (!admin) return res.status(401).json({ success: false, message: "Admin account not found" });
+
+    // Enforce verification
+    if (!admin.isVerified) return res.status(403).json({ success: false, message: "Please verify your email first." });
 
     if (password === admin.password) {
-      res.status(200).json({ 
-        success: true, 
-        message: "Login successful",
-        admin: { email: admin.email } 
-      });
+      res.status(200).json({ success: true, message: "Login successful" });
     } else {
       res.status(401).json({ success: false, message: "Invalid password" });
     }
   } catch (error) {
-    console.error(error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
@@ -105,22 +101,15 @@ router.post("/login", async (req, res) => {
 router.post("/register", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const existingAdmin = await User.findOne({ email });
-    if (existingAdmin) {
-      return res.status(400).json({ success: false, message: "Admin ID already exists" });
-    }
+    if (await User.findOne({ email })) return res.status(400).json({ success: false, message: "Email already registered" });
 
-    const newAdmin = new User({
-      email,
-      password, 
-      role: "admin"
-    });
-
+    const newAdmin = new User({ email, password, role: "admin", isVerified: false });
     await newAdmin.save();
-    res.status(201).json({ success: true, message: "New admin created successfully" });
+    
+    // Trigger your email verification logic here...
+    res.status(201).json({ success: true, message: "Admin created. Please verify email." });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Server error during registration" });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 });
 

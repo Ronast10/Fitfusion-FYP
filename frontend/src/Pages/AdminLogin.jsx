@@ -20,7 +20,7 @@ export default function AdminLogin() {
 
   const navigate = useNavigate();
 
-  const handleAdminAction = async (e) => {
+ const handleAdminAction = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
@@ -36,7 +36,7 @@ export default function AdminLogin() {
 
       if (res.data.success) {
         if (isRegistering) {
-          setSuccess("Admin created successfully! Switching to login...");
+          setSuccess("Admin created successfully! Please verify your email.");
           setEmail("");
           setPassword("");
           setTimeout(() => {
@@ -44,7 +44,10 @@ export default function AdminLogin() {
             setIsRegistering(false);
           }, 2500);
         } else {
+          // Store both flags
           localStorage.setItem("isAdmin", "true");
+          localStorage.setItem("isVerified", "true"); // Assuming login success implies verification
+          
           setSuccess("Access authorized. Welcome back, Boss!");
           setTimeout(() => {
             navigate("/admin-dashboard");
@@ -52,6 +55,7 @@ export default function AdminLogin() {
         }
       }
     } catch (err) {
+      // Improved error handling
       setError(err.response?.data?.message || "Authentication credentials rejected.");
     } finally {
       setLoading(false);

@@ -1,24 +1,38 @@
+/* Container for the paper look */
 .receipt-content {
   background: #ffffff;
   color: #333;
   padding: 40px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  max-width: 650px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Cleaner professional font */
+  max-width: 600px; /* Reduced width for a more vertical receipt look */
   margin: 0 auto;
+  border: 1px solid #eee;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
 }
 
 .receipt-header {
-  text-align: left;
-  border-bottom: 3px solid #2ed573;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
+  border-bottom: 2px solid #2ed573;
+  padding-bottom: 25px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
 }
 
 .receipt-header h1 {
   margin: 0;
   text-transform: uppercase;
-  color: #222;
-  font-size: 28px;
+  letter-spacing: 2px; /* Professional spacing */
+  color: #1a1a1a;
+  font-size: 24px;
+}
+
+.receipt-header p {
+  margin: 0;
+  text-align: right;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #555;
 }
 
 .receipt-table {
@@ -28,28 +42,60 @@
 }
 
 .receipt-table th {
-  border-bottom: 2px solid #ddd;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 1px;
+  border-bottom: 2px solid #eee;
   text-align: left;
-  padding: 10px 5px;
-  color: #777;
+  padding: 12px 5px;
+  color: #888;
 }
 
 .receipt-table td {
   padding: 15px 5px;
-  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  border-bottom: 1px solid #f9f9f9;
+}
+
+/* Align numeric columns to the right for readability */
+.receipt-table td:nth-child(2), 
+.receipt-table td:nth-child(3), 
+.receipt-table td:nth-child(4) {
+  text-align: right;
+}
+
+/* Header alignments match column content */
+.receipt-table th:nth-child(2), 
+.receipt-table th:nth-child(3), 
+.receipt-table th:nth-child(4) {
+  text-align: right;
 }
 
 .total-row {
-  background-color: #f8f9fa;
-  font-size: 1.2rem;
-  font-weight: bold;
+  background-color: transparent;
+  font-size: 1.1rem;
+  border-top: 2px solid #333 !important;
+}
+
+.total-row td {
+  padding: 20px 5px;
+  font-weight: 700;
+  color: #000;
+}
+
+.savings-summary {
+  margin-top: 10px;
+  text-align: right;
+  color: #2ed573;
+  font-size: 14px;
 }
 
 .footer-note {
-  margin-top: 50px;
-  font-size: 11px;
-  color: #888;
+  margin-top: 40px;
+  font-size: 12px;
+  color: #aaa;
   border-top: 1px solid #eee;
   padding-top: 20px;
   text-align: center;
+  font-style: italic;
 }

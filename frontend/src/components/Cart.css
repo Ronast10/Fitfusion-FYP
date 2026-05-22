@@ -295,3 +295,55 @@
   background: #f9f9f9;
   border-top: 1px solid #ddd;
 }
+.cart-page {
+  background-color: #000;
+  color: #fff;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.cart-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 120px 20px 60px;
+}
+
+.cart-container h1 {
+  font-size: 2.2rem;
+  margin-bottom: 40px;
+  border-bottom: 2px solid #8b0000;
+  display: inline-block;
+  padding-bottom: 10px;
+}
+
+/* --- Empty Cart State (Updated) --- */
+.empty-cart {
+  text-align: center;
+  padding: 80px 20px;
+  background: #0a0a0a;
+  border-radius: 15px;
+  border: 1px solid #1a1a1a;
+  margin-top: 20px;
+}
+
+.empty-cart p {
+  font-size: 1.3rem;
+  color: #888;
+  margin-bottom: 30px;
+}
+
+.empty-cart button {
+  background: #8b0000;
+  color: #fff;
+  border: none;
+  padding: 14px 40px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background 0.3s ease;
+}
+
+.empty-cart button:hover {
+  background: #a00000;
+}

@@ -4,8 +4,13 @@ import "./EsewaPayment.css";
 const EsewaPayment = ({ amount, itemName, onBack }) => {
   const handlePayment = async () => {
     try {
-      const formattedAmount = String(Math.floor(Number(amount)));
-      const transaction_uuid = `FF-${Date.now()}-${Math.floor(Math.random()*1000)}`;
+      // FIX: Ensure the amount has 2 decimal places before sending to backend
+      const formattedAmount = Number(amount).toFixed(2);
+      const transaction_uuid = `FF-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+
+      // 💡 FIX: Save whether this is a membership or shop item before leaving for eSewa
+      const isMembership = itemName.toLowerCase().includes("membership") || itemName.toLowerCase().includes("plan");
+      localStorage.setItem("paymentType", isMembership ? "membership" : "shop");
 
       const response = await fetch("http://localhost:5000/api/esewa/create-signature", {
         method: "POST",
@@ -20,15 +25,14 @@ const EsewaPayment = ({ amount, itemName, onBack }) => {
       const data = await response.json();
 
       const formFields = {
-        amount: formattedAmount,
-        tax_amount: "0",
+        amount: formattedAmount, 
         total_amount: formattedAmount,
-        transaction_uuid,
+        transaction_uuid: transaction_uuid,
         product_code: data.product_code,
+        tax_amount: "0",
         product_service_charge: "0",
         product_delivery_charge: "0",
         success_url: "http://localhost:5173/payment-success",
-        // Dynamically sets failure return to whatever page you are currently on
         failure_url: window.location.href, 
         signed_field_names: "total_amount,transaction_uuid,product_code",
         signature: data.signature,
@@ -69,7 +73,6 @@ const EsewaPayment = ({ amount, itemName, onBack }) => {
       </div>
 
       <div className="esewa-details">
-        {/* Dynamic text to handle both shop items and memberships */}
         <p>You are paying for: <strong>{itemName}</strong></p>
         <h2 className="esewa-amount-text">Rs. {amount}</h2>
       </div>

@@ -10,10 +10,10 @@ import productRoutes from "./routes/productRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js"; 
 import contactRoutes from "./routes/contactRoutes.js"; 
 import adminAuthRoutes from "./routes/adminAuth.js"; 
-import paypalRoutes from "./routes/paypalRoutes.js";
 import esewaRoutes from "./routes/esewaRoutes.js";
 import videoRoutes from "./routes/videoRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js"; 
+import khaltiRoutes from "./routes/khaltiRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -37,7 +37,7 @@ app.use("/api/contact", contactRoutes);
 
 app.use("/api/admin", adminAuthRoutes);   
 
-app.use("/api/paypal", paypalRoutes);
+app.use("/api/khalti", khaltiRoutes);
 app.use("/api/esewa", esewaRoutes);
 app.use("/api/notifications", notificationRoutes); 
 app.use("/api/videos", videoRoutes);
